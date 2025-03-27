@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [ 
+      {
+        "name": "Debug Chrome Extension",
+        "type": "chrome",
+        "request": "launch",
+        "runtimeArgs": [
+          "--load-extension=${workspaceFolder}",
+          "--disable-extensions-except=${workspaceFolder}"
+        ],
+        "userDataDir": "${workspaceFolder}/.chrome-debug",
+        "url": "about:blank"
+      }
+    ]
+}

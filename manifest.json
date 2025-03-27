@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Time Management",
+  "version": "1.0",
+  "description": "A Chrome extension to manage website usage time and set limits.",
+  "permissions": [
+    "tabs",
+    "storage",
+    "activeTab",
+    "scripting",
+    "alarms",
+    "idle",
+    "windows"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/sandglass16.png",
+      "48": "icons/sandglass48.png",
+      "128": "icons/sandglass128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/sandglass16.png",
+    "48": "icons/sandglass48.png",
+    "128": "icons/sandglass128.png"
+  }
+}
