@@ -4,6 +4,11 @@ const activeTabs = {}; // 存储各标签页的最新活动时间
 let updateInterval;
 let isSystemActive = true; // 新增系统活动状态标识
 let isBrowserFocused = true; // 新增窗口焦点状态标识
+// 在文件顶部添加颜色常量
+const BADGE_COLORS = {
+  enabled: '#2ecc71', // 绿色
+  disabled: '#e74c3c' // 红色
+};
 
 // 创建定时更新函数
 function startIntervalUpdate() {
@@ -191,3 +196,35 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 setDailyAlarm(); // 设置每日凌晨的闹钟
 
 startIntervalUpdate(); // 新增此行
+
+// 统一更新徽章的方法
+function updateBadgeStatus(enabled) {
+  const text = enabled ? '专注' : '娱乐';
+  const color = enabled ? BADGE_COLORS.enabled : BADGE_COLORS.disabled;
+
+  // 同步设置初始状态
+  chrome.action.setBadgeText({ text });
+  chrome.action.setBadgeBackgroundColor({ color });
+
+  // 添加动画
+  chrome.action.setBadgeText({ text: '' }, () => {
+    setTimeout(() => {
+      chrome.action.setBadgeText({ text });
+      chrome.action.setBadgeBackgroundColor({ color });
+    }, 50);
+  });
+}
+
+// 修改消息监听器
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.type === 'toggleTracking') {
+    const trackingEnabled = request.enabled;
+    updateBadgeStatus(trackingEnabled); 
+  }
+});
+
+// 初始化时从存储加载状态
+chrome.storage.local.get(['trackingEnabled'], (result) => {
+  const enabled = result.trackingEnabled ?? true;
+  updateBadgeStatus(enabled);
+});

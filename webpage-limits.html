@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>网页限额管理</title>
+    <style>
+        .modal {
+            display: none;
+            /* 默认隐藏 */
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>网页限额</h2>
+    <button id="add-limit-btn">添加限额</button>
+
+    <!-- 添加限额对话框 -->
+    <div id="add-limit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>添加限额对话框</h3>
+            <label for="website">网站:</label>
+            <input type="text" id="website" name="website"><br><br>
+            <label for="daily-limit">每日娱乐时长 (分钟):</label>
+            <input type="number" id="daily-limit" name="daily-limit"><br><br>
+            <button id="save-limit-btn">保存</button>
+        </div>
+    </div>
+    
+    <div id="limits-list" style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px;">
+        <h3>已设置的限额</h3>
+        <div id="limits-container"></div>
+    </div>
+    <script src="webpage-limits.js"></script>
+
+</body>
+
+</html>

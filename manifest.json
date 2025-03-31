@@ -10,7 +10,8 @@
     "scripting",
     "alarms",
     "idle",
-    "windows"
+    "windows",
+    "contextMenus"
   ],
   "background": {
     "service_worker": "background.js"
@@ -27,5 +28,13 @@
     "16": "icons/sandglass16.png",
     "48": "icons/sandglass48.png",
     "128": "icons/sandglass128.png"
-  }
+  },
+  "options_page": "option.html",
+  "content_scripts": [
+    {
+      "matches": ["*://*.bilibili.com/*"],
+      "js": ["bilibili.js"],
+      "run_at": "document_end"
+    }
+  ]
 }

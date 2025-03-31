@@ -3,7 +3,13 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const websiteList = document.getElementById('website-list');
-
+  const trackingSwitch = document.getElementById('tracking-switch');
+  chrome.storage.local.get(['trackingEnabled'], (result) => {
+    const isEnabled = !!result.trackingEnabled;
+    if (trackingSwitch instanceof HTMLInputElement) {
+      trackingSwitch.checked = isEnabled;
+    }
+  });
   function updateWebsiteList() {
     chrome.storage.local.get(['websiteTimesDaily'], (result) => {
       const websiteTimesDaily = result.websiteTimesDaily || {};
@@ -30,9 +36,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hours > 0) parts.push(`${hours}h`);
     if (minutes > 0) parts.push(`${minutes}m`);
     if (secs > 0) parts.push(`${secs}s`);
-    
+
     return parts.join(' ');
   }
 
   updateWebsiteList();
+
+  // 修改开关变化事件监听
+  trackingSwitch.addEventListener('change', (event) => {
+    const isEnabled = event.target instanceof HTMLInputElement ? event.target.checked : false;
+
+    chrome.storage.local.set({ trackingEnabled: isEnabled }, () => {
+
+      // 立即更新当前页面的徽章
+      chrome.runtime.sendMessage({
+        type: 'toggleTracking',
+        enabled: isEnabled
+      });
+
+    
+    });
+  });
 });
+
+document.querySelector('#go-to-options').addEventListener('click', function() {
+  if (chrome.runtime.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else {
+    window.open(chrome.runtime.getURL('options.html'));
+  }
+});
+
