@@ -1,40 +1,29 @@
 function removeBiliFeed() {
-    const TARGETS = {
-        feed: 'main.bili-feed4-layout',
-        header: 'div.bili-header__channel',
-        header2: 'div.header-channel',
-        trending: 'div.trending'
-    };
+    const TARGETS = [
+        'main.bili-feed4-layout',
+        'div.bili-header__channel',
+        'div.header-channel',
+        'div.trendings-single',
+        'div.trendings-double',
+    ];
 
     // 将checkAndRemove提升到observer回调外部
     const checkAndRemove = (root = document) => {
-        // 移除feed流模块
-        const feed = root.querySelector(TARGETS.feed);
-        if (feed?.parentElement) {
-            feed.parentElement.removeChild(feed);
-            console.log('[Extension] Removed feed layout');
-        }
-
-        // 移除顶部频道
-        const header = root.querySelector(TARGETS.header);
-        if (header?.parentElement) {
-            header.parentElement.removeChild(header);
-            console.log('[Extension] Removed header channel');
-        }
-
-        const header2 = root.querySelector(TARGETS.header2);
-        if (header2?.parentElement) {
-            header2.parentElement.removeChild(header2);
-            console.log('[Extension] Removed header channel');
-        }
-
-        // 移除trending模块
-        const trending = root.querySelector(TARGETS.trending);
-        if (trending?.parentElement) {
-            trending.parentElement.removeChild(trending);
-            console.log('[Extension] Removed trending layout');
+        TARGETS.forEach(target => {
+            const elements = root.querySelector(target);
+            if (elements?.parentElement) {
+                elements.parentElement.removeChild(elements);
+                console.log(`[Extension] Removed ${target}`);
+            }
+        });
+        const searchInput = root.querySelector('.nav-search-input');
+        if (searchInput && searchInput.placeholder) {
+            searchInput.removeAttribute('placeholder');
+            console.log('[Extension] Removed search placeholder');
         }
     };
+
+
 
     const observer = new MutationObserver((mutations) => {
         // 立即检查文档主体
@@ -59,13 +48,38 @@ function removeBiliFeed() {
     checkAndRemove();
 }
 
+// function checkAndRemove() {
+//     // 从存储读取状态
+//     chrome.storage.local.get(['trackingEnabled'], result => {
+//         if (result.trackingEnabled === true) {
+//             removeBiliFeed();
+//         }
+//     });
+// }
+
 function checkAndRemove() {
-    // 从存储读取状态
-    chrome.storage.local.get(['trackingEnabled'], result => {
-        if (result.trackingEnabled === true) { 
-            removeBiliFeed();
-        } 
+    // 同时读取两个存储空间的数据
+    chrome.storage.local.get(['trackingEnabled', 'websiteTimesDaily'], localResult => {
+        chrome.storage.sync.get(['limits'], syncResult => {
+            // 双重条件判断
+            const shouldRemove = localResult.trackingEnabled === true ||
+                (checkTimeLimit('www.bilibili.com', localResult.websiteTimesDaily, syncResult.limits));
+            if (shouldRemove) {
+                removeBiliFeed();
+            }
+        });
     });
+}
+
+
+// 新增时间校验函数
+function checkTimeLimit(domain, timeData = {}, limits = []) {
+    const domainLimit = limits.find(l => l.website === domain)?.dailyLimit;
+    if (!domainLimit) return false;
+
+    // 转换时间单位（秒转分钟）
+    const usedMinutes = Math.floor((timeData[domain] || 0) / 60);
+    return usedMinutes >= domainLimit;
 }
 
 // // 精确执行控制（仅首页）
@@ -83,21 +97,3 @@ if (location.hostname === 'www.bilibili.com' && location.pathname === '/') {
     checkAndRemove();
     setInterval(checkSPA, 1000);
 }
-
-
-
-// // 页面加载时执行
-// if (location.hostname === 'www.bilibili.com' && location.pathname === '/') {
-//     // 初始执行
-//     checkAndRemove();
-
-//     // SPA路由检测（简化版）
-//     let lastPath = location.pathname;
-//     setInterval(() => {
-//         if (location.pathname !== lastPath) {
-//             lastPath = location.pathname;
-//             if (location.pathname === '/') checkAndRemove();
-//         }
-//     }, 1000);
-// }
-
