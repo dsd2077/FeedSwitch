@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   function updateWebsiteList() {
-    chrome.storage.local.get(['websiteTimesDaily'], (result) => {
+    chrome.storage.local.get(['websiteTimesDaily', 'websiteTimesDailyFun'], (result) => {
       const websiteTimesDaily = result.websiteTimesDaily || {};
+      const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
       websiteList.innerHTML = '';
       // 将对象转换为数组并排序
       const sortedEntries = Object.entries(websiteTimesDaily).sort((a, b) => b[1] - a[1]);
@@ -20,8 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const listItem = document.createElement('li');
         // 格式化时间和限制时间
         const formattedTime = formatTime(time);
-        listItem.textContent = `${url}: ${formattedTime}`;
-        // listItem.textContent = `${url}: ${time} seconds (Limit: ${timeLimits[url] || 'None'} seconds)`;
+        if (websiteTimesDailyFun[url]) {
+          const formattedTimeFun = formatTime(websiteTimesDailyFun[url]);
+          listItem.textContent = `${url}: ${formattedTime} (Fun: ${formattedTimeFun})`;
+        } else {
+          listItem.textContent = `${url}: ${formattedTime}`;
+        }
         websiteList.appendChild(listItem);
       }
     });
@@ -45,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 修改开关变化事件监听
   trackingSwitch.addEventListener('change', (event) => {
     const isEnabled = event.target instanceof HTMLInputElement ? event.target.checked : false;
-
+    console.log("isEnabled", isEnabled)
     chrome.storage.local.set({ trackingEnabled: isEnabled }, () => {
 
       // 立即更新当前页面的徽章
@@ -53,8 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
         type: 'toggleTracking',
         enabled: isEnabled
       });
-
-    
     });
   });
 });

@@ -48,22 +48,13 @@ function removeBiliFeed() {
     checkAndRemove();
 }
 
-// function checkAndRemove() {
-//     // 从存储读取状态
-//     chrome.storage.local.get(['trackingEnabled'], result => {
-//         if (result.trackingEnabled === true) {
-//             removeBiliFeed();
-//         }
-//     });
-// }
-
 function checkAndRemove() {
     // 同时读取两个存储空间的数据
-    chrome.storage.local.get(['trackingEnabled', 'websiteTimesDaily'], localResult => {
+    chrome.storage.local.get(['trackingEnabled', 'websiteTimesDailyFun'], localResult => {
         chrome.storage.sync.get(['limits'], syncResult => {
             // 双重条件判断
             const shouldRemove = localResult.trackingEnabled === true ||
-                (checkTimeLimit('www.bilibili.com', localResult.websiteTimesDaily, syncResult.limits));
+                (checkTimeLimit('www.bilibili.com', localResult.websiteTimesDailyFun, syncResult.limits));
             if (shouldRemove) {
                 removeBiliFeed();
             }
@@ -97,3 +88,10 @@ if (location.hostname === 'www.bilibili.com' && location.pathname === '/') {
     checkAndRemove();
     setInterval(checkSPA, 1000);
 }
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+    if (areaName === 'local' && (changes.trackingEnabled || changes.websiteTimesDailyFun)) {
+        console.log('[Extension] Storage changed:');
+        checkAndRemove();
+    }
+});

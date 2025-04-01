@@ -17,11 +17,11 @@ function startIntervalUpdate() {
   updateInterval = setInterval(() => {
     if (activeTabs?.[activeTabId]?.url) {
       const now = Date.now();
-      const duration = Math.floor((now - activeTabs[activeTabId].startTime) / 1000);
+      const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000);
       
       // 更新存储并刷新开始时间
       updateDomainTime(activeTabs[activeTabId].url, duration);
-      activeTabs[activeTabId].startTime = now;
+      activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000);
 
     }
     console.log(`Interval update. Active Tab ID: ${activeTabId}, URL: ${activeTabs?.[activeTabId]?.url || 'N/A'}`);
@@ -38,9 +38,9 @@ chrome.windows.onFocusChanged.addListener((windowId) => {
     // 失去焦点时先更新一次时间
     if (activeTabId && activeTabs?.[activeTabId]?.url) {
       const now = Date.now();
-      const duration = Math.floor((now - activeTabs[activeTabId].startTime) / 1000);
+      const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000);
       updateDomainTime(activeTabs[activeTabId].url, duration);
-      activeTabs[activeTabId].startTime = now; // 重置开始时间为当前时刻
+      // activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000);
     }
     clearInterval(updateInterval);
     console.log('Browser lost focus, final update');
@@ -64,9 +64,9 @@ chrome.idle.onStateChanged.addListener((newState) => {
     // 进入非活动状态前更新最后一次时间
     if (activeTabId && activeTabs?.[activeTabId]?.url) {
       const now = Date.now();
-      const duration = Math.floor((now - activeTabs[activeTabId].startTime) / 1000);
+      const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000);
       updateDomainTime(activeTabs[activeTabId].url, duration);
-      activeTabs[activeTabId].startTime = now;
+      // activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000);
     }
     clearInterval(updateInterval);
     console.log('System inactive, final update');
@@ -88,7 +88,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   
   // 记录前一个标签页的停留时间
   if (activeTabId  && activeTabs?.[activeTabId]?.url) {
-    const duration = Math.floor((now - activeTabs[activeTabId].startTime) / 1000);
+    const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000);
     updateDomainTime(activeTabs[activeTabId].url, duration);
   }
   activeTabId = activeInfo.tabId;
@@ -121,7 +121,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     }
     if (existingRecord && existingRecord.url !== newDomain) {
       // 计算前一个页面的停留时间
-      const duration = Math.floor((now - existingRecord.startTime) / 1000);
+      const duration = Math.round((now - existingRecord.startTime) / 1000);
       updateDomainTime(existingRecord.url, duration);
     }
 
@@ -144,13 +144,18 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 function updateDomainTime(domain, seconds) {
   if (!isSystemActive || !isBrowserFocused || !domain || seconds <= 0) return;
 
-  chrome.storage.local.get(['websiteTimesDaily'], (result) => {
+  chrome.storage.local.get(['trackingEnabled','websiteTimesDaily', 'websiteTimesDailyFun'], (result) => {
     const websiteTimesDaily = result.websiteTimesDaily || {};
+    const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
     if (websiteTimesDaily[domain]) {
       console.log("previous time : ", websiteTimesDaily[domain])
     }
     websiteTimesDaily[domain] = (websiteTimesDaily[domain] || 0) + seconds;
     chrome.storage.local.set({ websiteTimesDaily });
+    if (!result.trackingEnabled) {
+      websiteTimesDailyFun[domain] = (websiteTimesDailyFun[domain] || 0) + seconds;
+      chrome.storage.local.set({ websiteTimesDailyFun });
+    }
   });
 }
 
