@@ -161,13 +161,13 @@ function updateDomainTime(domain, seconds) {
 
 // 新增函数：将每日使用时间累加到每周使用时间，并清空每日使用时间
 function resetDailyAndAccumulateWeekly() {
-  chrome.storage.local.get(['websiteTimesDaily', 'websiteTimesWeekly', 'websiteTimesDailyFun'], (result) => {
+  chrome.storage.local.get(['websiteTimesDaily', 'websiteTimesWeekly'], (result) => {
     const websiteTimesDaily = result.websiteTimesDaily || {};
-    const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
+    // const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
     const websiteTimesWeekly = result.websiteTimesWeekly || {};
 
     for (const domain in websiteTimesDaily) {
-      if (websiteTimesDaily.hasOwnProperty(domain)) {
+      if (Object.prototype.hasOwnProperty.call(websiteTimesDaily, domain)) {
         websiteTimesWeekly[domain] = (websiteTimesWeekly[domain] || 0) + websiteTimesDaily[domain];
       }
     }
@@ -223,7 +223,7 @@ function updateBadgeStatus(isFocus) {
 }
 
 // 修改消息监听器
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request) => {
   if (request.type === 'toggleTracking') {
     updateBadgeStatus(request.isFocus); 
   }
