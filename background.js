@@ -230,7 +230,14 @@ chrome.runtime.onMessage.addListener((request) => {
 });
 
 // 初始化时从存储加载状态
-chrome.storage.local.get(['focus'], (result) => {
-  const isFocus = result.focus ?? true;
-  updateBadgeStatus(isFocus);
+chrome.storage.local.set({ focus: true }, () => {
+  updateBadgeStatus(true);
+  console.log('Reset focus to true on browser startup');
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  chrome.storage.local.set({ focus: true }, () => {
+    updateBadgeStatus(true);
+    console.log('Runtime startup: Focus reset to true');
+  });
 });

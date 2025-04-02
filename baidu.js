@@ -1,10 +1,7 @@
 function removeBiliFeed() {
     const TARGETS = [
-        'main.bili-feed4-layout',
-        'div.bili-header__channel',
-        'div.header-channel',
-        'div.trendings-single',
-        'div.trendings-double',
+        'div.s-hotsearch-wrapper',
+        'div.new_search_guide_bub'
     ];
 
     // 将checkAndRemove提升到observer回调外部
@@ -16,11 +13,6 @@ function removeBiliFeed() {
                 console.log(`[Extension] Removed ${target}`);
             }
         });
-        const searchInput = root.querySelector('.nav-search-input');
-        if (searchInput && searchInput.placeholder) {
-            searchInput.removeAttribute('placeholder');
-            console.log('[Extension] Removed search placeholder');
-        }
     };
 
 
@@ -54,7 +46,7 @@ function checkAndRemove() {
         chrome.storage.sync.get(['limits'], syncResult => {
             // 双重条件判断
             const shouldRemove = localResult.focus === true ||
-                (checkTimeLimit('www.bilibili.com', localResult.websiteTimesDailyFun, syncResult.limits));
+                (checkTimeLimit('www.baidu.com', localResult.websiteTimesDailyFun, syncResult.limits));
             if (shouldRemove) {
                 removeBiliFeed();
             }
@@ -74,7 +66,7 @@ function checkTimeLimit(domain, timeData = {}, limits = []) {
 }
 
 // // 精确执行控制（仅首页）
-if (location.hostname === 'www.bilibili.com' && location.pathname === '/') {
+if (location.hostname === 'www.baidu.com' && location.pathname === '/') {
     // 兼容SPA路由变化的检测
     let lastPath = location.pathname;
     const checkSPA = () => {
