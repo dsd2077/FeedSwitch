@@ -6,7 +6,7 @@
       "ES2020",
       "DOM"
     ],
-    "checkJs": false,
+    "checkJs": true,
     "strict": false,
     "allowJs": true,
     "types": [

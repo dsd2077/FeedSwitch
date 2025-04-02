@@ -6,8 +6,8 @@ let isSystemActive = true; // 新增系统活动状态标识
 let isBrowserFocused = true; // 新增窗口焦点状态标识
 // 在文件顶部添加颜色常量
 const BADGE_COLORS = {
-  enabled: '#2ecc71', // 绿色
-  disabled: '#e74c3c' // 红色
+  focus: '#2ecc71', // 绿色
+  fun: '#e74c3c' // 红色
 };
 
 // 创建定时更新函数
@@ -144,7 +144,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 function updateDomainTime(domain, seconds) {
   if (!isSystemActive || !isBrowserFocused || !domain || seconds <= 0) return;
 
-  chrome.storage.local.get(['trackingEnabled','websiteTimesDaily', 'websiteTimesDailyFun'], (result) => {
+  chrome.storage.local.get(['focus','websiteTimesDaily', 'websiteTimesDailyFun'], (result) => {
     const websiteTimesDaily = result.websiteTimesDaily || {};
     const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
     if (websiteTimesDaily[domain]) {
@@ -152,7 +152,7 @@ function updateDomainTime(domain, seconds) {
     }
     websiteTimesDaily[domain] = (websiteTimesDaily[domain] || 0) + seconds;
     chrome.storage.local.set({ websiteTimesDaily });
-    if (!result.trackingEnabled) {
+    if (!result.focus) {
       websiteTimesDailyFun[domain] = (websiteTimesDailyFun[domain] || 0) + seconds;
       chrome.storage.local.set({ websiteTimesDailyFun });
     }
@@ -161,8 +161,9 @@ function updateDomainTime(domain, seconds) {
 
 // 新增函数：将每日使用时间累加到每周使用时间，并清空每日使用时间
 function resetDailyAndAccumulateWeekly() {
-  chrome.storage.local.get(['websiteTimesDaily', 'websiteTimesWeekly'], (result) => {
+  chrome.storage.local.get(['websiteTimesDaily', 'websiteTimesWeekly', 'websiteTimesDailyFun'], (result) => {
     const websiteTimesDaily = result.websiteTimesDaily || {};
+    const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
     const websiteTimesWeekly = result.websiteTimesWeekly || {};
 
     for (const domain in websiteTimesDaily) {
@@ -173,6 +174,7 @@ function resetDailyAndAccumulateWeekly() {
 
     chrome.storage.local.set({
       websiteTimesDaily: {},
+      websiteTimesDailyFun: {},
       websiteTimesWeekly: websiteTimesWeekly
     });
   });
@@ -203,9 +205,9 @@ setDailyAlarm(); // 设置每日凌晨的闹钟
 startIntervalUpdate(); // 新增此行
 
 // 统一更新徽章的方法
-function updateBadgeStatus(enabled) {
-  const text = enabled ? '专注' : '娱乐';
-  const color = enabled ? BADGE_COLORS.enabled : BADGE_COLORS.disabled;
+function updateBadgeStatus(isFocus) {
+  const text = isFocus ? '专注' : '娱乐';
+  const color = isFocus ? BADGE_COLORS.focus : BADGE_COLORS.fun;
 
   // 同步设置初始状态
   chrome.action.setBadgeText({ text });
@@ -223,13 +225,13 @@ function updateBadgeStatus(enabled) {
 // 修改消息监听器
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'toggleTracking') {
-    const trackingEnabled = request.enabled;
-    updateBadgeStatus(trackingEnabled); 
+    const focus = request.enabled;
+    updateBadgeStatus(focus); 
   }
 });
 
 // 初始化时从存储加载状态
-chrome.storage.local.get(['trackingEnabled'], (result) => {
-  const enabled = result.trackingEnabled ?? true;
-  updateBadgeStatus(enabled);
+chrome.storage.local.get(['focus'], (result) => {
+  const isFocus = result.focus ?? true;
+  updateBadgeStatus(isFocus);
 });

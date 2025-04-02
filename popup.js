@@ -4,8 +4,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const websiteList = document.getElementById('website-list');
   const trackingSwitch = document.getElementById('tracking-switch');
-  chrome.storage.local.get(['trackingEnabled'], (result) => {
-    const isEnabled = !!result.trackingEnabled;
+  chrome.storage.local.get(['focus'], (result) => {
+    const isEnabled = !!result.focus;
     if (trackingSwitch instanceof HTMLInputElement) {
       trackingSwitch.checked = isEnabled;
     }
@@ -49,14 +49,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 修改开关变化事件监听
   trackingSwitch.addEventListener('change', (event) => {
-    const isEnabled = event.target instanceof HTMLInputElement ? event.target.checked : false;
-    console.log("isEnabled", isEnabled)
-    chrome.storage.local.set({ trackingEnabled: isEnabled }, () => {
+    const isFocus = event.target instanceof HTMLInputElement ? event.target.checked : false;
+    chrome.storage.local.set({ focus: isFocus }, () => {
 
       // 立即更新当前页面的徽章
       chrome.runtime.sendMessage({
         type: 'toggleTracking',
-        enabled: isEnabled
+        isFocus: isFocus
       });
     });
   });
