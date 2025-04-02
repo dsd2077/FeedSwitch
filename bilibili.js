@@ -17,7 +17,6 @@ function removeBiliFeed() {
             }
         });
         const searchInput = root.querySelector('.nav-search-input');
-        // @ts-ignore
         if (searchInput && searchInput.placeholder) {
             searchInput.removeAttribute('placeholder');
             console.log('[Extension] Removed search placeholder');
@@ -34,7 +33,6 @@ function removeBiliFeed() {
         mutations.forEach(mutation => {
             mutation.addedNodes.forEach(node => {
                 if (node.nodeType === Node.ELEMENT_NODE) {
-                    // @ts-ignore
                     checkAndRemove(node);
                 }
             });

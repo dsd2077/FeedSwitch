@@ -225,8 +225,7 @@ function updateBadgeStatus(isFocus) {
 // 修改消息监听器
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'toggleTracking') {
-    const focus = request.enabled;
-    updateBadgeStatus(focus); 
+    updateBadgeStatus(request.isFocus); 
   }
 });
 
