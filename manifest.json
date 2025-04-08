@@ -32,13 +32,8 @@
   "options_page": "option.html",
   "content_scripts": [
     {
-      "matches": ["*://*.bilibili.com/*"],
-      "js": ["bilibili.js"],
-      "run_at": "document_start"
-    },
-    {
-      "matches": ["*://*.baidu.com/*"],
-      "js": ["baidu.js"],
+      "matches": ["*://*.bilibili.com/*", "*://*.baidu.com/*", "*://*.zhihu.com/*"],
+      "js": ["config.js", "content.js"],
       "run_at": "document_start"
     }
   ]
