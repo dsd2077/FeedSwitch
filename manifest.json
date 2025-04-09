@@ -32,7 +32,7 @@
   "options_page": "option.html",
   "content_scripts": [
     {
-      "matches": ["*://*.bilibili.com/*", "*://*.baidu.com/*", "*://*.zhihu.com/*"],
+      "matches": ["*://*.bilibili.com/*", "*://*.baidu.com/*", "*://*.zhihu.com/*", "*://*.blog.csdn.net/*"],
       "js": ["config.js", "content.js"],
       "run_at": "document_start"
     }
