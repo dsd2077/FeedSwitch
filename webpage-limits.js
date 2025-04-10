@@ -1,14 +1,13 @@
-(function init() {
-  const generateId = () =>
-    Date.now().toString(36) + Math.random().toString(36).substr(2);
-  const limitsContainer = document.getElementById("limits-container");
-
+(function () {
+  var limitsContainer = document.getElementById("limits-container");
+  var modal = document.getElementById("add-limit-modal");
+  var websitesContainer = document.querySelector(".added-websites");
+  var addBtn = document.getElementById("add-website-btn");
   const addLimitBtn = document.getElementById("add-limit-btn");
-  if (!addLimitBtn) return; // 防止元素不存在时报错
-
-  const modal = document.getElementById("add-limit-modal");
   const span = modal.querySelector(".close");
   const saveBtn = document.getElementById("save-limit-btn");
+
+  loadAndDisplayLimits();
 
   addLimitBtn.addEventListener("click", () => {
     console.log("addLimitBtn clicked");
@@ -23,6 +22,7 @@
   window.addEventListener("click", (event) => {
     if (event.target === modal) modal.style.display = "none";
   });
+
   saveBtn.addEventListener("click", () => {
     // 获取输入值
     const websites = Array.from(document.querySelectorAll('[name="websites"]'))
@@ -53,7 +53,12 @@
       const existingIndex = limits.findIndex((item) =>
         editingId ? item.id === editingId : false
       );
-      if (existingIndex > -1 && JSON.stringify(websites) === JSON.stringify(limits[existingIndex].websites) && dailyLimit == limits[existingIndex].dailyLimit) {
+      if (
+        existingIndex > -1 &&
+        JSON.stringify(websites) ===
+          JSON.stringify(limits[existingIndex].websites) &&
+        dailyLimit == limits[existingIndex].dailyLimit
+      ) {
         console.log("未作任何更改");
         return;
       } else if (existingIndex > -1) {
@@ -86,15 +91,53 @@
     });
   });
 
-  // 新增函数：渲染限额列表
+  // 添加网站标签
+  addBtn.addEventListener("click", () => {
+    const input = document.getElementById("website-input");
+    const website = input.value.trim();
+
+    if (!website) {
+      alert("请输入有效网站");
+      return;
+    }
+
+    // 创建标签元素
+    const tag = document.createElement("div");
+    tag.className = "website-tag";
+    tag.innerHTML = `
+        ${website}
+        <button class="remove-tag-btn">×</button>
+        <input type="hidden" name="websites" value="${website}">
+    `;
+
+    websitesContainer.appendChild(tag);
+    input.value = ""; // 清空输入框
+  });
+
+  // 删除标签
+  websitesContainer.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove-tag-btn")) {
+      e.target.closest(".website-tag").remove();
+    }
+  });
+
+  function loadAndDisplayLimits() {
+    chrome.storage.sync.get(["limits"], (result) => {
+      if (chrome.runtime.lastError) {
+        console.error("读取失败:", chrome.runtime.lastError);
+        return;
+      }
+      renderLimits(result.limits || []);
+    });
+  }
+
   function renderLimits(limits) {
-    
     limitsContainer.innerHTML = limits
       .map(
         (item) => `
-        <div class="limit-item" data-id="${item.id}"style="...">
-            ${item.websites.join(", ")} - 每日限制：${item.dailyLimit}分钟
-        </div>`
+      <div class="limit-item" data-id="${item.id}"style="...">
+          ${item.websites.join(", ")} - 每日限制：${item.dailyLimit}分钟
+      </div>`
       )
       .join("");
 
@@ -103,7 +146,7 @@
       item.addEventListener("click", () => {
         const limit = limits.find((l) => l.id === item.dataset.id); // 改为用ID查找
 
-        const websitesContainer = document.querySelector(".added-websites");
+        // const websitesContainer = document.querySelector(".added-websites");
         websitesContainer.innerHTML = "";
 
         // 填充网站标签
@@ -111,10 +154,10 @@
           const tag = document.createElement("div");
           tag.className = "website-tag";
           tag.innerHTML = `
-                    ${website}
-                    <button class="remove-tag-btn">×</button>
-                    <input type="hidden" name="websites" value="${website}">
-                `;
+                  ${website}
+                  <button class="remove-tag-btn">×</button>
+                  <input type="hidden" name="websites" value="${website}">
+              `;
           websitesContainer.appendChild(tag);
         });
 
@@ -126,49 +169,7 @@
     });
   }
 
-  // 新增函数：加载并显示数据
-  function loadAndDisplayLimits() {
-    chrome.storage.sync.get(["limits"], (result) => {
-      if (chrome.runtime.lastError) {
-        console.error("读取失败:", chrome.runtime.lastError);
-        return;
-      }
-      renderLimits(result.limits || []);
-    });
+  function generateId() {
+    Date.now().toString(36) + Math.random().toString(36).substr(2);
   }
-
-  loadAndDisplayLimits();
 })();
-
-const websitesContainer = document.querySelector(".added-websites");
-const addBtn = document.getElementById("add-website-btn");
-
-// 添加网站标签
-addBtn.addEventListener("click", () => {
-  const input = document.getElementById("website-input");
-  const website = input.value.trim();
-
-  if (!website) {
-    alert("请输入有效网站");
-    return;
-  }
-
-  // 创建标签元素
-  const tag = document.createElement("div");
-  tag.className = "website-tag";
-  tag.innerHTML = `
-        ${website}
-        <button class="remove-tag-btn">×</button>
-        <input type="hidden" name="websites" value="${website}">
-    `;
-
-  websitesContainer.appendChild(tag);
-  input.value = ""; // 清空输入框
-});
-
-// 删除标签
-websitesContainer.addEventListener("click", (e) => {
-  if (e.target.classList.contains("remove-tag-btn")) {
-    e.target.closest(".website-tag").remove();
-  }
-});
