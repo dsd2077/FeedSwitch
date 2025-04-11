@@ -3,18 +3,10 @@
   "name": "Time Management",
   "version": "1.0",
   "description": "A Chrome extension to manage website usage time and set limits.",
-  "permissions": [
-    "tabs",
-    "storage",
-    "activeTab",
-    "scripting",
-    "alarms",
-    "idle",
-    "windows",
-    "contextMenus"
-  ],
+  "permissions": ["tabs", "storage", "activeTab", "scripting", "alarms", "idle", "windows", "contextMenus"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup.html",

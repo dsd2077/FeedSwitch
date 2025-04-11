@@ -1,91 +1,89 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
-<head>
+  <head>
     <title>时间管理选项</title>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+      }
 
-        .sidebar {
-            width: 200px;
-            background-color: #f4f4f4;
-            height: 100vh;
-            padding: 20px;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-        }
+      .sidebar {
+        width: 200px;
+        background-color: #f4f4f4;
+        height: 100vh;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      }
 
-        .sidebar a {
-            display: block;
-            color: #333;
-            padding: 10px 0;
-            text-decoration: none;
-        }
+      .sidebar a {
+        display: block;
+        color: #333;
+        padding: 10px 0;
+        text-decoration: none;
+      }
 
-        .sidebar a:hover {
-            background-color: #ddd;
-        }
+      .sidebar a:hover {
+        background-color: #ddd;
+      }
 
-        .content {
-            flex-grow: 1;
-            padding: 20px;
-        }
+      .content {
+        flex-grow: 1;
+        padding: 20px;
+      }
 
-        /* 添加样式以支持对话框 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
-        }
+      /* 添加样式以支持对话框 */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+      }
 
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 500px;
-        }
+      .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        max-width: 500px;
+      }
 
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
 
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="sidebar">
-        <a href="#" data-page="website-usage-time">网站使用时间</a>
-        <a href="#" data-page="webpage-limits">网页限额</a>
-        <a href="#" data-page="disable-time">停用时间</a>
+      <a href="#" data-page="website-usage-time">网站使用时间</a>
+      <a href="#" data-page="webpage-limits">网页限额</a>
+      <a href="#" data-page="disable-time">停用时间</a>
     </div>
     <div class="content" id="content-area">
-        <!-- 内容将在这里动态加载 -->
+      <!-- 内容将在这里动态加载 -->
     </div>
 
-    <script src="options.js"> </script>
-</body>
-
+    <script src="options.js"></script>
+  </body>
 </html>

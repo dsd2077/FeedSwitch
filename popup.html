@@ -1,34 +1,30 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Time Management</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Time Management</title>
-  <link rel="stylesheet" type="text/css" href="styles.css">
-</head>
+  <body>
+    <!-- 添加开关控件 -->
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="tracking-switch" hidden />
+        <div class="slider">
+          <span class="on">专注</span>
+          <span class="off">娱乐</span>
+          <div class="button"></div>
+        </div>
+      </label>
+    </div>
+    <h1>Website Usage Time</h1>
+    <ul id="website-list"></ul>
+    <button id="go-to-options">Go to options</button>
 
-<body>
-  <!-- 添加开关控件 -->
-  <div class="toggle-container">
-    <label class="switch">
-      <input type="checkbox" id="tracking-switch" hidden>
-      <div class="slider">
-        <span class="on">专注</span>
-        <span class="off">娱乐</span>
-        <div class="button"></div>
-      </div>
-    </label>
-  </div>
-  <h1>Website Usage Time</h1>
-  <ul id="website-list"></ul>
-  <button id="go-to-options">Go to options</button>
-
-  <script src="popup.js"></script>
-</body>
-
+    <script src="popup.js"></script>
+  </body>
 </html>
-
-
 
 <style>
   /* 新增滑动开关样式 */
@@ -53,7 +49,7 @@
     bottom: 0;
     background-color: #e74c3c;
     border-radius: 25px;
-    transition: .4s;
+    transition: 0.4s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: space-between;
@@ -69,7 +65,7 @@
     bottom: 3px;
     background-color: white;
     border-radius: 50%;
-    transition: .4s;
+    transition: 0.4s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
@@ -91,19 +87,19 @@
     opacity: 1;
   }
 
-  input:checked+.slider {
+  input:checked + .slider {
     background-color: #2ecc71;
   }
 
-  input:checked+.slider .button {
+  input:checked + .slider .button {
     transform: translateX(50px);
   }
 
-  input:checked+.slider .on {
+  input:checked + .slider .on {
     opacity: 1;
   }
 
-  input:checked+.slider .off {
+  input:checked + .slider .off {
     opacity: 0;
   }
 

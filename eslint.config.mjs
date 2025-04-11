@@ -9,12 +9,12 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        chrome: "readonly"
-      }
+        chrome: "readonly",
+      },
     },
     rules: {
-      "no-unused-vars": "error",    // 开启未使用变量检查
-      "no-undef": "error"           // 加强未定义变量检查
-    }
-  }
+      "no-unused-vars": "error", // 开启未使用变量检查
+      "no-undef": "error", // 加强未定义变量检查
+    },
+  },
 ];

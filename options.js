@@ -23,10 +23,8 @@ function loadPage(page) {
         const newScript = document.createElement("script");
         newScript.src = oldScript.src + "?t=" + Date.now();
 
-        const baseSrc = oldScript.src.split("?")[0]; 
-        document
-          .querySelectorAll(`script[src^="${baseSrc}"]`)
-          .forEach((s) => s.remove());
+        const baseSrc = oldScript.src.split("?")[0];
+        document.querySelectorAll(`script[src^="${baseSrc}"]`).forEach((s) => s.remove());
 
         document.body.appendChild(newScript);
       });
