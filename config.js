@@ -1,6 +1,6 @@
 window.SITE_CONFIG = {
   "www.bilibili.com": {
-    targets: ["main.bili-feed4-layout", "div.bili-header__channel", "div.header-channel"],
+    targets: ["main.bili-feed4-layout", "div.bili-header__channel", "div.header-channel", "div.trending"],
     extraCheck: (root) => {
       const searchInput = root.querySelector(".nav-search-input")
       if (searchInput?.placeholder) {
@@ -41,6 +41,13 @@ window.SITE_CONFIG = {
     targets: ["div.swiper-slide-box-remuneration", "div#asideHotArticle.aside-box", "div#asideCategory.aside-box ", "div#asideArchive.aside-box", "div#asideNewComments.aside-box"],
   },
   "juejin.cn": {
-    targets: ["div.sidebar-block.shadow"],
+    targets: ["div.sidebar-block.shadow","div.top-banners-container"],
+    extraCheck: (root) => {
+        // 删除特定图片
+        const targetImage = root.querySelector('img[src="https://p6-piu.byteimg.com/tos-cn-i-8jisjyls3a/fa501ba562f845bcb9d5207fdec8886f~tplv-8jisjyls3a-image.image"]');
+        if (targetImage) {
+          targetImage.remove();
+        }
+      },
   },
 }

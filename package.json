@@ -9,5 +9,8 @@
   "scripts": {
     "build": "vite build",
     "watch": "vite build --watch"
+  },
+  "dependencies": {
+    "psl": "^1.15.0"
   }
 }
