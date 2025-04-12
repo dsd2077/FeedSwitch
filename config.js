@@ -2,9 +2,9 @@ window.SITE_CONFIG = {
   "www.bilibili.com": {
     targets: ["main.bili-feed4-layout", "div.bili-header__channel", "div.header-channel"],
     extraCheck: (root) => {
-      const searchInput = root.querySelector(".nav-search-input");
+      const searchInput = root.querySelector(".nav-search-input")
       if (searchInput?.placeholder) {
-        searchInput.removeAttribute("placeholder");
+        searchInput.removeAttribute("placeholder")
       }
     },
   },
@@ -20,30 +20,27 @@ window.SITE_CONFIG = {
       // 'div.AutoComplete-group'
     ],
     extraCheck: (root) => {
-      const searchInput = root.querySelector("#Popover1-toggle");
+      const searchInput = root.querySelector("#Popover1-toggle")
       if (searchInput?.placeholder) {
-        searchInput.removeAttribute("placeholder");
+        searchInput.removeAttribute("placeholder")
       }
-      const discoveryGroups = root.querySelectorAll(".AutoComplete-group");
+      const discoveryGroups = root.querySelectorAll(".AutoComplete-group")
       discoveryGroups.forEach((group) => {
-        const label = group.querySelector(".SearchBar-label");
+        const label = group.querySelector(".SearchBar-label")
         if (label?.textContent?.includes("搜索发现")) {
-          group.remove();
+          group.remove()
         }
-      });
-      const searchMain = root.querySelector("#SearchMain");
+      })
+      const searchMain = root.querySelector("#SearchMain")
       if (searchMain) {
-        searchMain.style.width = "1000px"; // 设置行内样式优先级更高
+        searchMain.style.width = "1000px" // 设置行内样式优先级更高
       }
     },
   },
   "blog.csdn.net": {
-    targets: [
-      "div.swiper-slide-box-remuneration",
-      "div#asideHotArticle.aside-box",
-      "div#asideCategory.aside-box ",
-      "div#asideArchive.aside-box",
-      "div#asideNewComments.aside-box",
-    ],
+    targets: ["div.swiper-slide-box-remuneration", "div#asideHotArticle.aside-box", "div#asideCategory.aside-box ", "div#asideArchive.aside-box", "div#asideNewComments.aside-box"],
   },
-};
+  "juejin.cn": {
+    targets: ["div.sidebar-block.shadow"],
+  },
+}
