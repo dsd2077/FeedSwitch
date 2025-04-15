@@ -105,6 +105,33 @@
       .suggestion-item.active {
         background: #f0f8ff;
       }
+      #suggestions div.active {
+        background-color: #f0f0f0;
+        color: #333;
+        font-weight: 500;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      #suggestions div:hover {
+        background-color: #f5f5f5;
+        transform: translateX(3px);
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      #suggestions div {
+        transition: background-color 0.2s ease;
+        padding: 8px 12px;
+        border-radius: 4px;
+        margin: 2px 0;
+        overflow: hidden;
+        text-overflow: ellipsis; /* 超长文本显示省略号 */
+        width: 100%;
+      }
+      #suggestions {
+        overflow-x: hidden; /* 隐藏横向滚动条 */
+        white-space: nowrap; /* 防止文本换行 */
+        width: 100%; /* 宽度与父容器对齐 */
+      }
     </style>
   </head>
 

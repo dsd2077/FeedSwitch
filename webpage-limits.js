@@ -105,29 +105,6 @@ import { SITE_CONFIG } from "./config.js"
     })
   })
 
-  // 添加网站标签
-  // addBtn.addEventListener("click", () => {
-  //   const input = document.getElementById("website-input")
-  //   const website = input.value.trim()
-
-  //   if (!website) {
-  //     alert("请输入有效网站")
-  //     return
-  //   }
-
-  //   // 创建标签元素
-  //   const tag = document.createElement("div")
-  //   tag.className = "website-tag"
-  //   tag.innerHTML = `
-  //       ${website}
-  //       <button class="remove-tag-btn">×</button>
-  //       <input type="hidden" name="websites" value="${website}">
-  //   `
-
-  //   websitesContainer.appendChild(tag)
-  //   input.value = "" // 清空输入框
-  // })
-
   // 删除标签
   websitesContainer.addEventListener("click", (e) => {
     if (e.target.classList.contains("remove-tag-btn")) {
@@ -153,6 +130,18 @@ import { SITE_CONFIG } from "./config.js"
           websiteInput.value = match
           suggestionsDiv.innerHTML = ""
         }
+        // 添加悬停事件
+        div.addEventListener("mouseenter", () => {
+          // 移除所有激活状态
+          suggestionsDiv.querySelectorAll("div").forEach((item) => {
+            item.classList.remove("active")
+          })
+          // 设置当前项激活
+          div.classList.add("active")
+        })
+        div.addEventListener("mouseleave", () => {
+          div.classList.remove("active")
+        })
         suggestionsDiv.appendChild(div)
       })
     } else {
@@ -162,22 +151,36 @@ import { SITE_CONFIG } from "./config.js"
 
   // 添加键盘导航支持
   websiteInput.addEventListener("keydown", (e) => {
-    const items = suggestionsDiv.children
+    const items = [...suggestionsDiv.children]
     let active = suggestionsDiv.querySelector(".active")
-
-    if (e.key === "ArrowDown") {
-      e.preventDefault()
-      active = active ? active.nextElementSibling : items[0]
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault()
-      active = active ? active.previousElementSibling : items[items.length - 1]
-    } else if (e.key === "Enter" && active) {
-      websiteInput.value = active.textContent
-      suggestionsDiv.innerHTML = ""
+    if (items.length === 0) return
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault()
+        active = active?.nextElementSibling || items[0]
+        break
+      case "ArrowUp":
+        e.preventDefault()
+        active = active?.previousElementSibling || items[items.length - 1]
+        break
+      case "Enter":
+        e.preventDefault()
+        if (active) {
+          websiteInput.value = active.textContent
+          suggestionsDiv.innerHTML = ""
+        }
+        return // 提前返回避免执行后续代码
     }
 
-    ;[...items].forEach((item) => item.classList.remove("active"))
-    if (active) active.classList.add("active")
+    items.forEach((item) => item.classList.remove("active"))
+    if (active) {
+      active.classList.add("active")
+      // 自动滚动到可见区域
+      active.scrollIntoView({
+        block: "nearest",
+        behavior: "smooth",
+      })
+    }
   })
 
   document.addEventListener("click", (e) => {
