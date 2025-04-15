@@ -40,14 +40,20 @@ window.SITE_CONFIG = {
   "blog.csdn.net": {
     targets: ["div.swiper-slide-box-remuneration", "div#asideHotArticle.aside-box", "div#asideCategory.aside-box ", "div#asideArchive.aside-box", "div#asideNewComments.aside-box"],
   },
-  "juejin.cn": {
-    targets: ["div.sidebar-block.shadow","div.top-banners-container"],
+  "www.juejin.cn": {
+    targets: ["div.sidebar-block.shadow", "div.top-banners-container"],
     extraCheck: (root) => {
-        // 删除特定图片
-        const targetImage = root.querySelector('img[src="https://p6-piu.byteimg.com/tos-cn-i-8jisjyls3a/fa501ba562f845bcb9d5207fdec8886f~tplv-8jisjyls3a-image.image"]');
-        if (targetImage) {
-          targetImage.remove();
-        }
-      },
+      // 删除特定图片
+      const targetImage = root.querySelector('img[src="https://p6-piu.byteimg.com/tos-cn-i-8jisjyls3a/fa501ba562f845bcb9d5207fdec8886f~tplv-8jisjyls3a-image.image"]')
+      if (targetImage) {
+        targetImage.remove()
+      }
+    },
+  },
+  "www.xiaohongshu.com": {
+    targets: ["div.with-side-bar.main-content"],
+  },
+  "www.jianshu.com": {
+    targets: ["aside._2OwGUo"],
   },
 }
