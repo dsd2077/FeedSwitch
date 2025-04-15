@@ -1,12 +1,19 @@
+import { SITE_CONFIG } from "./config.js"
 ;(function () {
+  // const SITE_CONFIG = window.SITE_CONFIG || {}
+
   var limitsContainer = document.getElementById("limits-container")
   var modal = document.getElementById("add-limit-modal")
   var websitesContainer = document.querySelector(".added-websites")
-  var addBtn = document.getElementById("add-website-btn")
+  // var addBtn = document.getElementById("add-website-btn")
   const addLimitBtn = document.getElementById("add-limit-btn")
   const span = modal.querySelector(".close")
   const saveBtn = document.getElementById("save-limit-btn")
-
+  const websiteInput = document.getElementById("website-input")
+  const suggestionsDiv = document.getElementById("suggestions")
+  const suggestionList = Object.keys(SITE_CONFIG)
+  console.log("suggestionList", suggestionList)
+  console.log("SITE_CONFIG", SITE_CONFIG)
   loadAndDisplayLimits()
 
   addLimitBtn.addEventListener("click", () => {
@@ -99,32 +106,83 @@
   })
 
   // 添加网站标签
-  addBtn.addEventListener("click", () => {
-    const input = document.getElementById("website-input")
-    const website = input.value.trim()
+  // addBtn.addEventListener("click", () => {
+  //   const input = document.getElementById("website-input")
+  //   const website = input.value.trim()
 
-    if (!website) {
-      alert("请输入有效网站")
-      return
-    }
+  //   if (!website) {
+  //     alert("请输入有效网站")
+  //     return
+  //   }
 
-    // 创建标签元素
-    const tag = document.createElement("div")
-    tag.className = "website-tag"
-    tag.innerHTML = `
-        ${website}
-        <button class="remove-tag-btn">×</button>
-        <input type="hidden" name="websites" value="${website}">
-    `
+  //   // 创建标签元素
+  //   const tag = document.createElement("div")
+  //   tag.className = "website-tag"
+  //   tag.innerHTML = `
+  //       ${website}
+  //       <button class="remove-tag-btn">×</button>
+  //       <input type="hidden" name="websites" value="${website}">
+  //   `
 
-    websitesContainer.appendChild(tag)
-    input.value = "" // 清空输入框
-  })
+  //   websitesContainer.appendChild(tag)
+  //   input.value = "" // 清空输入框
+  // })
 
   // 删除标签
   websitesContainer.addEventListener("click", (e) => {
     if (e.target.classList.contains("remove-tag-btn")) {
       e.target.closest(".website-tag").remove()
+    }
+  })
+
+  websiteInput.addEventListener("input", function (e) {
+    const input = e.target.value.toLowerCase()
+    suggestionsDiv.innerHTML = ""
+
+    if (input.length > 0) {
+      // 添加激活状态（触发CSS显示）
+      websiteInput.closest(".input-group").classList.add("active")
+      const matches = suggestionList.filter((item) => item.toLowerCase().includes(input)).slice(0, 5) // 显示最多5条建议
+
+      matches.forEach((match) => {
+        const div = document.createElement("div")
+        div.textContent = match
+        div.style.padding = "5px"
+        div.style.cursor = "pointer"
+        div.onclick = () => {
+          websiteInput.value = match
+          suggestionsDiv.innerHTML = ""
+        }
+        suggestionsDiv.appendChild(div)
+      })
+    } else {
+      websiteInput.closest(".input-group").classList.remove("active")
+    }
+  })
+
+  // 添加键盘导航支持
+  websiteInput.addEventListener("keydown", (e) => {
+    const items = suggestionsDiv.children
+    let active = suggestionsDiv.querySelector(".active")
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      active = active ? active.nextElementSibling : items[0]
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault()
+      active = active ? active.previousElementSibling : items[items.length - 1]
+    } else if (e.key === "Enter" && active) {
+      websiteInput.value = active.textContent
+      suggestionsDiv.innerHTML = ""
+    }
+
+    ;[...items].forEach((item) => item.classList.remove("active"))
+    if (active) active.classList.add("active")
+  })
+
+  document.addEventListener("click", (e) => {
+    if (!websiteInput.contains(e.target)) {
+      websiteInput.closest(".input-group").classList.remove("active")
     }
   })
 

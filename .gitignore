@@ -3,3 +3,4 @@ node_modules/
 .chrome-debug/
 .vscode/
 .idea/
+dist/

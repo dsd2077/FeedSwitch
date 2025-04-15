@@ -1,6 +1,8 @@
+// import psl from "psl"
 import psl from "./node_modules/psl/dist/psl.mjs"
 let cachedMap = new Map()
-const SITE_CONFIG = window.SITE_CONFIG || {}
+import { SITE_CONFIG } from "./config.js"
+
 // 通用移除函数
 function removeWebsiteFeed(hostname) {
   const config = SITE_CONFIG[hostname]

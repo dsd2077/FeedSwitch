@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
@@ -37,6 +37,7 @@
         display: flex;
         gap: 8px;
         margin-top: 10px;
+        position: relative; /* 新增 */
       }
 
       #website-input {
@@ -78,6 +79,32 @@
         margin: 5px 0;
         padding: 8px;
       }
+      .suggestions-container {
+        display: none; /* 初始隐藏 */
+        position: absolute;
+        top: 100%; /* 紧贴输入框下方 */
+        left: 0;
+        width: 100%;
+        background: white;
+        border: 1px solid #ddd;
+        border-top: none;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+      }
+      .input-group.active .suggestions-container {
+        display: block;
+      }
+      .suggestion-item {
+        padding: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .suggestion-item:hover,
+      .suggestion-item.active {
+        background: #f0f8ff;
+      }
     </style>
   </head>
 
@@ -97,8 +124,9 @@
         <!-- 网站输入区域 -->
         <div class="websites-container">
           <div class="input-group">
-            <input type="text" id="website-input" placeholder="输入网站域名（如：example.com）" />
-            <button type="button" id="add-website-btn">+ 添加</button>
+            <input type="text" id="website-input" placeholder="输入网站域名（如：example.com）" autocomplete="off" />
+            <!-- <button type="button" id="add-website-btn">+ 添加</button> -->
+            <div id="suggestions" class="suggestions-container"></div>
           </div>
           <!-- <label>网站：</label> -->
           <div class="added-websites"></div>

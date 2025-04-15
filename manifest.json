@@ -21,12 +21,17 @@
     "48": "icons/sandglass48.png",
     "128": "icons/sandglass128.png"
   },
-  "options_page": "option.html",
+  "options_ui": {
+    "page": "option.html",
+    "open_in_tab": true,
+    "type": "module"
+  },
   "content_scripts": [
     {
       "matches": ["*://*.bilibili.com/*", "*://*.baidu.com/*", "*://*.zhihu.com/*", "*://*.blog.csdn.net/*", "*://*.juejin.cn/*", "*://*.xiaohongshu.com/*", "*://*.jianshu.com/*"],
-      "js": ["config.js", "dist/content.js"],
-      "run_at": "document_start"
+      "js": ["dist/content.js"],
+      "run_at": "document_start",
+      "type": "module"
     }
   ]
 }
