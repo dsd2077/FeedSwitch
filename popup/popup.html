@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Time Management</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- 添加开关控件 -->
+    <div class="toggle-container">
+      <label class="switch">
+        <input type="checkbox" id="tracking-switch" hidden />
+        <div class="slider">
+          <span class="on">专注</span>
+          <span class="off">娱乐</span>
+          <div class="button"></div>
+        </div>
+      </label>
+    </div>
+    <h1>Website Usage Time</h1>
+    <ul id="website-list"></ul>
+    <button id="go-to-options">Go to options</button>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

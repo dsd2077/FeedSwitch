@@ -5,11 +5,12 @@
   "description": "A Chrome extension to manage website usage time and set limits.",
   "permissions": ["tabs", "storage", "activeTab", "scripting", "alarms", "idle", "windows", "contextMenus"],
   "background": {
-    "service_worker": "background.js",
+    "service_worker": "scripts/background.js",
     "type": "module"
   },
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "popup/popup.html",
+    "default_title": "网页使用时间",
     "default_icon": {
       "16": "icons/sandglass16.png",
       "48": "icons/sandglass48.png",
@@ -22,7 +23,7 @@
     "128": "icons/sandglass128.png"
   },
   "options_ui": {
-    "page": "option.html",
+    "page": "options/option.html",
     "open_in_tab": true,
     "type": "module"
   },
@@ -33,5 +34,6 @@
       "run_at": "document_start",
       "type": "module"
     }
-  ]
+  ],
+  "homepage_url": "https://github.com/dsd2077"
 }

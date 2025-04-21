@@ -1,4 +1,4 @@
-import { SITE_CONFIG } from "./config.js"
+import { SITE_CONFIG } from "../scripts/config.js"
 ;(function () {
   var limitsContainer = document.getElementById("limits-container")
   var modal = document.getElementById("add-limit-modal")

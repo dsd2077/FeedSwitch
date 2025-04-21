@@ -8,6 +8,6 @@
     "allowJs": true,
     "types": ["chrome"]
   },
-  "include": ["**/*.js", "content.js", "config.js"],
+  "include": ["**/*.js", "scripts/content.js", "scripts/config.js"],
   "exclude": ["node_modules"]
 }
