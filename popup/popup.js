@@ -2,14 +2,14 @@
 /// <reference lib="DOM"/>
 
 document.addEventListener("DOMContentLoaded", () => {
-  const websiteList = document.getElementById("website-list");
-  const trackingSwitch = document.getElementById("tracking-switch");
+  const websiteList = document.getElementById("website-list")
+  const trackingSwitch = document.getElementById("tracking-switch")
   chrome.storage.local.get(["focus"], (result) => {
-    const isEnabled = !!result.focus;
+    const isEnabled = !!result.focus
     if (trackingSwitch instanceof HTMLInputElement) {
-      trackingSwitch.checked = isEnabled;
+      trackingSwitch.checked = isEnabled
     }
-  });
+  })
   // function updateWebsiteList() {
   //   chrome.storage.local.get(['websiteTimesDaily', 'websiteTimesDailyFun'], (result) => {
   //     const websiteTimesDaily = result.websiteTimesDaily || {};
@@ -34,78 +34,85 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateWebsiteList() {
     chrome.storage.local.get(["websiteTimesDaily", "websiteTimesDailyFun"], (result) => {
-      const websiteTimesDaily = result.websiteTimesDaily || {};
-      const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
-      websiteList.innerHTML = "";
+      const websiteTimesDaily = result.websiteTimesDaily || {}
+      const websiteTimesDailyFun = result.websiteTimesDailyFun || {}
+      websiteList.innerHTML = ""
 
       // 1. 计算主域名总时长
       const domainTotals = Object.entries(websiteTimesDaily).map(([mainDomain, subDomains]) => {
         // 计算专注总时长
-        const focusTime = Object.values(subDomains).reduce((sum, time) => sum + time, 0);
+        const focusTime = Object.values(subDomains).reduce((sum, time) => sum + time, 0)
 
         // 计算娱乐总时长
-        const funDomains = websiteTimesDailyFun[mainDomain] || {};
-        const funTime = Object.values(funDomains).reduce((sum, time) => sum + time, 0);
+        const funDomains = websiteTimesDailyFun[mainDomain] || {}
+        const funTime = Object.values(funDomains).reduce((sum, time) => sum + time, 0)
 
         return {
           mainDomain,
           focusTime,
           funTime,
-        };
-      });
+        }
+      })
 
       // 2. 按总时长排序
-      const sortedDomains = domainTotals.sort((a, b) => b.focusTime - a.focusTime);
+      const sortedDomains = domainTotals.sort((a, b) => b.focusTime - a.focusTime)
 
       // 3. 生成列表项
       for (const { mainDomain, focusTime, funTime } of sortedDomains) {
-        const listItem = document.createElement("li");
-        listItem.classList.add("domain-item");
+        const listItem = document.createElement("li")
+        listItem.classList.add("domain-item")
 
-        const timeDisplay = funTime > 0 ? `${formatTime(focusTime)} (娱乐: ${formatTime(funTime)})` : formatTime(focusTime);
+        const timeDisplay = funTime > 0 ? `${formatTime(focusTime)} (娱乐: ${formatTime(funTime)})` : formatTime(focusTime)
 
         listItem.innerHTML = `
             <span class="domain-name">${mainDomain}</span>
             <span class="domain-time">${timeDisplay}</span>
-          `;
+          `
 
-        websiteList.appendChild(listItem);
+        websiteList.appendChild(listItem)
       }
-    });
+    })
   }
 
   function formatTime(seconds) {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+    const secs = seconds % 60
 
-    let parts = [];
-    if (hours > 0) parts.push(`${hours}h`);
-    if (minutes > 0) parts.push(`${minutes}m`);
-    if (secs > 0) parts.push(`${secs}s`);
+    let parts = []
+    if (hours > 0) parts.push(`${hours}h`)
+    if (minutes > 0) parts.push(`${minutes}m`)
+    if (secs > 0) parts.push(`${secs}s`)
 
-    return parts.join(" ");
+    return parts.join(" ")
   }
 
-  updateWebsiteList();
+  updateWebsiteList()
 
   // 修改开关变化事件监听
   trackingSwitch.addEventListener("change", (event) => {
-    const isFocus = event.target instanceof HTMLInputElement ? event.target.checked : false;
+    const isFocus = event.target instanceof HTMLInputElement ? event.target.checked : false
     chrome.storage.local.set({ focus: isFocus }, () => {
       // 立即更新当前页面的徽章
       chrome.runtime.sendMessage({
         type: "toggleTracking",
         isFocus: isFocus,
-      });
-    });
-  });
-});
+      })
+    })
+  })
+
+  // 添加 storage 监听
+  chrome.storage.onChanged.addListener((changes) => {
+    if (changes.focus) {
+      trackingSwitch.checked = changes.focus.newValue
+    }
+  })
+})
 
 document.querySelector("#go-to-options").addEventListener("click", function () {
   if (chrome.runtime.openOptionsPage) {
-    chrome.runtime.openOptionsPage();
+    chrome.runtime.openOptionsPage()
   } else {
-    window.open(chrome.runtime.getURL("options.html"));
+    window.open(chrome.runtime.getURL("options.html"))
   }
-});
+})

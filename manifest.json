@@ -24,16 +24,23 @@
   },
   "options_ui": {
     "page": "options/option.html",
-    "open_in_tab": true,
-    "type": "module"
+    "open_in_tab": true
   },
   "content_scripts": [
     {
       "matches": ["*://*.bilibili.com/*", "*://*.baidu.com/*", "*://*.zhihu.com/*", "*://*.blog.csdn.net/*", "*://*.juejin.cn/*", "*://*.xiaohongshu.com/*", "*://*.jianshu.com/*"],
       "js": ["dist/content.js"],
-      "run_at": "document_start",
-      "type": "module"
+      "run_at": "document_start"
     }
   ],
-  "homepage_url": "https://github.com/dsd2077"
+  "homepage_url": "https://github.com/dsd2077",
+  "commands": {
+    "toggle-tracking": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+V",
+        "mac": "Option+F"
+      },
+      "description": "Toggle time tracking switch"
+    }
+  }
 }

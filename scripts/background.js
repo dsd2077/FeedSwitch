@@ -141,28 +141,6 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   }
 })
 
-// 统一更新存储的方法
-// function updateDomainTime(domain, seconds) {
-//   if (!isSystemActive || !isBrowserFocused || !domain || seconds <= 0) return;
-//   chrome.storage.local.get(
-//     ["focus", "websiteTimesDaily", "websiteTimesDailyFun"],
-//     (result) => {
-//       const websiteTimesDaily = result.websiteTimesDaily || {};
-//       const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
-//       if (websiteTimesDaily[domain]) {
-//         console.log("previous time : ", websiteTimesDaily[domain]);
-//       }
-//       websiteTimesDaily[domain] = (websiteTimesDaily[domain] || 0) + seconds;
-//       chrome.storage.local.set({ websiteTimesDaily });
-//       if (!result.focus) {
-//         websiteTimesDailyFun[domain] =
-//           (websiteTimesDailyFun[domain] || 0) + seconds;
-//         chrome.storage.local.set({ websiteTimesDailyFun });
-//       }
-//     }
-//   );
-// }
-
 /* ****************************************
 {
   "websiteTimesDaily": {
@@ -308,45 +286,6 @@ function parseDomain(domain) {
   }
 }
 
-// function migrateLegacyData() {
-//   const storageKeys = ['websiteTimesDaily', 'websiteTimesDailyFun', 'websiteTimesWeekly'];
-
-//   chrome.storage.local.get(storageKeys, (result) => {
-//     const migratedData = {};
-
-//     storageKeys.forEach(key => {
-//       if (!result[key]) return;
-
-//       migratedData[key] = {};
-//       const legacyData = result[key];
-
-//       // 仅处理平面结构（map[string]int）
-//       if (isFlatStructure(legacyData)) {
-//         for (const [fullDomain, time] of Object.entries(legacyData)) {
-//           const mainDomain = parseDomain(fullDomain);
-
-//           migratedData[key][mainDomain] = migratedData[key][mainDomain] || {};
-//           migratedData[key][mainDomain][fullDomain] =
-//             (migratedData[key][mainDomain][fullDomain] || 0) + time;
-//         }
-//       }
-//     });
-
-//     // 保留原始数据并存储迁移结果
-//     chrome.storage.local.set({
-//       ...result, // 保留未迁移的数据
-//       ...migratedData
-//     }, () => {
-//       console.log('Migration completed. New structure:', migratedData);
-//     });
-//   });
-// }
-
-// 检测是否为平面结构
-// function isFlatStructure(data) {
-//   return Object.values(data).every(v => typeof v === 'number');
-// }
-
 function isValidDomain(domain) {
   // ...其他验证逻辑保持不动...
 
@@ -370,3 +309,14 @@ function isValidDomain(domain) {
     return false
   }
 }
+
+chrome.commands.onCommand.addListener((command) => {
+  console.log(`Command received: ${command}`)
+  if (command === "toggle-tracking") {
+    chrome.storage.local.get("focus", (result) => {
+      const newState = !result.focus
+      updateBadgeStatus(newState)
+      chrome.storage.local.set({ focus: newState })
+    })
+  }
+})
