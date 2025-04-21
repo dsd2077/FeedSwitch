@@ -1,6 +1,6 @@
 export const SITE_CONFIG = {
   "www.bilibili.com": {
-    targets: ["main.bili-feed4-layout", "div.bili-header__channel", "div.header-channel", "div.trending"],
+    targets: ["main.bili-feed4-layout", "div.bili-header__channel", "div.header-channel", "div.trending", "div.adblock-tips"],
     extraCheck: (root) => {
       const searchInput = root.querySelector(".nav-search-input")
       if (searchInput?.placeholder) {
@@ -9,7 +9,7 @@ export const SITE_CONFIG = {
     },
   },
   "www.baidu.com": {
-    targets: ["div.s-hotsearch-wrapper", "div.new_search_guide_bub", "div.cr-offset", "div.adblock-tips"],
+    targets: ["div.s-hotsearch-wrapper", "div.new_search_guide_bub", "div.cr-offset"],
   },
   "www.zhihu.com": {
     targets: [
@@ -20,10 +20,12 @@ export const SITE_CONFIG = {
       // 'div.AutoComplete-group'
     ],
     extraCheck: (root) => {
+      // 删除搜索框中的placeholder
       const searchInput = root.querySelector("#Popover1-toggle")
       if (searchInput?.placeholder) {
         searchInput.removeAttribute("placeholder")
       }
+      // 删除搜索框中的搜索发现
       const discoveryGroups = root.querySelectorAll(".AutoComplete-group")
       discoveryGroups.forEach((group) => {
         const label = group.querySelector(".SearchBar-label")
@@ -38,7 +40,15 @@ export const SITE_CONFIG = {
     },
   },
   "blog.csdn.net": {
-    targets: ["div.swiper-slide-box-remuneration", "div#asideHotArticle.aside-box", "div#asideCategory.aside-box ", "div#asideArchive.aside-box", "div#asideNewComments.aside-box"],
+    targets: [
+      "div.swiper-slide-box-remuneration",
+      "div#asideHotArticle.aside-box",
+      "div#asideCategory.aside-box ",
+      "div#asideArchive.aside-box",
+      "div#asideNewComments.aside-box",
+      "div.toolbar-advert",
+      "div.rightside-fixed-hide",
+    ],
   },
   "www.juejin.cn": {
     targets: ["div.sidebar-block.shadow", "div.top-banners-container"],
@@ -50,9 +60,9 @@ export const SITE_CONFIG = {
       }
     },
   },
-  "www.xiaohongshu.com": {
-    targets: ["div.with-side-bar.main-content"],
-  },
+  // "www.xiaohongshu.com": {
+  //   targets: ["div.with-side-bar.main-content"],
+  // },
   "www.jianshu.com": {
     targets: ["aside._2OwGUo"],
   },

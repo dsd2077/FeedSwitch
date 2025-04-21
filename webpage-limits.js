@@ -1,7 +1,5 @@
 import { SITE_CONFIG } from "./config.js"
 ;(function () {
-  // const SITE_CONFIG = window.SITE_CONFIG || {}
-
   var limitsContainer = document.getElementById("limits-container")
   var modal = document.getElementById("add-limit-modal")
   var websitesContainer = document.querySelector(".added-websites")
@@ -12,8 +10,8 @@ import { SITE_CONFIG } from "./config.js"
   const websiteInput = document.getElementById("website-input")
   const suggestionsDiv = document.getElementById("suggestions")
   const suggestionList = Object.keys(SITE_CONFIG)
-  console.log("suggestionList", suggestionList)
-  console.log("SITE_CONFIG", SITE_CONFIG)
+  // console.log("suggestionList", suggestionList)
+  // console.log("SITE_CONFIG", SITE_CONFIG)
   loadAndDisplayLimits()
 
   addLimitBtn.addEventListener("click", () => {
