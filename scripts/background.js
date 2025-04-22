@@ -8,8 +8,11 @@ let isSystemActive = true // 新增系统活动状态标识
 let isBrowserFocused = true // 新增窗口焦点状态标识
 // 在文件顶部添加颜色常量
 const BADGE_COLORS = {
-  focus: "#2ecc71", // 绿色
-  fun: "#e74c3c", // 红色
+  // focus: "#2ecc71", // 绿色
+  focus: "#00C853", // 明亮的绿色
+  // fun: "#FFA500", // 橙色
+  fun: "#FF6B00", // 活力橙
+  // fun: "#FFB74D", // 浅橙色
 }
 
 // migrateLegacyData(); // 迁移旧数据
@@ -101,6 +104,8 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
         url: new URL(tab.url).hostname,
         startTime: now,
       }
+      const favIconUrl = tab.favIconUrl
+      cacheFavicon(parseDomain(activeTabs[activeTabId].url), favIconUrl) // 缓存图标
     }
   })
 })
@@ -320,3 +325,13 @@ chrome.commands.onCommand.addListener((command) => {
     })
   }
 })
+
+function cacheFavicon(mainDomain, iconUrl) {
+  chrome.storage.local.get(["faviconCache"], (result) => {
+    const cache = result.faviconCache || {}
+    if (!cache[mainDomain]) {
+      cache[mainDomain] = iconUrl
+      chrome.storage.local.set({ faviconCache: cache })
+    }
+  })
+}
