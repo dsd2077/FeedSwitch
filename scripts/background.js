@@ -26,7 +26,7 @@ function startIntervalUpdate() {
       const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
 
       // 更新存储并刷新开始时间
-      updateDomainTime(activeTabs[activeTabId].url, duration)
+      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title)
       activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000)
     }
     console.log(`Interval update. Active Tab ID: ${activeTabId}, URL: ${activeTabs?.[activeTabId]?.url || "N/A"}`)
@@ -43,8 +43,8 @@ chrome.windows.onFocusChanged.addListener((windowId) => {
     if (activeTabId && activeTabs?.[activeTabId]?.url) {
       const now = Date.now()
       const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
-      updateDomainTime(activeTabs[activeTabId].url, duration)
-      // activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000);
+      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title)
+      activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000)
     }
     clearInterval(updateInterval)
     console.log("Browser lost focus, final update")
@@ -69,8 +69,8 @@ chrome.idle.onStateChanged.addListener((newState) => {
     if (activeTabId && activeTabs?.[activeTabId]?.url) {
       const now = Date.now()
       const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
-      updateDomainTime(activeTabs[activeTabId].url, duration)
-      // activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000);
+      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title)
+      activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000)
     }
     clearInterval(updateInterval)
     console.log("System inactive, final update")
@@ -93,7 +93,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   // 记录前一个标签页的停留时间
   if (activeTabId && activeTabs?.[activeTabId]?.url) {
     const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
-    updateDomainTime(activeTabs[activeTabId].url, duration)
+    updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title) // 修改：传入完整URL
   }
   activeTabId = activeInfo.tabId
 
@@ -101,11 +101,12 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   chrome.tabs.get(activeTabId, (tab) => {
     if (tab?.url) {
       activeTabs[activeTabId] = {
-        url: new URL(tab.url).hostname,
+        url: tab.url, // 修改：存储完整URL
         startTime: now,
+        title: tab.title,
       }
       const favIconUrl = tab.favIconUrl
-      cacheFavicon(parseDomain(activeTabs[activeTabId].url), favIconUrl) // 缓存图标
+      cacheFavicon(parseDomain(new URL(tab.url).hostname), favIconUrl) // 缓存图标
     }
   })
 })
@@ -114,11 +115,11 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 // 单纯的刷新——tabId不变、url不变
 // 更新当前页面——tabId不变，url改变
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log("Browser tab updated")
+  console.log("Browser tab updated, tabId: ", tabId, ", title: ", tab.title, ", url: ", tab.url)
 
   if (changeInfo.status === "complete" && tab.url) {
     const now = Date.now()
-    const newDomain = new URL(tab.url).hostname
+    const newDomain = tab.url // 修改：使用完整URL
     const existingRecord = activeTabs[tabId]
 
     // 单纯的刷新url不变
@@ -128,12 +129,12 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     if (existingRecord && existingRecord.url !== newDomain) {
       // 计算前一个页面的停留时间
       const duration = Math.round((now - existingRecord.startTime) / 1000)
-      updateDomainTime(existingRecord.url, duration)
+      updateDomainTime(existingRecord.url, duration, existingRecord.title) // 修改：传入完整URL
     }
 
     // 记录新的域名信息
     activeTabs[tabId] = {
-      url: newDomain,
+      url: newDomain, // 修改：存储完整URL
       startTime: now,
     }
   }
@@ -154,17 +155,36 @@ chrome.tabs.onRemoved.addListener((tabId) => {
       "search.bilibili.com": 1200,
       "account.bilibili.com": 1800
     },
-    "github.io": {
-      "user.github.io": 1800,
-      "@.github.com": 1200
-    }
+  }
+
+  "websiteTimesDaily": {
+    "bilibili.com": {
+      "www.bilibili.com": {
+        "https://www.bilibili.com/video/BV1E55BztEzX/?spm_id_from=333.1007.tianma.1-2-2.click&vd_source=836e2cbc96ae0060340beef17d34df94": {
+          "time": 1200,
+          title: "B站视频标题",
+        },
+      },
+      "search.bilibili.com": {
+        "https://search.bilibili.com/all?keyword=chrome%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%8C%96%E9%97%AE%E9%A2%98&from_source=webtop_search&spm_id_from=333.1007&search_source=3" : {  
+          "time": 1200,
+          "title": "chrome插件开发工程化问题-哔哩哔哩_bilibili",
+        },
+        "https://www.bilibili.com/video/BV1E55BztEzX/?spm_id_from=333.1007.tianma.1-2-2.click&vd_source=836e2cbc96ae0060340beef17d34df94": {
+          "time": 1200,
+          "title": "B站视频标题",
+        }
+      },
+    },
   }
 }
 
 **************************************** */
 
-function updateDomainTime(domain, seconds) {
-  if (!isSystemActive || !isBrowserFocused || !domain || seconds <= 0 || !isValidDomain(domain)) return
+function updateDomainTime(pageUrl, seconds, title) {
+  const domain = new URL(pageUrl).hostname // 提取域名
+  if (!isSystemActive || !isBrowserFocused || !pageUrl || seconds <= 0 || !isValidDomain(domain)) return
+
   const mainDomain = parseDomain(domain)
   chrome.storage.local.get(["focus", "websiteTimesDaily", "websiteTimesDailyFun"], (result) => {
     const websiteTimesDaily = result.websiteTimesDaily || {}
@@ -174,11 +194,23 @@ function updateDomainTime(domain, seconds) {
     }
     // 初始化嵌套结构
     websiteTimesDaily[mainDomain] = websiteTimesDaily[mainDomain] || {}
-    websiteTimesDaily[mainDomain][domain] = (websiteTimesDaily[mainDomain][domain] || 0) + seconds
+    websiteTimesDaily[mainDomain][domain] = websiteTimesDaily[mainDomain][domain] || {}
+
+    // 更新时间并记录标题
+    websiteTimesDaily[mainDomain][domain][pageUrl] = {
+      time: (websiteTimesDaily[mainDomain][domain][pageUrl]?.time || 0) + seconds,
+      title: title || "",
+    }
+
     if (!result.focus) {
       websiteTimesDailyFun[mainDomain] = websiteTimesDailyFun[mainDomain] || {}
-      websiteTimesDailyFun[mainDomain][domain] = (websiteTimesDailyFun[mainDomain][domain] || 0) + seconds
+      websiteTimesDailyFun[mainDomain][domain] = websiteTimesDailyFun[mainDomain][domain] || {}
+      websiteTimesDailyFun[mainDomain][domain][pageUrl] = {
+        time: (websiteTimesDailyFun[mainDomain][domain][pageUrl]?.time || 0) + seconds,
+        title: title || "",
+      }
     }
+
     chrome.storage.local.set({
       websiteTimesDaily,
       websiteTimesDailyFun,
@@ -186,21 +218,24 @@ function updateDomainTime(domain, seconds) {
   })
 }
 
-// 新增函数：将每日使用时间累加到每周使用时间，并清空每日使用时间
 function resetDailyAndAccumulateWeekly() {
   chrome.storage.local.get(["websiteTimesDaily", "websiteTimesWeekly"], (result) => {
     const websiteTimesDaily = result.websiteTimesDaily || {}
-    // const websiteTimesDailyFun = result.websiteTimesDailyFun || {};
     const websiteTimesWeekly = result.websiteTimesWeekly || {}
 
     // 深度合并每日数据到周数据
     for (const [mainDomain, subDomains] of Object.entries(websiteTimesDaily)) {
-      // 初始化主域名结构
       websiteTimesWeekly[mainDomain] = websiteTimesWeekly[mainDomain] || {}
 
-      // 累加子域名时间
-      for (const [subDomain, time] of Object.entries(subDomains)) {
-        websiteTimesWeekly[mainDomain][subDomain] = (websiteTimesWeekly[mainDomain][subDomain] || 0) + time
+      for (const [subDomain, pages] of Object.entries(subDomains)) {
+        websiteTimesWeekly[mainDomain][subDomain] = websiteTimesWeekly[mainDomain][subDomain] || {}
+
+        for (const [pageUrl, pageInfo] of Object.entries(pages)) {
+          websiteTimesWeekly[mainDomain][subDomain][pageUrl] = {
+            time: (websiteTimesWeekly[mainDomain][subDomain][pageUrl]?.time || 0) + pageInfo.time,
+            title: pageInfo.title,
+          }
+        }
       }
     }
 
@@ -292,7 +327,7 @@ function parseDomain(domain) {
 }
 
 function isValidDomain(domain) {
-  // ...其他验证逻辑保持不动...
+  if (!domain) return false
 
   // 新增PSL深度验证
   try {

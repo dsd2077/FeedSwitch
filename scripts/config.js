@@ -1,5 +1,5 @@
 export const SITE_CONFIG = {
-  "www.bilibili.com": {
+  "bilibili.com": {
     targets: ["main.bili-feed4-layout", "div.bili-header__channel", "div.header-channel", "div.trending", "div.adblock-tips"],
     extraCheck: (root) => {
       const searchInput = root.querySelector(".nav-search-input")
@@ -8,10 +8,10 @@ export const SITE_CONFIG = {
       }
     },
   },
-  "www.baidu.com": {
+  "baidu.com": {
     targets: ["div.s-hotsearch-wrapper", "div.new_search_guide_bub", "div.cr-offset"],
   },
-  "www.zhihu.com": {
+  "zhihu.com": {
     targets: [
       "div.Topstory",
       "div.LoadingBar",
@@ -39,7 +39,7 @@ export const SITE_CONFIG = {
       }
     },
   },
-  "blog.csdn.net": {
+  "csdn.net": {
     targets: [
       "div.swiper-slide-box-remuneration",
       "div#asideHotArticle.aside-box",
@@ -50,7 +50,7 @@ export const SITE_CONFIG = {
       "div.rightside-fixed-hide",
     ],
   },
-  "www.juejin.cn": {
+  "juejin.cn": {
     targets: ["div.sidebar-block.shadow", "div.top-banners-container"],
     extraCheck: (root) => {
       // 删除特定图片
@@ -63,7 +63,7 @@ export const SITE_CONFIG = {
   // "www.xiaohongshu.com": {
   //   targets: ["div.with-side-bar.main-content"],
   // },
-  "www.jianshu.com": {
+  "jianshu.com": {
     targets: ["aside._2OwGUo"],
   },
 }

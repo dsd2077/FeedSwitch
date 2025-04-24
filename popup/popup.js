@@ -51,28 +51,20 @@ function updateWebsiteList(websiteList) {
 
     // 1. 计算主域名总时长
     const domainTotals = Object.entries(websiteTimesDaily).map(([mainDomain, subDomains]) => {
-      // 计算总时长
-      const totalTime = Object.values(subDomains).reduce((sum, time) => sum + time, 0)
-
-      // 计算娱乐总时长
+      const totalTime = Object.values(subDomains).reduce((sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0), 0)
       const funDomains = websiteTimesDailyFun[mainDomain] || {}
-      const funTime = Object.values(funDomains).reduce((sum, time) => sum + time, 0)
-
-      return {
-        mainDomain,
-        totalTime,
-        funTime,
-      }
+      const funTime = Object.values(funDomains).reduce((sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0), 0)
+      return { mainDomain, totalTime, funTime }
     })
 
     // 2. 按总时长排序
     const sortedDomains = domainTotals.sort((a, b) => b.totalTime - a.totalTime)
     const maxTotalTime = Math.max(...sortedDomains.map((d) => d.totalTime), 0)
+
     // 3. 生成列表项
     for (const { mainDomain, totalTime, funTime } of sortedDomains) {
       const listItem = document.createElement("li")
       listItem.classList.add("domain-item")
-      // 计算总时长用于比例
       const focusTime = totalTime - funTime
       const focusPercentage = totalTime > 0 ? ((focusTime / totalTime) * 100).toFixed(1) : 0
       const funPercentage = totalTime > 0 ? ((funTime / totalTime) * 100).toFixed(1) : 0
@@ -80,7 +72,8 @@ function updateWebsiteList(websiteList) {
       const widthPercentage = maxTotalTime > 0 ? ((totalTime / maxTotalTime) * 100).toFixed(1) : 0
 
       listItem.innerHTML = `
-          <div class="domain-icon-container">
+        <div class="domain-container">
+          <div class="domain-icon">
             <img class="domain-icon" src="${faviconCache[mainDomain] || getFaviconUrl(mainDomain)}" alt="${mainDomain} icon">
           </div>
           <div class="domain-info">
@@ -91,7 +84,65 @@ function updateWebsiteList(websiteList) {
               <div class="fun-progress" style="width: ${funPercentage * 100}%"></div>
             </div>
           </div>
+        </div>
+          
         `
+
+      // 主域名点击展开二级域名
+      listItem.addEventListener("click", () => {
+        const existingList = listItem.querySelector(".subdomain-list")
+        if (existingList) {
+          existingList.classList.toggle("expanded")
+          return
+        }
+        const subDomainList = document.createElement("ul")
+        subDomainList.classList.add("subdomain-list")
+
+        const subDomains = websiteTimesDaily[mainDomain]
+        for (const [subDomain, pages] of Object.entries(subDomains)) {
+          const subDomainItem = document.createElement("li")
+          subDomainItem.classList.add("subdomain-item")
+          const subDomainTotalTime = Object.values(pages).reduce((sum, pageInfo) => sum + pageInfo.time, 0)
+
+          subDomainItem.innerHTML = `
+              <div class="subdomain-info">
+                <span class="subdomain-name">${subDomain}</span>
+                <span class="subdomain-time">${formatTime(subDomainTotalTime)}</span>
+              </div>
+            `
+
+          // 二级域名点击展开网页标题
+          subDomainItem.addEventListener("click", (event) => {
+            const existingList = listItem.querySelector(".page-list")
+            if (existingList) {
+              existingList.classList.toggle("expanded")
+              return
+            }
+            event.stopPropagation()
+            const pageList = document.createElement("ul")
+            pageList.classList.add("page-list")
+
+            for (const [pageUrl, pageInfo] of Object.entries(pages)) {
+              const pageItem = document.createElement("li")
+              pageItem.classList.add("page-item")
+              pageItem.innerHTML = `
+                  <div class="page-info">
+                    <span class="page-title">${pageInfo.title}</span>
+                    <span class="page-time">${formatTime(pageInfo.time)}</span>
+                  </div>
+                `
+              pageList.appendChild(pageItem)
+            }
+            pageList.classList.add("expanded")
+            subDomainItem.appendChild(pageList)
+          })
+
+          subDomainList.appendChild(subDomainItem)
+        }
+        subDomainList.classList.add("expanded")
+        listItem.appendChild(subDomainList)
+      })
+
       websiteList.appendChild(listItem)
     }
   })

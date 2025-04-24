@@ -5,7 +5,7 @@ let cachedMap = new Map()
 import { SITE_CONFIG } from "./config.js"
 // 通用移除函数
 function removeWebsiteFeed(hostname) {
-  const config = SITE_CONFIG[hostname]
+  const config = SITE_CONFIG[parseDomain(hostname)]
   if (!config) return
 
   const checkAndRemove = (root = document) => {
@@ -47,6 +47,9 @@ function checkAndRemove() {
 function checkTimeLimit(domain, timeData = {}, limits = {}) {
   const mainDomain = parseDomain(domain)
   const groupIds = cachedMap.get(mainDomain) || []
+
+  // console.log(`checkTimeLimit:${domain} limits:${JSON.stringify(limits)} groupIds:${JSON.stringify(groupIds)} cachedMap:${JSON.stringify(cachedMap)}`)
+
   if (groupIds.length === 0) return false
 
   return Object.values(limits).some((limit) => {
@@ -56,10 +59,10 @@ function checkTimeLimit(domain, timeData = {}, limits = {}) {
       // 获取该主域名下的所有子域名时间对象
       const subDomains = timeData[mainDomain] || {}
       // 累加所有子域名的时间（单位：秒）
-      const domainTotal = Object.values(subDomains).reduce((a, b) => a + b, 0)
+      const domainTotal = Object.values(subDomains).reduce((sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0), 0)
       return sum + domainTotal
     }, 0)
-
+    console.log(`domain:[${domain}] groupUsage:${groupUsage}`)
     // 转换为分钟比较
     return Math.floor(groupUsage / 60) >= limit.dailyLimit
   })
@@ -81,7 +84,7 @@ function initSPARouteCheck(hostname) {
   setInterval(checkSPA, 1000)
 }
 
-if (SITE_CONFIG?.[location.hostname]) {
+if (SITE_CONFIG?.[parseDomain(location.hostname)]) {
   initSPARouteCheck(location.hostname)
 }
 
@@ -94,7 +97,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 // 监听limits变化
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "sync" && changes.limits) {
-    updateCachedMap(changes.limits.newValue || [])
+    updateCachedMap(changes.limits.newValue || {})
   }
 })
 
@@ -107,8 +110,6 @@ function updateCachedMap(limits) {
   const newMap = new Map()
   Object.values(limits).forEach((limit) => {
     limit.websites.forEach((mainDomain) => {
-      // 为所有可能的子域名注册映射（需要实际子域名列表）
-      // 这里假设已有子域名数据，或使用通配符逻辑
       if (!newMap.has(mainDomain)) newMap.set(mainDomain, [])
       newMap.get(mainDomain).push(limit.id)
     })

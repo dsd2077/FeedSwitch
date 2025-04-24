@@ -130,14 +130,63 @@ input:checked + .slider .off {
   animation: badgeBounce 0.3s ease-in-out;
 }
 
-/* 进度条容器 */
+.domain-item {
+  display: flex;
+  flex-direction: column; /* 改为纵向排列 */
+  position: relative;
+  align-items: flex-start;
+  /* gap: 12px; */
+  padding: 4px 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  transition: all 0.2s;
+}
 
+.domain-item:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+/* 子域名项 */
+.subdomain-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+  /* border-left: 2px solid #00c853; 专注色标识 */
+}
+/* 页面项 */
+.page-item:hover {
+  background: rgba(0, 0, 0, 0.01);
+}
+
+/* .domain-item:hover .domain-icon {
+  transform: scale(1.1);
+} */
+
+.domain-container {
+  display: flex;
+  width: 100%;
+  align-items: center; /* 顶部对齐 */
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.domain-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.domain-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+/* 进度条容器 */
 .progress-bar {
   width: 100%;
   height: 2px;
   background: #eee;
   border-radius: 3px;
-  display: flex;
   overflow: hidden;
   transition: width 0.3s ease;
   margin-top: 2px;
@@ -164,40 +213,73 @@ input:checked + .slider .off {
   margin-bottom: 4px;
 }
 
-.domain-icon-container {
-  width: 20px;
-  height: 20px;
-  flex-shrink: 0;
-  margin-top: 2px; /* 微调垂直对齐 */
-}
-
-.domain-icon {
+.subdomain-list {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  /* padding: 4px 0; */
+  margin-left: 32px; /* 添加缩进区分层级 */
+  position: relative;
+  border-left: 2px solid #eee; /* 添加层级连接线 */
+  max-height: 0;
+  overflow: hidden;
+  padding-left: 12px; /* 线与内容的间距 */
+  transition: max-height 0.3s ease-out;
 }
 
-.domain-info {
-  flex-grow: 1;
-  min-width: 0;
-}
-
-.domain-item {
-  display: flex;
-  align-items: flex-start; /* 顶部对齐 */
-  gap: 12px; /* 元素间距 */
+.page-list {
   padding: 4px 0;
+  position: relative;
+  margin-left: 48 px; /* 添加缩进区分层级 */
+  border-left: 2px solid #e0e0e0;
+  padding-left: 12px;
 }
 
-.domain-item:hover {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+.subdomain-list.expanded {
+  max-height: 1000px; /* 根据实际内容调整 */
 }
 
-.domain-icon {
+/* 添加展开指示箭头 */
+.domain-container::after {
+  content: "▶";
+  color: #999;
+  font-size: 10px;
+  margin-left: auto; /* 靠右显示 */
   transition: transform 0.2s;
 }
 
-.domain-item:hover .domain-icon {
-  transform: scale(1.1);
+/* 展开状态旋转箭头 */
+.domain-item.active .domain-container::after {
+  transform: rotate(90deg);
+}
+
+.domain-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.subdomain-name {
+  font-size: 13px;
+  color: #666;
+}
+
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0; /* 关键属性：允许内容收缩 */
+}
+
+.page-title {
+  min-width: 0; /* 关键属性：允许文本截断 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  color: #888;
+}
+
+.page-time {
+  flex-shrink: 0;
+  margin-right: 48px;
 }

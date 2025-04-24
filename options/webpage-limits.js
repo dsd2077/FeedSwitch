@@ -125,8 +125,17 @@ import { SITE_CONFIG } from "../scripts/config.js"
         div.style.padding = "5px"
         div.style.cursor = "pointer"
         div.onclick = () => {
-          websiteInput.value = match
           suggestionsDiv.innerHTML = ""
+          websiteInput.value = ""
+          // 创建标签元素
+          const tag = document.createElement("div")
+          tag.className = "website-tag"
+          tag.innerHTML = `
+                ${match}
+                <button class="remove-tag-btn">×</button>
+                <input type="hidden" name="websites" value="${match}">
+            `
+          websitesContainer.appendChild(tag)
         }
         // 添加悬停事件
         div.addEventListener("mouseenter", () => {
@@ -164,9 +173,18 @@ import { SITE_CONFIG } from "../scripts/config.js"
       case "Enter":
         e.preventDefault()
         if (active) {
-          websiteInput.value = active.textContent
           suggestionsDiv.innerHTML = ""
+          websiteInput.value = ""
+          const tag = document.createElement("div")
+          tag.className = "website-tag"
+          tag.innerHTML = `
+                ${active.textContent}
+                <button class="remove-tag-btn">×</button>
+                <input type="hidden" name="websites" value="${active.textContent}">
+            `
+          websitesContainer.appendChild(tag)
         }
+
         return // 提前返回避免执行后续代码
     }
 
