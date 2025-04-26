@@ -86,58 +86,68 @@ chrome.idle.onStateChanged.addListener((newState) => {
 
 // 激活一个新的标签页
 chrome.tabs.onActivated.addListener((activeInfo) => {
-  console.log("Browser tab activated")
-
   const now = Date.now()
 
   // 记录前一个标签页的停留时间
   if (activeTabId && activeTabs?.[activeTabId]?.url) {
     const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
-    updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title) // 修改：传入完整URL
+    updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title)
   }
   activeTabId = activeInfo.tabId
 
   // 获取新标签页的URL
-  chrome.tabs.get(activeTabId, (tab) => {
-    if (tab?.url) {
-      activeTabs[activeTabId] = {
-        url: tab.url, // 修改：存储完整URL
-        startTime: now,
-        title: tab.title,
-      }
-      const favIconUrl = tab.favIconUrl
-      cacheFavicon(parseDomain(new URL(tab.url).hostname), favIconUrl) // 缓存图标
-    }
-  })
+  // chrome.tabs.get(activeTabId, (tab) => {
+  //   console.log("Browser tab activated", " title: ", tab.title, ", url: ", tab.url)
+  //   if (tab?.url) {
+  //     activeTabs[activeTabId] = {
+  //       url: tab.url, // 修改：存储完整URL
+  //       startTime: now,
+  //       title: tab.title,
+  //     }
+  //     const favIconUrl = tab.favIconUrl
+  //     cacheFavicon(parseDomain(new URL(tab.url).hostname), favIconUrl) // 缓存图标
+  //   }
+  // })
 })
-
 // 在标签页更新时触发（包括刷新）,
 // 单纯的刷新——tabId不变、url不变
 // 更新当前页面——tabId不变，url改变
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  console.log("Browser tab updated, tabId: ", tabId, ", title: ", tab.title, ", url: ", tab.url)
+  // 前置条件检查
+  if (changeInfo.status !== "complete" || !tab.url) return
 
-  if (changeInfo.status === "complete" && tab.url) {
-    const now = Date.now()
-    const newDomain = tab.url // 修改：使用完整URL
-    const existingRecord = activeTabs[tabId]
+  const now = Date.now()
+  const newRawUrl = tab.url
+  const newUrl = normalizeUrl(newRawUrl) // 标准化后的URL
+  const oldRecord = activeTabs[tabId]
 
-    // 单纯的刷新url不变
-    if (existingRecord && existingRecord.url == newDomain) {
-      return
-    }
-    if (existingRecord && existingRecord.url !== newDomain) {
-      // 计算前一个页面的停留时间
-      const duration = Math.round((now - existingRecord.startTime) / 1000)
-      updateDomainTime(existingRecord.url, duration, existingRecord.title) // 修改：传入完整URL
-    }
+  console.log(`Tab updated: 
+    TabID: ${tabId}
+    Title: ${tab.title}
+    RawURL: ${newRawUrl}
+    NormalizedURL: ${newUrl}
+    PreviousURL: ${oldRecord?.url || "N/A"}`)
 
-    // 记录新的域名信息
-    activeTabs[tabId] = {
-      url: newDomain, // 修改：存储完整URL
-      startTime: now,
-    }
+  // 单纯的刷新url不变
+  if (oldRecord?.url && normalizeUrl(oldRecord.url) === newUrl) {
+    console.log("Same normalized URL, update title only")
+    activeTabs[tabId].title = tab.title
+    return
   }
+  if (oldRecord?.url) {
+    // 计算前一个页面的停留时间
+    const duration = Math.round((now - oldRecord.startTime) / 1000)
+    updateDomainTime(oldRecord.url, duration, oldRecord.title)
+    console.log(`Recorded ${duration}s for ${oldRecord.url}`)
+  }
+
+  // 记录新的域名信息
+  activeTabs[tabId] = {
+    url: newRawUrl,
+    startTime: now,
+    title: tab.title,
+  }
+  cacheFavicon(parseDomain(new URL(tab.url).hostname), tab.favIconUrl) // 缓存图标
 })
 
 // 添加标签页关闭时的清理
@@ -369,4 +379,14 @@ function cacheFavicon(mainDomain, iconUrl) {
       chrome.storage.local.set({ faviconCache: cache })
     }
   })
+}
+
+function normalizeUrl(url) {
+  try {
+    const u = new URL(url)
+    // 保留协议、主机、路径，去除查询参数和hash
+    return `${u.origin}${u.pathname}`
+  } catch {
+    return url
+  }
 }

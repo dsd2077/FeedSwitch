@@ -127,7 +127,7 @@ function updateWebsiteList(websiteList) {
               pageItem.classList.add("page-item")
               pageItem.innerHTML = `
                   <div class="page-info">
-                    <span class="page-title">${pageInfo.title}</span>
+                    <a class="page-title" href="${pageUrl}" target="_blank">${pageInfo.title || pageUrl}</a>
                     <span class="page-time">${formatTime(pageInfo.time)}</span>
                   </div>
                 `
