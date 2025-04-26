@@ -1,7 +1,7 @@
 body {
   font-family: Arial, sans-serif;
   width: 300px;
-  padding: 10px;
+  padding: 2px;
 }
 
 h1,
@@ -130,48 +130,92 @@ input:checked + .slider .off {
   animation: badgeBounce 0.3s ease-in-out;
 }
 
-.domain-item {
+.domain-list {
   display: flex;
-  flex-direction: column; /* 改为纵向排列 */
+  flex-direction: column;
   position: relative;
   align-items: flex-start;
-  /* gap: 12px; */
   padding: 4px 0;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   border-radius: 6px;
   transition: all 0.2s;
+  width: 100%;
 }
 
-.domain-item:hover {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 4px;
+/* 展开状态旋转箭头 */
+.domain-list.active .domain-item::after {
+  transform: rotate(-90deg);
 }
 
-/* 子域名项 */
-.subdomain-item:hover {
-  background: rgba(0, 0, 0, 0.02);
-  /* border-left: 2px solid #00c853; 专注色标识 */
-}
-/* 页面项 */
-.page-item:hover {
-  background: rgba(0, 0, 0, 0.01);
-}
-
-/* .domain-item:hover .domain-icon {
-  transform: scale(1.1);
-} */
-
-.domain-container {
+.domain-item {
   display: flex;
   width: 100%;
   align-items: center; /* 顶部对齐 */
-  gap: 12px;
+  gap: 10px;
   padding: 4px 0;
+}
+.domain-item:hover {
+  background: rgba(0, 0, 0, 0.09);
+  border-radius: 4px;
+}
+/* 添加展开指示箭头 */
+.domain-item::after {
+  content: "◀";
+  color: #999;
+  font-size: 10px;
+  margin-left: auto; /* 靠右显示 */
+  transition: transform 0.2s;
+}
+
+.subdomain-list {
+  padding: 0px 4;
+  margin-left: 30px; /* 图标宽度18+ 2 +10*/
+  position: relative;
+  border-left: 2px solid #eee; /* 添加层级连接线 */
+  max-height: 0;
+  overflow: hidden;
+  padding-left: 12px; /*与连接线的间距*/
+  transition: max-height 0.3s ease-out;
+  width: calc(100% - 30px); /* 保持宽度计算 */
+}
+
+.subdomain-list.expanded {
+  max-height: 1000px; /* 根据实际内容调整 */
+}
+
+.subdomain-item {
+  display: flex;
+  width: calc(100% - 12px);
+  align-items: center; /* 顶部对齐 */
+  padding: 4px 0;
+}
+/* 子域名项 */
+.subdomain-item:hover {
+  background: rgba(0, 0, 0, 0.09);
+  border-radius: 4px;
+}
+
+/* 添加展开指示箭头 */
+.subdomain-item::after {
+  content: "◀";
+  color: #999;
+  font-size: 10px;
+  margin-left: auto; /* 靠右显示 */
+  transition: transform 0.2s;
+}
+
+.subdomain-list.active .subdomain-item::after {
+  transform: rotate(-90deg);
+}
+
+/* 页面项 */
+.page-item:hover {
+  background: rgba(0, 0, 0, 0.09);
 }
 
 .domain-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   transition: transform 0.2s;
 }
@@ -213,42 +257,17 @@ input:checked + .slider .off {
   margin-bottom: 4px;
 }
 
-.subdomain-list {
-  width: 100%;
-  /* padding: 4px 0; */
-  margin-left: 32px; /* 添加缩进区分层级 */
+.page-list {
   position: relative;
-  border-left: 2px solid #eee; /* 添加层级连接线 */
+  border-left: 2px solid #e0e0e0;
+  width: calc(100% - 30px); /* 继承父级宽度 */
+  padding-left: 12px; /*与连接线的间距*/
   max-height: 0;
   overflow: hidden;
-  padding-left: 12px; /* 线与内容的间距 */
-  transition: max-height 0.3s ease-out;
+  transition: max-height 0.3s ease-out; /* 缺少过渡效果定义 */
 }
-
-.page-list {
-  padding: 4px 0;
-  position: relative;
-  margin-left: 48 px; /* 添加缩进区分层级 */
-  border-left: 2px solid #e0e0e0;
-  padding-left: 12px;
-}
-
-.subdomain-list.expanded {
-  max-height: 1000px; /* 根据实际内容调整 */
-}
-
-/* 添加展开指示箭头 */
-.domain-container::after {
-  content: "▶";
-  color: #999;
-  font-size: 10px;
-  margin-left: auto; /* 靠右显示 */
-  transition: transform 0.2s;
-}
-
-/* 展开状态旋转箭头 */
-.domain-item.active .domain-container::after {
-  transform: rotate(90deg);
+.page-list.expanded {
+  max-height: 500px; /* 根据实际内容高度调整 */
 }
 
 .domain-name {
@@ -258,7 +277,7 @@ input:checked + .slider .off {
 }
 
 .subdomain-name {
-  font-size: 13px;
+  font-size: 14px;
   color: #666;
 }
 
@@ -275,11 +294,10 @@ input:checked + .slider .off {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 12px;
+  font-size: 14px;
   color: #888;
 }
 
 .page-time {
   flex-shrink: 0;
-  margin-right: 48px;
 }

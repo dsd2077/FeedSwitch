@@ -63,16 +63,16 @@ function updateWebsiteList(websiteList) {
 
     // 3. 生成列表项
     for (const { mainDomain, totalTime, funTime } of sortedDomains) {
-      const listItem = document.createElement("li")
-      listItem.classList.add("domain-item")
+      const domainList = document.createElement("li")
+      domainList.classList.add("domain-list")
       const focusTime = totalTime - funTime
       const focusPercentage = totalTime > 0 ? ((focusTime / totalTime) * 100).toFixed(1) : 0
       const funPercentage = totalTime > 0 ? ((funTime / totalTime) * 100).toFixed(1) : 0
       const timeDisplay = funTime > 0 ? `${formatTime(totalTime)} (娱乐: ${formatTime(funTime)})` : formatTime(totalTime)
       const widthPercentage = maxTotalTime > 0 ? ((totalTime / maxTotalTime) * 100).toFixed(1) : 0
 
-      listItem.innerHTML = `
-        <div class="domain-container">
+      domainList.innerHTML = `
+        <div class="domain-item">
           <div class="domain-icon">
             <img class="domain-icon" src="${faviconCache[mainDomain] || getFaviconUrl(mainDomain)}" alt="${mainDomain} icon">
           </div>
@@ -89,8 +89,10 @@ function updateWebsiteList(websiteList) {
         `
 
       // 主域名点击展开二级域名
-      listItem.addEventListener("click", () => {
-        const existingList = listItem.querySelector(".subdomain-list")
+      domainList.addEventListener("click", () => {
+        console.log("Clicked on main domain:", mainDomain)
+        domainList.classList.toggle("active") // 添加这行
+        const existingList = domainList.querySelector(".subdomain-list")
         if (existingList) {
           existingList.classList.toggle("expanded")
           return
@@ -113,12 +115,16 @@ function updateWebsiteList(websiteList) {
 
           // 二级域名点击展开网页标题
           subDomainItem.addEventListener("click", (event) => {
-            const existingList = listItem.querySelector(".page-list")
+            subDomainList.classList.toggle("active") // 添加这行
+            console.log("Clicked on sub domain:", subDomain)
+            event.stopPropagation() // 先阻止事件冒泡
+
+            const existingList = subDomainList.querySelector(".page-list")
             if (existingList) {
               existingList.classList.toggle("expanded")
               return
             }
-            event.stopPropagation()
+
             const pageList = document.createElement("ul")
             pageList.classList.add("page-list")
 
@@ -133,17 +139,18 @@ function updateWebsiteList(websiteList) {
                 `
               pageList.appendChild(pageItem)
             }
+
+            subDomainList.appendChild(pageList)
             pageList.classList.add("expanded")
-            subDomainItem.appendChild(pageList)
           })
 
           subDomainList.appendChild(subDomainItem)
         }
         subDomainList.classList.add("expanded")
-        listItem.appendChild(subDomainList)
+        domainList.appendChild(subDomainList)
       })
 
-      websiteList.appendChild(listItem)
+      websiteList.appendChild(domainList)
     }
   })
 }
