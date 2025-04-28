@@ -92,32 +92,49 @@ function updateWebsiteList(websiteList) {
       domainList.addEventListener("click", () => {
         console.log("Clicked on main domain:", mainDomain)
         domainList.classList.toggle("active") // 添加这行
-        const existingList = domainList.querySelector(".subdomain-list")
-        if (existingList) {
-          existingList.classList.toggle("expanded")
+        // const existingList = domainList.querySelector(".subdomain-list")
+        // if (existingList) {
+        //   existingList.classList.toggle("expanded")
+        //   return
+        // }
+
+        const allSubLists = domainList.querySelectorAll(".subdomain-list")
+
+        if (allSubLists.length > 0) {
+          // 统一切换所有子列表状态
+          allSubLists.forEach((list) => list.classList.toggle("expanded"))
           return
         }
-        const subDomainList = document.createElement("ul")
-        subDomainList.classList.add("subdomain-list")
-
         const subDomains = websiteTimesDaily[mainDomain]
-        for (const [subDomain, pages] of Object.entries(subDomains)) {
-          const subDomainItem = document.createElement("li")
-          subDomainItem.classList.add("subdomain-item")
-          const subDomainTotalTime = Object.values(pages).reduce((sum, pageInfo) => sum + pageInfo.time, 0)
+        // 计算二级域名总时长并排序
+        const sortedSubDomains = Object.entries(subDomains)
+          .map(([subDomain, pages]) => {
+            const subDomainTotalTime = Object.values(pages).reduce((sum, pageInfo) => sum + pageInfo.time, 0)
+            return { subDomain, subDomainTotalTime }
+          })
+          .sort((a, b) => b.subDomainTotalTime - a.subDomainTotalTime)
+        console.log("Sorted subdomains:", sortedSubDomains)
 
-          subDomainItem.innerHTML = `
-              <div class="subdomain-info">
-                <span class="subdomain-name">${subDomain}</span>
-                <span class="subdomain-time">${formatTime(subDomainTotalTime)}</span>
+        for (const { subDomain, subDomainTotalTime } of sortedSubDomains) {
+          const subDomainList = document.createElement("ul")
+          subDomainList.classList.add("subdomain-list")
+
+          // const subDomainTotalTime = Object.values(pages).reduce((sum, pageInfo) => sum + pageInfo.time, 0)
+
+          subDomainList.innerHTML = `
+              <div class="subdomain-item">
+                 <div class="subdomain-info">
+                  <span class="subdomain-name">${subDomain}</span>
+                  <span class="subdomain-time">${formatTime(subDomainTotalTime)}</span>
+                </div>
               </div>
             `
 
           // 二级域名点击展开网页标题
-          subDomainItem.addEventListener("click", (event) => {
-            subDomainList.classList.toggle("active") // 添加这行
+          subDomainList.addEventListener("click", (event) => {
+            event.stopPropagation()
+            subDomainList.classList.toggle("active")
             console.log("Clicked on sub domain:", subDomain)
-            event.stopPropagation() // 先阻止事件冒泡
 
             const existingList = subDomainList.querySelector(".page-list")
             if (existingList) {
@@ -127,13 +144,20 @@ function updateWebsiteList(websiteList) {
 
             const pageList = document.createElement("ul")
             pageList.classList.add("page-list")
-
-            for (const [pageUrl, pageInfo] of Object.entries(pages)) {
+            const sortedPages = Object.entries(subDomains[subDomain])
+              .map(([pageUrl, pageInfo]) => ({ pageUrl, pageInfo }))
+              .sort((a, b) => b.pageInfo.time - a.pageInfo.time)
+            for (const { pageUrl, pageInfo } of sortedPages) {
               const pageItem = document.createElement("li")
               pageItem.classList.add("page-item")
               pageItem.innerHTML = `
                   <div class="page-info">
-                    <a class="page-title" href="${pageUrl}" target="_blank">${pageInfo.title || pageUrl}</a>
+                    <a class="page-title" 
+                       href="${pageUrl}"
+                       target="_blank"
+                       title="${pageUrl}">
+                       ${pageInfo.title || pageUrl}
+                       </a>
                     <span class="page-time">${formatTime(pageInfo.time)}</span>
                   </div>
                 `
@@ -143,13 +167,10 @@ function updateWebsiteList(websiteList) {
             subDomainList.appendChild(pageList)
             pageList.classList.add("expanded")
           })
-
-          subDomainList.appendChild(subDomainItem)
+          subDomainList.classList.add("expanded")
+          domainList.appendChild(subDomainList)
         }
-        subDomainList.classList.add("expanded")
-        domainList.appendChild(subDomainList)
       })
-
       websiteList.appendChild(domainList)
     }
   })

@@ -26,7 +26,7 @@ function startIntervalUpdate() {
       const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
 
       // 更新存储并刷新开始时间
-      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title)
+      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title, "interval")
       activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000)
     }
     console.log(`Interval update. Active Tab ID: ${activeTabId}, URL: ${activeTabs?.[activeTabId]?.url || "N/A"}`)
@@ -43,7 +43,7 @@ chrome.windows.onFocusChanged.addListener((windowId) => {
     if (activeTabId && activeTabs?.[activeTabId]?.url) {
       const now = Date.now()
       const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
-      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title)
+      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title, "windowFocusChange")
       activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000)
     }
     clearInterval(updateInterval)
@@ -69,7 +69,7 @@ chrome.idle.onStateChanged.addListener((newState) => {
     if (activeTabId && activeTabs?.[activeTabId]?.url) {
       const now = Date.now()
       const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
-      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title)
+      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title, "stateChange")
       activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000)
     }
     clearInterval(updateInterval)
@@ -91,23 +91,22 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   // 记录前一个标签页的停留时间
   if (activeTabId && activeTabs?.[activeTabId]?.url) {
     const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
-    updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title)
+    updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title, "tab_activate")
   }
   activeTabId = activeInfo.tabId
-
   // 获取新标签页的URL
-  // chrome.tabs.get(activeTabId, (tab) => {
-  //   console.log("Browser tab activated", " title: ", tab.title, ", url: ", tab.url)
-  //   if (tab?.url) {
-  //     activeTabs[activeTabId] = {
-  //       url: tab.url, // 修改：存储完整URL
-  //       startTime: now,
-  //       title: tab.title,
-  //     }
-  //     const favIconUrl = tab.favIconUrl
-  //     cacheFavicon(parseDomain(new URL(tab.url).hostname), favIconUrl) // 缓存图标
-  //   }
-  // })
+  chrome.tabs.get(activeTabId, (tab) => {
+    console.log("Browser tab activated", " title: ", tab.title, ", url: ", tab.url)
+    if (tab?.url) {
+      activeTabs[activeTabId] = {
+        url: tab.url, // 修改：存储完整URL
+        startTime: now,
+        title: tab.title,
+      }
+      const favIconUrl = tab.favIconUrl
+      cacheFavicon(parseDomain(new URL(tab.url).hostname), favIconUrl) // 缓存图标
+    }
+  })
 })
 // 在标签页更新时触发（包括刷新）,
 // 单纯的刷新——tabId不变、url不变
@@ -116,7 +115,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   // 前置条件检查
   if (changeInfo.status !== "complete" || !tab.url) return
 
-  const now = Date.now()
   const newRawUrl = tab.url
   const newUrl = normalizeUrl(newRawUrl) // 标准化后的URL
   const oldRecord = activeTabs[tabId]
@@ -136,15 +134,14 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
   if (oldRecord?.url) {
     // 计算前一个页面的停留时间
-    const duration = Math.round((now - oldRecord.startTime) / 1000)
-    updateDomainTime(oldRecord.url, duration, oldRecord.title)
-    console.log(`Recorded ${duration}s for ${oldRecord.url}`)
+    const duration = Math.round((Date.now() - oldRecord.startTime) / 1000)
+    updateDomainTime(oldRecord.url, duration, oldRecord.title, "tab_update")
   }
 
   // 记录新的域名信息
   activeTabs[tabId] = {
     url: newRawUrl,
-    startTime: now,
+    startTime: Date.now(),
     title: tab.title,
   }
   cacheFavicon(parseDomain(new URL(tab.url).hostname), tab.favIconUrl) // 缓存图标
@@ -191,7 +188,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
 **************************************** */
 
-function updateDomainTime(pageUrl, seconds, title) {
+function updateDomainTime(pageUrl, seconds, title, type) {
   const domain = new URL(pageUrl).hostname // 提取域名
   if (!isSystemActive || !isBrowserFocused || !pageUrl || seconds <= 0 || !isValidDomain(domain)) return
 
@@ -200,7 +197,12 @@ function updateDomainTime(pageUrl, seconds, title) {
     const websiteTimesDaily = result.websiteTimesDaily || {}
     const websiteTimesDailyFun = result.websiteTimesDailyFun || {}
     if (websiteTimesDaily[mainDomain]) {
-      console.log("previous time : ", websiteTimesDaily[mainDomain][domain])
+      console.log(`updateDomainTime
+        "type : ", ${type}
+        "pageUrl : ", ${pageUrl}
+        "title : ", ${title}
+        "previous time : ", ${websiteTimesDaily?.[mainDomain]?.[domain]?.[pageUrl]?.time || 0}
+        `)
     }
     // 初始化嵌套结构
     websiteTimesDaily[mainDomain] = websiteTimesDaily[mainDomain] || {}

@@ -1,42 +1,39 @@
 <ul id="website-list">
-  <!-- 主域名项（多个） -->
   <li class="domain-list active">
     <div class="domain-item">
       <div class="domain-icon">
-        <img class="domain-icon" src="..." />
+        <img class="domain-icon" src="https://www.google.com/s2/favicons?domain=example.com&sz=128" alt="example.com icon" />
       </div>
       <div class="domain-info">
         <span class="domain-name">example.com</span>
-        <span class="domain-time">2h 30m (娱乐: 30m)</span>
+        <span class="domain-time">1h (娱乐: 30m)</span>
         <div class="progress-bar" style="width: 100%">
-          <div class="focus-progress" style="width: 80%"></div>
-          <div class="fun-progress" style="width: 20%"></div>
+          <div class="focus-progress" style="width: 50%"></div>
+          <div class="fun-progress" style="width: 50%"></div>
         </div>
       </div>
     </div>
-
-    <!-- 二级域名列表 -->
     <ul class="subdomain-list expanded">
-      <li class="subdomain-item">
+      <li class="subdomain-item active">
         <div class="subdomain-info">
-          <span class="subdomain-name">blog.example.com</span>
-          <span class="subdomain-time">1h 20m</span>
+          <span class="subdomain-name">sub.example.com</span>
+          <span class="subdomain-time">1h 30m</span>
         </div>
+        <ul class="page-list expanded">
+          <li class="page-item">
+            <div class="page-info">
+              <a class="page-title" href="http://sub.example.com/page1" target="_blank" title="http://sub.example.com/page1">Page 1</a>
+              <span class="page-time">1h</span>
+            </div>
+          </li>
+          <li class="page-item">
+            <div class="page-info">
+              <a class="page-title" href="http://sub.example.com/page2" target="_blank" title="http://sub.example.com/page2">Page 2</a>
+              <span class="page-time">30m</span>
+            </div>
+          </li>
+        </ul>
       </li>
-
-      <!-- 页面列表 -->
-      <ul class="page-list expanded">
-        <li class="page-item">
-          <div class="page-info">
-            <a class="page-title" href="..." target="_blank">文章标题</a>
-            <span class="page-time">45m</span>
-          </div>
-        </li>
-        <!-- 更多 page-item -->
-      </ul>
-      <!-- 更多 subdomain-item -->
     </ul>
   </li>
-
-  <!-- 更多 domain-list -->
 </ul>

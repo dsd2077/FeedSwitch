@@ -141,7 +141,9 @@ input:checked + .slider .off {
   transition: all 0.2s;
   width: 100%;
 }
-
+.domain-list.expanded {
+  max-height: 1000px; /* 根据实际内容调整 */
+}
 /* 展开状态旋转箭头 */
 .domain-list.active .domain-item::after {
   transform: rotate(-90deg);
@@ -169,7 +171,7 @@ input:checked + .slider .off {
 
 .subdomain-list {
   padding: 0px 4;
-  margin-left: 30px; /* 图标宽度18+ 2 +10*/
+  margin-left: 30px; /* 图标宽度18+ padding2 + gap10*/
   position: relative;
   border-left: 2px solid #eee; /* 添加层级连接线 */
   max-height: 0;
@@ -300,4 +302,5 @@ input:checked + .slider .off {
 
 .page-time {
   flex-shrink: 0;
+  margin-left: auto;
 }
