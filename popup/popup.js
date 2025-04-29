@@ -80,12 +80,11 @@ function updateWebsiteList(websiteList) {
             <span class="domain-name">${mainDomain}</span>
             <span class="domain-time">${timeDisplay}</span>
             <div class="progress-bar" style="width: ${widthPercentage}%">
-              <div class="focus-progress" style="width: ${focusPercentage * 100}%"></div>
-              <div class="fun-progress" style="width: ${funPercentage * 100}%"></div>
+              <div class="focus-progress" style="width: ${focusPercentage}%"></div>
+              <div class="fun-progress" style="width: ${funPercentage}%"></div>
             </div>
           </div>
         </div>
-          
         `
 
       // 主域名点击展开二级域名

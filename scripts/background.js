@@ -99,7 +99,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
     console.log("Browser tab activated", " title: ", tab.title, ", url: ", tab.url)
     if (tab?.url) {
       activeTabs[activeTabId] = {
-        url: tab.url, // 修改：存储完整URL
+        url: normalizeUrl(tab.url), // 修改：存储完整URL
         startTime: now,
         title: tab.title,
       }
@@ -140,7 +140,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
   // 记录新的域名信息
   activeTabs[tabId] = {
-    url: newRawUrl,
+    url: newUrl,
     startTime: Date.now(),
     title: tab.title,
   }
@@ -189,8 +189,9 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 **************************************** */
 
 function updateDomainTime(pageUrl, seconds, title, type) {
-  const domain = new URL(pageUrl).hostname // 提取域名
-  if (!isSystemActive || !isBrowserFocused || !pageUrl || seconds <= 0 || !isValidDomain(domain)) return
+  const normalizedUrl = normalizeUrl(pageUrl)
+  const domain = new URL(normalizedUrl).hostname // 提取域名
+  if (!isSystemActive || !isBrowserFocused || !normalizedUrl || seconds <= 0 || !isValidDomain(domain)) return
 
   const mainDomain = parseDomain(domain)
   chrome.storage.local.get(["focus", "websiteTimesDaily", "websiteTimesDailyFun"], (result) => {
@@ -199,9 +200,9 @@ function updateDomainTime(pageUrl, seconds, title, type) {
     if (websiteTimesDaily[mainDomain]) {
       console.log(`updateDomainTime
         "type : ", ${type}
-        "pageUrl : ", ${pageUrl}
+        "normalizedUrl : ", ${normalizedUrl}
         "title : ", ${title}
-        "previous time : ", ${websiteTimesDaily?.[mainDomain]?.[domain]?.[pageUrl]?.time || 0}
+        "previous time : ", ${websiteTimesDaily?.[mainDomain]?.[domain]?.[normalizedUrl]?.time || 0}
         `)
     }
     // 初始化嵌套结构
@@ -209,16 +210,16 @@ function updateDomainTime(pageUrl, seconds, title, type) {
     websiteTimesDaily[mainDomain][domain] = websiteTimesDaily[mainDomain][domain] || {}
 
     // 更新时间并记录标题
-    websiteTimesDaily[mainDomain][domain][pageUrl] = {
-      time: (websiteTimesDaily[mainDomain][domain][pageUrl]?.time || 0) + seconds,
+    websiteTimesDaily[mainDomain][domain][normalizedUrl] = {
+      time: (websiteTimesDaily[mainDomain][domain][normalizedUrl]?.time || 0) + seconds,
       title: title || "",
     }
 
     if (!result.focus) {
       websiteTimesDailyFun[mainDomain] = websiteTimesDailyFun[mainDomain] || {}
       websiteTimesDailyFun[mainDomain][domain] = websiteTimesDailyFun[mainDomain][domain] || {}
-      websiteTimesDailyFun[mainDomain][domain][pageUrl] = {
-        time: (websiteTimesDailyFun[mainDomain][domain][pageUrl]?.time || 0) + seconds,
+      websiteTimesDailyFun[mainDomain][domain][normalizedUrl] = {
+        time: (websiteTimesDailyFun[mainDomain][domain][normalizedUrl]?.time || 0) + seconds,
         title: title || "",
       }
     }
@@ -242,9 +243,9 @@ function resetDailyAndAccumulateWeekly() {
       for (const [subDomain, pages] of Object.entries(subDomains)) {
         websiteTimesWeekly[mainDomain][subDomain] = websiteTimesWeekly[mainDomain][subDomain] || {}
 
-        for (const [pageUrl, pageInfo] of Object.entries(pages)) {
-          websiteTimesWeekly[mainDomain][subDomain][pageUrl] = {
-            time: (websiteTimesWeekly[mainDomain][subDomain][pageUrl]?.time || 0) + pageInfo.time,
+        for (const [normalizedUrl, pageInfo] of Object.entries(pages)) {
+          websiteTimesWeekly[mainDomain][subDomain][normalizedUrl] = {
+            time: (websiteTimesWeekly[mainDomain][subDomain][normalizedUrl]?.time || 0) + pageInfo.time,
             title: pageInfo.title,
           }
         }

@@ -1,5 +1,5 @@
-console.log(normalizeUrl("https://www.bilibili.com/video/BV1Ub411w7zn/?spm_id_from=333.337.search-card.all.click"))
-console.log(normalizeUrl("https://www.bilibili.com/video/BV1Ub411w7zn/?spm_id_from=333.337.search-card.all.click&vd_source=836e2cbc96ae006034Obeef17d34df94"))
+console.log(normalizeUrl("https://www.bilibili.com/video/BV1BWRhYFE8y/?spm_id_from=333.337.search-card.all.click"))
+console.log(normalizeUrl("https://www.bilibili.com/video/BV1BWRhYFE8y/?spm_id_from=333.337.search-card.all.click&vd_source=836e2cbc96ae0060340beef17d34df94"))
 
 function normalizeUrl(url) {
   try {
