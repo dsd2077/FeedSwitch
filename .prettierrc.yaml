@@ -1,0 +1,11 @@
+tabWidth: 2 # 缩进空格数（默认2）
+useTabs: false # 使用空格代替制表符
+semi: false # 语句结尾不加分号
+singleQuote: false # 使用双引号（默认）
+trailingComma: all # 多行时尽可能添加尾随逗号（ES5+有效）
+bracketSpacing: true # 对象花括号间保留空格 { foo: bar }
+printWidth: 150 # 换行长度阈值（超过此值自动换行）
+bracketSameLine: false # 换行时保持花括号在同一行（如 { foo: bar }）
+arrowParens: always # 箭头函数参数始终使用括号：(x) => x
+singleAttributePerLine: true # 单个属性独占一行（增强长属性可读性）
+

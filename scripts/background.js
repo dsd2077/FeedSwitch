@@ -55,7 +55,9 @@ chrome.windows.onFocusChanged.addListener((windowId) => {
       activeTabs[activeTabId].startTime = Date.now()
     }
     startIntervalUpdate()
-    console.log(`Browser focused, resume timing. Active Tab ID: ${activeTabId}, URL: ${activeTabs?.[activeTabId]?.url || "N/A"}, Window ID: ${windowId}`)
+    console.log(
+      `Browser focused, resume timing. Active Tab ID: ${activeTabId}, URL: ${activeTabs?.[activeTabId]?.url || "N/A"}, Window ID: ${windowId}`,
+    )
   }
 })
 
@@ -96,7 +98,7 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   activeTabId = activeInfo.tabId
   // 获取新标签页的URL
   chrome.tabs.get(activeTabId, (tab) => {
-    console.log("Browser tab activated", " title: ", tab.title, ", url: ", tab.url)
+    console.log("Browser tab activated", " title: ", tab.title, ", url: ", tab.url, "favIconUrl: ", tab.favIconUrl)
     if (tab?.url) {
       activeTabs[activeTabId] = {
         url: normalizeUrl(tab.url), // 修改：存储完整URL
@@ -377,7 +379,12 @@ chrome.commands.onCommand.addListener((command) => {
 function cacheFavicon(mainDomain, iconUrl) {
   chrome.storage.local.get(["faviconCache"], (result) => {
     const cache = result.faviconCache || {}
-    if (!cache[mainDomain]) {
+
+    // 新增过滤条件
+    const shouldCache =
+      iconUrl && !iconUrl.startsWith("data:image/svg+xml") && !iconUrl.includes("chrome-extension://") && /\.(png|jpe?g|gif|webp|ico)$/i.test(iconUrl)
+
+    if (shouldCache && !cache[mainDomain]) {
       cache[mainDomain] = iconUrl
       chrome.storage.local.set({ faviconCache: cache })
     }

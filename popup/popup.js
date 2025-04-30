@@ -51,9 +51,15 @@ function updateWebsiteList(websiteList) {
 
     // 1. 计算主域名总时长
     const domainTotals = Object.entries(websiteTimesDaily).map(([mainDomain, subDomains]) => {
-      const totalTime = Object.values(subDomains).reduce((sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0), 0)
+      const totalTime = Object.values(subDomains).reduce(
+        (sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0),
+        0,
+      )
       const funDomains = websiteTimesDailyFun[mainDomain] || {}
-      const funTime = Object.values(funDomains).reduce((sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0), 0)
+      const funTime = Object.values(funDomains).reduce(
+        (sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0),
+        0,
+      )
       return { mainDomain, totalTime, funTime }
     })
 
@@ -74,7 +80,11 @@ function updateWebsiteList(websiteList) {
       domainList.innerHTML = `
         <div class="domain-item">
           <div class="domain-icon">
-            <img class="domain-icon" src="${faviconCache[mainDomain] || getFaviconUrl(mainDomain)}" alt="${mainDomain} icon">
+            <img class="domain-icon" 
+                src="${encodeURI(faviconCache[mainDomain] || getDefaultIconUrl())}"
+                alt=""
+                onerror="this.onerror=null;this.src='${chrome.runtime.getURL("icons/broken_pic.png")}'"
+            >
           </div>
           <div class="domain-info">
             <span class="domain-name">${mainDomain}</span>
@@ -188,6 +198,10 @@ function formatTime(seconds) {
   return parts.join(" ")
 }
 
-function getFaviconUrl(domain) {
-  return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`
+// function getFaviconUrl(domain) {
+//   return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`
+// }
+
+function getDefaultIconUrl() {
+  return chrome.runtime.getURL(`icons/broken_pic.png`)
 }

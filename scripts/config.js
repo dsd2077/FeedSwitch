@@ -51,14 +51,11 @@ export const SITE_CONFIG = {
     ],
   },
   "juejin.cn": {
-    targets: ["div.sidebar-block.shadow", "div.top-banners-container"],
-    extraCheck: (root) => {
-      // 删除特定图片
-      const targetImage = root.querySelector('img[src="https://p6-piu.byteimg.com/tos-cn-i-8jisjyls3a/fa501ba562f845bcb9d5207fdec8886f~tplv-8jisjyls3a-image.image"]')
-      if (targetImage) {
-        targetImage.remove()
-      }
-    },
+    targets: [
+      "div.sidebar-block.shadow",
+      "div.top-banners-container",
+      "#juejin > div:nth-child(1) > div > main > div > div.main-area.article-area > article > img",
+    ],
   },
   // "www.xiaohongshu.com": {
   //   targets: ["div.with-side-bar.main-content"],
