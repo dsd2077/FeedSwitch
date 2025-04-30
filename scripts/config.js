@@ -1,6 +1,13 @@
 export const SITE_CONFIG = {
   "bilibili.com": {
-    targets: ["main.bili-feed4-layout", "div.bili-header__channel", "div.header-channel", "div.trending", "div.adblock-tips"],
+    targets: [
+      "main.bili-feed4-layout",
+      "div.bili-header__channel",
+      "div.header-channel",
+      "#i_cecream > div.bili-feed4 > div.bili-header.large-header > div.bili-header__bar > div > div > div > div.trending > div.trendings-double",
+      "#i_cecream > div.bili-feed4 > div.bili-header.large-header > div.bili-header__bar > div > div > div > div.trending > div",
+      "div.adblock-tips",
+    ],
     extraCheck: (root) => {
       const searchInput = root.querySelector(".nav-search-input")
       if (searchInput?.placeholder) {
@@ -57,9 +64,9 @@ export const SITE_CONFIG = {
       "#juejin > div:nth-child(1) > div > main > div > div.main-area.article-area > article > img",
     ],
   },
-  // "www.xiaohongshu.com": {
-  //   targets: ["div.with-side-bar.main-content"],
-  // },
+  "xiaohongshu.com": {
+    targets: ["#exploreFeeds", "#mfContainer > div.channel-container"],
+  },
   "jianshu.com": {
     targets: ["aside._2OwGUo"],
   },
