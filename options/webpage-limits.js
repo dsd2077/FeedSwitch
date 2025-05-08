@@ -220,7 +220,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
       .map(
         (item) => `<div class="limit-item" data-id="${item.id}"style="...">
           ${item.websites.join(", ")} - 每日限制：${item.dailyLimit}分钟
-      </div>`
+      </div>`,
       )
       .join("")
 

@@ -157,7 +157,9 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 })
 
 /* ****************************************
+数据结构变化过程：
 {
+// 1
   "websiteTimesDaily": {
     "bilibili.com": {
       "www.bilibili.com": 3600,
@@ -165,13 +167,13 @@ chrome.tabs.onRemoved.addListener((tabId) => {
       "account.bilibili.com": 1800
     },
   }
-
+// 2
   "websiteTimesDaily": {
     "bilibili.com": {
       "www.bilibili.com": {
         "https://www.bilibili.com/video/BV1E55BztEzX/?spm_id_from=333.1007.tianma.1-2-2.click&vd_source=836e2cbc96ae0060340beef17d34df94": {
           "time": 1200,
-          title: "B站视频标题",
+          "title": "B站视频标题",
         },
       },
       "search.bilibili.com": {
@@ -186,9 +188,40 @@ chrome.tabs.onRemoved.addListener((tabId) => {
       },
     },
   }
-}
 
+// 3
+ "websitesTime-2025-05-07": {
+    "bilibili.com": {
+      "www.bilibili.com": {
+        "https://www.bilibili.com/video/BV1E55BztEzX/?spm_id_from=333.1007.tianma.1-2-2.click&vd_source=836e2cbc96ae0060340beef17d34df94": {
+          "time": 1200,
+          "title": "B站视频标题",
+          "funTime": 600
+        },
+      },
+      "search.bilibili.com": {
+        "https://search.bilibili.com/all?keyword=chrome%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%8C%96%E9%97%AE%E9%A2%98&from_source=webtop_search&spm_id_from=333.1007&search_source=3" : {  
+          "time": 1200,
+          "title": "chrome插件开发工程化问题-哔哩哔哩_bilibili",
+          "funTime": 20
+        },
+        "https://www.bilibili.com/video/BV1E55BztEzX/?spm_id_from=333.1007.tianma.1-2-2.click&vd_source=836e2cbc96ae0060340beef17d34df94": {
+          "time": 1200,
+          "title": "B站视频标题",
+          "funTime": 20
+        }
+      },
+    },
+  }
+}
 **************************************** */
+const websitesTimeKey = generateWebsitesTimeKey()
+const hourlyUsageKey = generateHourlyUsageKey()
+chrome.storage.local.get(["focus", websitesTimeKey, hourlyUsageKey], (result) => {
+  const websitesTimeDaily = result[websitesTimeKey] || {}
+  const hourlyUsage = result[hourlyUsageKey] || Array(24).fill(0)
+  console.log("Initialized storage:", websitesTimeDaily, hourlyUsage)
+})
 
 function updateDomainTime(pageUrl, seconds, title, type) {
   const normalizedUrl = normalizeUrl(pageUrl)
@@ -196,70 +229,67 @@ function updateDomainTime(pageUrl, seconds, title, type) {
   if (!isSystemActive || !isBrowserFocused || !normalizedUrl || seconds <= 0 || !isValidDomain(domain)) return
 
   const mainDomain = parseDomain(domain)
-  chrome.storage.local.get(["focus", "websiteTimesDaily", "websiteTimesDailyFun"], (result) => {
-    const websiteTimesDaily = result.websiteTimesDaily || {}
-    const websiteTimesDailyFun = result.websiteTimesDailyFun || {}
-    if (websiteTimesDaily[mainDomain]) {
+  const websitesTimeKey = generateWebsitesTimeKey()
+  const hourlyUsageKey = generateHourlyUsageKey()
+  chrome.storage.local.get(["focus", websitesTimeKey, hourlyUsageKey], (result) => {
+    const websitesTimeDaily = result[websitesTimeKey] || {}
+    const hourlyUsage = result[hourlyUsageKey] || Array(24).fill(0)
+    if (websitesTimeDaily[mainDomain]) {
       console.log(`updateDomainTime
         "type : ", ${type}
         "normalizedUrl : ", ${normalizedUrl}
         "title : ", ${title}
-        "previous time : ", ${websiteTimesDaily?.[mainDomain]?.[domain]?.[normalizedUrl]?.time || 0}
+        "previous time : ", ${websitesTimeDaily?.[mainDomain]?.[domain]?.[normalizedUrl]?.time || 0}
         `)
     }
     // 初始化嵌套结构
-    websiteTimesDaily[mainDomain] = websiteTimesDaily[mainDomain] || {}
-    websiteTimesDaily[mainDomain][domain] = websiteTimesDaily[mainDomain][domain] || {}
-
+    websitesTimeDaily[mainDomain] = websitesTimeDaily[mainDomain] || {}
+    websitesTimeDaily[mainDomain][domain] = websitesTimeDaily[mainDomain][domain] || {}
     // 更新时间并记录标题
-    websiteTimesDaily[mainDomain][domain][normalizedUrl] = {
-      time: (websiteTimesDaily[mainDomain][domain][normalizedUrl]?.time || 0) + seconds,
-      title: title || "",
+    const existingEntry = websitesTimeDaily[mainDomain][domain][normalizedUrl] || {}
+    const entry = {
+      time: (existingEntry.time || 0) + seconds,
+      title: title || existingEntry.title || "",
     }
 
+    // 更新 funTime（仅在非 focus 状态下）
     if (!result.focus) {
-      websiteTimesDailyFun[mainDomain] = websiteTimesDailyFun[mainDomain] || {}
-      websiteTimesDailyFun[mainDomain][domain] = websiteTimesDailyFun[mainDomain][domain] || {}
-      websiteTimesDailyFun[mainDomain][domain][normalizedUrl] = {
-        time: (websiteTimesDailyFun[mainDomain][domain][normalizedUrl]?.time || 0) + seconds,
-        title: title || "",
-      }
+      entry.funTime = (existingEntry.funTime || 0) + seconds
     }
+
+    // 将更新后的 entry 写回
+    websitesTimeDaily[mainDomain][domain][normalizedUrl] = entry
+    // 更新小时使用情况
+    const currentHour = new Date().getHours()
+    hourlyUsage[currentHour] = (hourlyUsage[currentHour] || 0) + seconds
 
     chrome.storage.local.set({
-      websiteTimesDaily,
-      websiteTimesDailyFun,
+      [websitesTimeKey]: websitesTimeDaily,
+      [hourlyUsageKey]: hourlyUsage,
     })
   })
 }
 
 function resetDailyAndAccumulateWeekly() {
-  chrome.storage.local.get(["websiteTimesDaily", "websiteTimesWeekly"], (result) => {
-    const websiteTimesDaily = result.websiteTimesDaily || {}
-    const websiteTimesWeekly = result.websiteTimesWeekly || {}
-
-    // 深度合并每日数据到周数据
-    for (const [mainDomain, subDomains] of Object.entries(websiteTimesDaily)) {
-      websiteTimesWeekly[mainDomain] = websiteTimesWeekly[mainDomain] || {}
-
-      for (const [subDomain, pages] of Object.entries(subDomains)) {
-        websiteTimesWeekly[mainDomain][subDomain] = websiteTimesWeekly[mainDomain][subDomain] || {}
-
-        for (const [normalizedUrl, pageInfo] of Object.entries(pages)) {
-          websiteTimesWeekly[mainDomain][subDomain][normalizedUrl] = {
-            time: (websiteTimesWeekly[mainDomain][subDomain][normalizedUrl]?.time || 0) + pageInfo.time,
-            title: pageInfo.title,
-          }
-        }
-      }
-    }
-
-    chrome.storage.local.set({
-      websiteTimesDaily: {},
-      websiteTimesDailyFun: {},
-      websiteTimesWeekly: websiteTimesWeekly,
-    })
-  })
+  // chrome.storage.local.get(["websiteTimesDaily"], (result) => {
+  // 深度合并每日数据到周数据
+  // for (const [mainDomain, subDomains] of Object.entries(websiteTimesDaily)) {
+  //   websiteTimesWeekly[mainDomain] = websiteTimesWeekly[mainDomain] || {}
+  //   for (const [subDomain, pages] of Object.entries(subDomains)) {
+  //     websiteTimesWeekly[mainDomain][subDomain] = websiteTimesWeekly[mainDomain][subDomain] || {}
+  //     for (const [normalizedUrl, pageInfo] of Object.entries(pages)) {
+  //       websiteTimesWeekly[mainDomain][subDomain][normalizedUrl] = {
+  //         time: (websiteTimesWeekly[mainDomain][subDomain][normalizedUrl]?.time || 0) + pageInfo.time,
+  //         title: pageInfo.title,
+  //       }
+  //     }
+  //   }
+  // }
+  // chrome.storage.local.set({
+  //   websiteTimesDaily: {},
+  //   websiteTimesDailyFun: {},
+  // })
+  // })
 }
 
 // 新增函数：设置每日凌晨的闹钟
@@ -399,4 +429,21 @@ function normalizeUrl(url) {
   } catch {
     return url
   }
+}
+
+function getTodayDate() {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, "0") // 月份从0开始，需要+1并补零
+  const day = String(today.getDate()).padStart(2, "0") // 日期补零
+
+  return `${year}-${month}-${day}`
+}
+
+function generateWebsitesTimeKey() {
+  return "websitesTime-" + getTodayDate()
+}
+
+function generateHourlyUsageKey() {
+  return "hourlyUsage-" + getTodayDate()
 }

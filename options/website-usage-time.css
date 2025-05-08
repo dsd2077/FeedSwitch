@@ -1,0 +1,42 @@
+.chart-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.chart-wrapper {
+  flex: 1; /* 等分剩余空间 */
+  min-width: 0;
+  position: relative;
+  height: 300px; /* 适当增加高度 */
+  width: 600px;
+}
+
+.chart-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-section {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column; /* 采用上下布局 */
+  align-items: center;
+}
+
+.info-item span {
+  margin: 0 5px;
+}
+
+button {
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+}

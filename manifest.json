@@ -28,7 +28,15 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.bilibili.com/*", "*://*.baidu.com/*", "*://*.zhihu.com/*", "*://*.blog.csdn.net/*", "*://*.juejin.cn/*", "*://*.xiaohongshu.com/*", "*://*.jianshu.com/*"],
+      "matches": [
+        "*://*.bilibili.com/*",
+        "*://*.baidu.com/*",
+        "*://*.zhihu.com/*",
+        "*://*.blog.csdn.net/*",
+        "*://*.juejin.cn/*",
+        "*://*.xiaohongshu.com/*",
+        "*://*.jianshu.com/*"
+      ],
       "js": ["dist/content.js"],
       "run_at": "document_start"
     }
@@ -42,5 +50,11 @@
       },
       "description": "Toggle time tracking switch"
     }
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["node_modules/chart.js/dist/*.js", "node_modules/chart.js/dist/*.map"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

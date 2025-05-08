@@ -42,22 +42,21 @@ document.querySelector("#go-to-options").addEventListener("click", function () {
 })
 
 function updateWebsiteList(websiteList) {
-  chrome.storage.local.get(["websiteTimesDaily", "websiteTimesDailyFun", "faviconCache"], (result) => {
-    const websiteTimesDaily = result.websiteTimesDaily || {}
-    const websiteTimesDailyFun = result.websiteTimesDailyFun || {}
+  const websitesTimeKey = generateWebsitesTimeKey()
+  chrome.storage.local.get([websitesTimeKey, "faviconCache"], (result) => {
+    const websitesTimeDaily = result[websitesTimeKey] || {}
     const faviconCache = result.faviconCache || {}
 
     websiteList.innerHTML = ""
 
     // 1. 计算主域名总时长
-    const domainTotals = Object.entries(websiteTimesDaily).map(([mainDomain, subDomains]) => {
+    const domainTotals = Object.entries(websitesTimeDaily).map(([mainDomain, subDomains]) => {
       const totalTime = Object.values(subDomains).reduce(
         (sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0),
         0,
       )
-      const funDomains = websiteTimesDailyFun[mainDomain] || {}
-      const funTime = Object.values(funDomains).reduce(
-        (sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0),
+      const funTime = Object.values(subDomains).reduce(
+        (sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + (pageInfo.funTime || 0), 0),
         0,
       )
       return { mainDomain, totalTime, funTime }
@@ -114,7 +113,7 @@ function updateWebsiteList(websiteList) {
           allSubLists.forEach((list) => list.classList.toggle("expanded"))
           return
         }
-        const subDomains = websiteTimesDaily[mainDomain]
+        const subDomains = websitesTimeDaily[mainDomain]
         // 计算二级域名总时长并排序
         const sortedSubDomains = Object.entries(subDomains)
           .map(([subDomain, pages]) => {
@@ -204,4 +203,17 @@ function formatTime(seconds) {
 
 function getDefaultIconUrl() {
   return chrome.runtime.getURL(`icons/broken_pic.png`)
+}
+
+function getTodayDate() {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, "0") // 月份从0开始，需要+1并补零
+  const day = String(today.getDate()).padStart(2, "0") // 日期补零
+
+  return `${year}-${month}-${day}`
+}
+
+function generateWebsitesTimeKey() {
+  return "websitesTime-" + getTodayDate()
 }

@@ -1,6 +1,4 @@
-// import psl from "psl"
 import psl from "../node_modules/psl/dist/psl.mjs"
-// import psl from "./libs/psl.mjs"
 let cachedMap = new Map()
 import { SITE_CONFIG } from "./config.js"
 // 通用移除函数
@@ -33,9 +31,10 @@ function removeWebsiteFeed(hostname) {
 
 // 通用检查逻辑
 function checkAndRemove() {
-  chrome.storage.local.get(["focus", "websiteTimesDailyFun"], (localResult) => {
+  const websitesTimeKey = generateWebsitesTimeKey()
+  chrome.storage.local.get(["focus", websitesTimeKey], (localResult) => {
     chrome.storage.sync.get(["limits"], (syncResult) => {
-      const shouldRemove = localResult.focus === true || checkTimeLimit(location.hostname, localResult.websiteTimesDailyFun, syncResult.limits)
+      const shouldRemove = localResult.focus === true || checkTimeLimit(location.hostname, localResult[websitesTimeKey], syncResult.limits)
       if (shouldRemove) {
         removeWebsiteFeed(location.hostname)
       }
@@ -59,7 +58,14 @@ function checkTimeLimit(domain, timeData = {}, limits = {}) {
       // 获取该主域名下的所有子域名时间对象
       const subDomains = timeData[mainDomain] || {}
       // 累加所有子域名的时间（单位：秒）
-      const domainTotal = Object.values(subDomains).reduce((sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0), 0)
+      // const domainTotal = Object.values(subDomains).reduce(
+      //   (sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + pageInfo.time, 0),
+      //   0,
+      // )
+      const domainTotal = Object.values(subDomains).reduce(
+        (sum, pages) => sum + Object.values(pages).reduce((pageSum, pageInfo) => pageSum + (pageInfo.funTime || 0), 0),
+        0,
+      )
       return sum + domainTotal
     }, 0)
     console.log(`domain:[${domain}] groupUsage:${groupUsage}`)
@@ -89,7 +95,7 @@ if (SITE_CONFIG?.[parseDomain(location.hostname)]) {
 }
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "local" && (changes.focus || changes.websiteTimesDailyFun)) {
+  if (areaName === "local" && changes.focus) {
     checkAndRemove()
   }
 })
@@ -129,4 +135,13 @@ function parseDomain(domain) {
     console.error("Domain parse error:", domain, e)
     return domain
   }
+}
+
+function generateWebsitesTimeKey() {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, "0") // 月份从0开始，需要+1并补零
+  const day = String(today.getDate()).padStart(2, "0") // 日期补零
+
+  return `websitesTime-${year}-${month}-${day}`
 }

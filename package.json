@@ -15,6 +15,7 @@
     "watch": "vite build --watch"
   },
   "dependencies": {
+    "chart.js": "^4.4.9",
     "chrome-types": "^0.1.347",
     "psl": "^1.15.0"
   }
