@@ -40,3 +40,10 @@ button {
   color: #007bff;
   cursor: pointer;
 }
+
+/* 禁用状态的按钮样式 */
+#nextDay:disabled {
+  color: #666; /* 灰色文字 */
+  cursor: not-allowed; /* 显示不可点击的光标 */
+  opacity: 1; /* 防止默认透明度影响颜色表现 */
+}
