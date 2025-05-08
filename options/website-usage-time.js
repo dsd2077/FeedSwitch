@@ -292,23 +292,76 @@
   function createChartConfig(type) {
     const labels = type === "weekly" ? ["周日", "周一", "周二", "周三", "周四", "周五", "周六"] : Array.from({ length: 24 }, (_, i) => i.toString())
 
-    const data = type === "weekly" ? state.weeklyData : state.dailyData
+    let data = type === "weekly" ? state.weeklyData : state.dailyData
+
+    // 将 daily 数据从秒转换为分钟
+    if (type === "daily") {
+      data = data.map((seconds) => seconds / 60)
+    }
+
+    // 将 weekly 数据从秒转换为小时
+    if (type === "weekly") {
+      data = data.map((seconds) => seconds / 3600)
+    }
+
+    // 判断是否显示纵轴标尺
+    const showYAxis = data.some((value) => value !== 0)
 
     return {
       type: "bar",
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: { y: { beginAtZero: true } },
+        scales: {
+          y: {
+            beginAtZero: true,
+            display: showYAxis,
+            grid: {
+              display: true,
+            },
+            ticks: {
+              display: true,
+              callback: function (value, index, values) {
+                return type === "weekly" ? `${value}h` : `${value}m`
+              },
+              maxTicksLimit: 10, // 最多显示 10 个刻度
+            },
+          },
+          x: {
+            grid: {
+              display: true, // 移除纵轴的网格线
+              drawTicks: true, // 添加小刻线
+              tickLength: 10, // 小刻线长度
+              drawOnChartArea: false, // 不绘制在图表区域
+              offset: true,
+            },
+          },
+        },
       },
       data: {
         labels,
         datasets: [
           {
-            label: "使用时长（分钟）",
+            label: type === "weekly" ? "使用时长（小时）" : "使用时长（分钟）",
             data,
-            backgroundColor: "rgba(75, 192, 192, 0.2)",
-            borderColor: "rgba(75, 192, 192, 1)",
+            backgroundColor: [
+              "rgba(255, 99, 132, 0.2)",
+              "rgba(255, 159, 64, 0.2)",
+              "rgba(255, 205, 86, 0.2)",
+              "rgba(75, 192, 192, 0.2)",
+              "rgba(54, 162, 235, 0.2)",
+              "rgba(153, 102, 255, 0.2)",
+              "rgba(201, 203, 207, 0.2)",
+            ],
+            borderColor: [
+              "rgb(255, 99, 132)",
+              "rgb(255, 159, 64)",
+              "rgb(255, 205, 86)",
+              "rgb(75, 192, 192)",
+              "rgb(54, 162, 235)",
+              "rgb(153, 102, 255)",
+              "rgb(201, 203, 207)",
+            ],
             borderWidth: 1,
           },
         ],
