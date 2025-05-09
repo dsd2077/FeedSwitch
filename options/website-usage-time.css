@@ -1,7 +1,7 @@
 .chart-container {
   display: flex;
-  gap: 20px;
-  padding: 20px;
+  gap: 2rem;
+  padding: 1rem;
   box-sizing: border-box;
 }
 
@@ -10,12 +10,6 @@
   min-width: 0;
   position: relative;
   height: 300px; /* 适当增加高度 */
-  width: 600px;
-}
-
-.chart-container {
-  display: flex;
-  justify-content: space-between;
 }
 
 .info-section {
@@ -46,4 +40,21 @@ button {
   color: #666; /* 灰色文字 */
   cursor: not-allowed; /* 显示不可点击的光标 */
   opacity: 1; /* 防止默认透明度影响颜色表现 */
+}
+
+#nextWeek:disabled {
+  color: #666;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* 通用卡片样式 */
+.weeklyData,
+.dailyData {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  flex: 1;
+  min-width: 300px; /* 防止过小屏幕内容挤压 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

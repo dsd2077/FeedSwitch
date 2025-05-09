@@ -14,6 +14,7 @@
   // 初始化应用
   function init() {
     document.getElementById("nextDay").disabled = true
+    document.getElementById("nextWeek").disabled = true
     initializeDateUI()
     setupEventListeners()
     loadDataAndRender()
@@ -44,25 +45,56 @@
   function setupEventListeners() {
     document.getElementById("prevWeek")?.addEventListener("click", () => {
       state.currentWeek = getPreviousWeek()
+      const lastDayOfSelectedWeek = state.currentWeek[state.currentWeek.length - 1]
+      const today = new Date()
+      // 设置 currentDate 为周日 或 今天（如果周日大于今天）
+      state.currentDate = lastDayOfSelectedWeek > today ? new Date(today) : new Date(lastDayOfSelectedWeek)
       updateDateDisplay("weeklyDateRange", state.currentWeek)
+      updateDateDisplay("dailyDate", state.currentDate)
+      document.getElementById("nextWeek").disabled = false
       loadDataAndRender()
     })
 
     document.getElementById("nextWeek")?.addEventListener("click", () => {
       state.currentWeek = getNextWeek()
+      const lastDayOfSelectedWeek = state.currentWeek[state.currentWeek.length - 1]
+      const today = new Date()
+
+      // 设置 currentDate 为周日 或 今天（如果周日大于今天）
+      state.currentDate = lastDayOfSelectedWeek > today ? new Date(today) : new Date(lastDayOfSelectedWeek)
+
       updateDateDisplay("weeklyDateRange", state.currentWeek)
+      updateDateDisplay("dailyDate", state.currentDate)
+
       loadDataAndRender()
+
+      if (isThisWeek()) {
+        document.getElementById("nextWeek").disabled = true
+      }
     })
 
     document.getElementById("prevDay")?.addEventListener("click", () => {
       state.currentDate = getPreviousDay(state.currentDate)
       updateDateDisplay("dailyDate", state.currentDate)
+
+      // 判断是否需要切换周
+      if (!isDateInWeek(state.currentDate, state.currentWeek)) {
+        state.currentWeek = getPreviousWeek()
+        updateDateDisplay("weeklyDateRange", state.currentWeek)
+      }
       loadDataAndRender()
       document.getElementById("nextDay").disabled = false
     })
 
     document.getElementById("nextDay")?.addEventListener("click", () => {
       state.currentDate = getNextDay(state.currentDate)
+
+      // 判断是否需要切换周
+      if (!isDateInWeek(state.currentDate, state.currentWeek)) {
+        state.currentWeek = getNextWeek()
+        updateDateDisplay("weeklyDateRange", state.currentWeek)
+      }
+
       updateDateDisplay("dailyDate", state.currentDate)
       loadDataAndRender()
       if (isToday(state.currentDate)) {
@@ -70,23 +102,33 @@
       }
     })
   }
+  function isThisWeek() {
+    const today = new Date()
+    const day1 = new Date(today.setDate(today.getDate() - today.getDay()))
+    const day2 = state.currentWeek[0]
+    return day1.getFullYear() === day2.getFullYear() && day1.getMonth() === day2.getMonth() && day1.getDate() === day2.getDate()
+  }
+
+  // 判断日期是否在当前周范围内
+  function isDateInWeek(date, weekDates) {
+    const targetTime = date.getTime()
+    return targetTime >= weekDates[0].getTime() && targetTime <= weekDates[weekDates.length - 1].getTime()
+  }
 
   function getPreviousDay(date) {
     const prevDate = new Date(date)
     prevDate.setDate(prevDate.getDate() - 1)
     return prevDate
   }
-
-  function isToday(date) {
-    const today = new Date()
-    return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate()
-  }
   function getNextDay(date) {
     const nextDate = new Date(date)
     nextDate.setDate(nextDate.getDate() + 1)
     return nextDate
   }
-
+  function isToday(date) {
+    const today = new Date()
+    return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate()
+  }
   // 加载数据并渲染
   function loadDataAndRender() {
     // 为每一天生成 dailyKey
@@ -125,7 +167,7 @@
   }
 
   function calculateAverageDuration(data) {
-    return calculateTotalDuration(data) / data.length
+    return Math.round(calculateTotalDuration(data) / data.length)
   }
 
   // 创建/更新图表
@@ -158,12 +200,12 @@
 
     // 将 daily 数据从秒转换为分钟
     if (type === "daily") {
-      data = data.map((seconds) => seconds / 60)
+      data = data.map((seconds) => Math.round(seconds / 60))
     }
 
     // 将 weekly 数据从秒转换为小时
     if (type === "weekly") {
-      data = data.map((seconds) => seconds / 3600)
+      data = data.map((seconds) => Math.round((seconds / 3600) * 10) / 10)
     }
 
     // 判断是否显示纵轴标尺
@@ -240,20 +282,9 @@
     }
     return dates
   }
-  function getWeekDates(weekRange) {
-    // 根据周范围返回所有日期
-    const [start, end] = weekRange.split(" - ")
-    const dates = []
-    const currentDate = new Date(start)
-    while (currentDate <= new Date(end)) {
-      dates.push(formatDate(currentDate))
-      currentDate.setDate(currentDate.getDate() + 1)
-    }
-    return dates
-  }
 
   function getPreviousWeek() {
-    const firstDay = state.weekRange[0]
+    const firstDay = state.currentWeek[0]
     // 返回上一周范围
     const date = new Date(firstDay)
     date.setDate(date.getDate() - 7)
@@ -261,7 +292,7 @@
   }
 
   function getNextWeek() {
-    const firstDay = state.weekRange[0]
+    const firstDay = state.currentWeek[0]
 
     // 返回下一周范围
     const date = new Date(firstDay)
