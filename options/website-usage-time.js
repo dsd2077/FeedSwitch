@@ -3,8 +3,8 @@
   const state = {
     currentDate: new Date(),
     currentWeek: getWeekDatesArray(new Date()),
-    weeklyData: [],
-    dailyData: [],
+    weeklyData: {},
+    dailyData: {},
     weeklyChart: null,
     dailyChart: null,
   }
@@ -137,13 +137,30 @@
     // 获取所有相关数据
     chrome.storage.local.get(dailyKeys, (result) => {
       // 聚合周数据（每个元素代表一天的总时长）
-      state.weeklyData = state.currentWeek.map((date) => {
-        const dayData = result[`hourlyUsage-${getFormattedDate(date)}`] || []
-        return dayData.reduce((acc, curr) => acc + curr, 0)
+      const weeklyDataTotal = state.currentWeek.map((date) => {
+        const hourlyUsage = result[`hourlyUsage-${getFormattedDate(date)}`] || {
+          total: Array(24).fill(0),
+          fun: Array(24).fill(0),
+        }
+        return hourlyUsage.total.reduce((acc, curr) => acc + curr, 0)
       })
+      const weekDataFun = state.currentWeek.map((date) => {
+        const hourlyUsage = result[`hourlyUsage-${getFormattedDate(date)}`] || {
+          total: Array(24).fill(0),
+          fun: Array(24).fill(0),
+        }
+        return hourlyUsage.fun.reduce((acc, curr) => acc + curr, 0)
+      })
+      state.weeklyData = {
+        total: weeklyDataTotal,
+        fun: weekDataFun,
+      }
 
       // 获取当前日期的 daily 数据
-      state.dailyData = result[`hourlyUsage-${getFormattedDate(state.currentDate)}`] || Array(24).fill(0)
+      state.dailyData = result[`hourlyUsage-${getFormattedDate(state.currentDate)}`] || {
+        total: Array(24).fill(0), // 总时间数组
+        fun: Array(24).fill(0), // 娱乐时间数组
+      }
 
       // 更新统计信息和图表
       updateStatistics()
@@ -163,11 +180,11 @@
   }
 
   function calculateTotalDuration(data) {
-    return data.reduce((acc, curr) => acc + curr, 0)
+    return data.total.reduce((acc, curr) => acc + curr, 0)
   }
 
   function calculateAverageDuration(data) {
-    return Math.round(calculateTotalDuration(data) / data.length)
+    return Math.round(calculateTotalDuration(data) / data.total.length)
   }
 
   // 创建/更新图表
@@ -200,12 +217,14 @@
 
     // 将 daily 数据从秒转换为分钟
     if (type === "daily") {
-      data = data.map((seconds) => Math.round(seconds / 60))
+      data.total = data.total.map((seconds) => Math.round(seconds / 60))
+      data.fun = data.fun.map((seconds) => Math.round(seconds / 60))
     }
 
     // 将 weekly 数据从秒转换为小时
     if (type === "weekly") {
-      data = data.map((seconds) => Math.round((seconds / 3600) * 10) / 10)
+      data.total = data.total.map((seconds) => Math.round((seconds / 3600) * 10) / 10)
+      data.fun = data.fun.map((seconds) => Math.round((seconds / 3600) * 10) / 10)
     }
 
     // 确定“今天”的索引
@@ -215,20 +234,27 @@
     }
 
     // 创建“今天”的数据集
-    const todayData = Array(data.length).fill(0)
-    const maxValue = Math.max(...data)
+    const todayData = Array(data.total.length).fill(0)
+    const maxValue = Math.max(...data.total)
     if (todayIndex !== -1) {
       todayData[todayIndex] = maxValue + maxValue * 0.02
     }
 
     // 判断是否显示纵轴标尺
-    const showYAxis = data.some((value) => value !== 0)
-
+    const showYAxis = data.total.some((value) => value !== 0)
     // 构建 datasets
     const datasets = [
       {
-        label: type === "weekly" ? "使用时长（小时）" : "使用时长（分钟）",
-        data,
+        label: "娱乐",
+        data: data.fun,
+        borderWidth: 1,
+        backgroundColor: "#ff6b00",
+        barPercentage: type === "weekly" ? 0.5 : 0.9,
+      },
+
+      {
+        label: "专注",
+        data: data.total,
         borderWidth: 1,
         backgroundColor: "rgba(0, 200, 83, 0.5)",
         barPercentage: type === "weekly" ? 0.5 : 0.9,
@@ -254,7 +280,7 @@
         maintainAspectRatio: false,
         plugins: {
           legend: {
-            display: false, // 👈 禁用图例
+            enabled: false,
           },
           tooltip: {
             // 使用 filter 过滤掉 label 匹配的数据集

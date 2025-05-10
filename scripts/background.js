@@ -215,13 +215,13 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   }
 }
 **************************************** */
-const websitesTimeKey = generateWebsitesTimeKey()
-const hourlyUsageKey = generateHourlyUsageKey()
-chrome.storage.local.get(["focus", websitesTimeKey, hourlyUsageKey], (result) => {
-  const websitesTimeDaily = result[websitesTimeKey] || {}
-  const hourlyUsage = result[hourlyUsageKey] || Array(24).fill(0)
-  console.log("Initialized storage:", websitesTimeDaily, hourlyUsage)
-})
+// const websitesTimeKey = generateWebsitesTimeKey()
+// const hourlyUsageKey = generateHourlyUsageKey()
+// chrome.storage.local.get(["focus", websitesTimeKey, hourlyUsageKey], (result) => {
+//   const websitesTimeDaily = result[websitesTimeKey] || {}
+//   const hourlyUsage = result[hourlyUsageKey] || Array(24).fill(0)
+//   console.log("Initialized storage:", websitesTimeDaily, hourlyUsage)
+// })
 
 function updateDomainTime(pageUrl, seconds, title, type) {
   const normalizedUrl = normalizeUrl(pageUrl)
@@ -233,7 +233,10 @@ function updateDomainTime(pageUrl, seconds, title, type) {
   const hourlyUsageKey = generateHourlyUsageKey()
   chrome.storage.local.get(["focus", websitesTimeKey, hourlyUsageKey], (result) => {
     const websitesTimeDaily = result[websitesTimeKey] || {}
-    const hourlyUsage = result[hourlyUsageKey] || Array(24).fill(0)
+    const hourlyUsage = result[hourlyUsageKey] || {
+      total: Array(24).fill(0), // 总时间数组
+      fun: Array(24).fill(0), // 娱乐时间数组
+    }
     if (websitesTimeDaily[mainDomain]) {
       console.log(`updateDomainTime
         "type : ", ${type}
@@ -253,15 +256,17 @@ function updateDomainTime(pageUrl, seconds, title, type) {
     }
 
     // 更新 funTime（仅在非 focus 状态下）
+    const currentHour = new Date().getHours()
+
     if (!result.focus) {
       entry.funTime = (existingEntry.funTime || 0) + seconds
+      hourlyUsage.fun[currentHour] = (hourlyUsage.fun[currentHour] || 0) + seconds
     }
 
     // 将更新后的 entry 写回
     websitesTimeDaily[mainDomain][domain][normalizedUrl] = entry
     // 更新小时使用情况
-    const currentHour = new Date().getHours()
-    hourlyUsage[currentHour] = (hourlyUsage[currentHour] || 0) + seconds
+    hourlyUsage.total[currentHour] = (hourlyUsage.total[currentHour] || 0) + seconds
 
     chrome.storage.local.set({
       [websitesTimeKey]: websitesTimeDaily,
