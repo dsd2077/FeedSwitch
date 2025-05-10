@@ -97,7 +97,7 @@
 
       updateDateDisplay("dailyDate", state.currentDate)
       loadDataAndRender()
-      if (isToday(state.currentDate)) {
+      if (isSameDay(state.currentDate, new Date())) {
         document.getElementById("nextDay").disabled = true
       }
     })
@@ -125,9 +125,9 @@
     nextDate.setDate(nextDate.getDate() + 1)
     return nextDate
   }
-  function isToday(date) {
-    const today = new Date()
-    return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate()
+
+  function isSameDay(date1, date2) {
+    return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth() && date1.getDate() === date2.getDate()
   }
   // 加载数据并渲染
   function loadDataAndRender() {
@@ -208,14 +208,61 @@
       data = data.map((seconds) => Math.round((seconds / 3600) * 10) / 10)
     }
 
+    // 确定“今天”的索引
+    let todayIndex = -1
+    if (type === "weekly") {
+      todayIndex = state.currentWeek.findIndex((date) => isSameDay(date, state.currentDate))
+    }
+
+    // 创建“今天”的数据集
+    const todayData = Array(data.length).fill(0)
+    const maxValue = Math.max(...data)
+    if (todayIndex !== -1) {
+      todayData[todayIndex] = maxValue + maxValue * 0.02
+    }
+
     // 判断是否显示纵轴标尺
     const showYAxis = data.some((value) => value !== 0)
+
+    // 构建 datasets
+    const datasets = [
+      {
+        label: type === "weekly" ? "使用时长（小时）" : "使用时长（分钟）",
+        data,
+        borderWidth: 1,
+        backgroundColor: "rgba(0, 200, 83, 0.5)",
+        barPercentage: type === "weekly" ? 0.5 : 0.9,
+      },
+    ]
+    // 只在 weekly 图表上添加浅色条形
+    if (type === "weekly") {
+      datasets.push({
+        label: "今天",
+        data: todayData,
+        borderWidth: 0,
+        backgroundColor: "rgba(0, 200, 83, 0.1)", // 浅色条形
+        barPercentage: 1, // 更宽的条形
+        categoryPercentage: 1,
+        showTooltip: true, // 默认为 true，也可以显式设置
+      })
+    }
 
     return {
       type: "bar",
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false, // 👈 禁用图例
+          },
+          tooltip: {
+            // 使用 filter 过滤掉 label 匹配的数据集
+            filter: function (tooltipItem) {
+              return tooltipItem.dataset.label !== "今天"
+            },
+          },
+        },
         scales: {
           y: {
             beginAtZero: true,
@@ -237,20 +284,16 @@
               drawTicks: true, // 添加小刻线
               tickLength: 10, // 小刻线长度
               drawOnChartArea: false, // 不绘制在图表区域
-              offset: true,
             },
+            barPercentage: 0.3, // 示例：让条形更窄
+            categoryPercentage: 0.5, // 可选，用于多数据集的情况
+            stacked: true,
           },
         },
       },
       data: {
         labels,
-        datasets: [
-          {
-            label: type === "weekly" ? "使用时长（小时）" : "使用时长（分钟）",
-            data,
-            borderWidth: 1,
-          },
-        ],
+        datasets,
       },
     }
   }
