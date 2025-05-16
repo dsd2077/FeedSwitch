@@ -24,6 +24,7 @@ export const SITE_CONFIG = {
       "div.LoadingBar",
       "div.Card.TopSearch.TopSearch--new",
       "div.css-knqde",
+      "#root > div > main > div > div.Post-Row-Content > div.Post-Row-Content-right.css-1qyytj7",
       // 'div.AutoComplete-group'
     ],
     extraCheck: (root) => {
@@ -43,6 +44,10 @@ export const SITE_CONFIG = {
       const searchMain = root.querySelector("#SearchMain")
       if (searchMain) {
         searchMain.style.width = "1000px" // 设置行内样式优先级更高
+      }
+      const Post_Row_Content_left = document.querySelector("#root > div > main > div > div.Post-Row-Content > div")
+      if (Post_Row_Content_left) {
+        Post_Row_Content_left.style.width = "1000px" // 设置行内样式优先级更高
       }
     },
   },

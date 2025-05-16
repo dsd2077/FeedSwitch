@@ -6,7 +6,6 @@ let websitesTimeCache = null
 let faviconCache = null
 
 document.addEventListener("DOMContentLoaded", () => {
-  const websiteList = document.getElementById("website-list")
   const trackingSwitch = document.getElementById("tracking-switch")
   chrome.storage.local.get(["focus"], (result) => {
     const isEnabled = !!result.focus
@@ -15,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  const websiteList = document.getElementById("website-list")
   updateWebsiteList(websiteList)
 
   // 修改开关变化事件监听
