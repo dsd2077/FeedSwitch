@@ -1,15 +1,13 @@
 .chart-container {
-  display: flex;
+  display: grid;
   gap: 2rem;
   padding: 1rem;
   box-sizing: border-box;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 自适应布局 */
 }
 
 .chart-wrapper {
-  flex: 1; /* 等分剩余空间 */
-  min-width: 0;
-  position: relative;
-  height: 300px; /* 适当增加高度 */
+  height: 300px;
 }
 
 .info-section {
@@ -51,10 +49,200 @@ button {
 /* 通用卡片样式 */
 .weeklyData,
 .dailyData {
+  flex: 1;
+}
+
+.info-chart {
   background: #f8f9fa;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 8px;
   flex: 1;
-  min-width: 300px; /* 防止过小屏幕内容挤压 */
+  /* min-width: 300px; */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+#website-list {
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  padding: 8px;
+  flex: 1;
+  min-width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.domain-list {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: flex-start;
+  padding: 4px 0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  transition: all 0.2s;
+  width: 100%;
+}
+.domain-list.expanded {
+  max-height: 1000px; /* 根据实际内容调整 */
+}
+/* 展开状态旋转箭头 */
+.domain-list.active .domain-item::after {
+  transform: rotate(-90deg);
+}
+
+.domain-item {
+  display: flex;
+  width: 100%;
+  align-items: center; /* 顶部对齐 */
+  gap: 10px;
+  padding: 4px 0;
+}
+.domain-item:hover {
+  background: rgba(0, 0, 0, 0.09);
+  border-radius: 4px;
+}
+/* 添加展开指示箭头 */
+.domain-item::after {
+  content: "◀";
+  color: #999;
+  font-size: 10px;
+  margin-left: auto; /* 靠右显示 */
+  transition: transform 0.2s;
+}
+
+.subdomain-list {
+  padding: 0px 4;
+  margin-left: 30px; /* 图标宽度18+ padding2 + gap10*/
+  position: relative;
+  border-left: 2px solid #eee; /* 添加层级连接线 */
+  max-height: 0;
+  overflow: hidden;
+  padding-left: 12px; /*与连接线的间距*/
+  transition: max-height 0.3s ease-out;
+  width: calc(100% - 30px); /* 保持宽度计算 */
+}
+
+.subdomain-list.expanded {
+  max-height: 1000px; /* 根据实际内容调整 */
+}
+
+.subdomain-item {
+  display: flex;
+  width: calc(100% - 12px);
+  align-items: center; /* 顶部对齐 */
+  padding: 4px 0;
+}
+/* 子域名项 */
+.subdomain-item:hover {
+  background: rgba(0, 0, 0, 0.09);
+  border-radius: 4px;
+}
+
+/* 添加展开指示箭头 */
+.subdomain-item::after {
+  content: "◀";
+  color: #999;
+  font-size: 10px;
+  margin-left: auto; /* 靠右显示 */
+  transition: transform 0.2s;
+}
+
+.subdomain-list.active .subdomain-item::after {
+  transform: rotate(-90deg);
+}
+
+/* 页面项 */
+.page-item:hover {
+  background: rgba(0, 0, 0, 0.09);
+}
+
+.domain-icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+
+.domain-info {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+/* 进度条容器 */
+.progress-bar {
+  display: flex;
+  width: 100%;
+  height: 2px;
+  background: #eee;
+  border-radius: 3px;
+  overflow: hidden;
+  transition: width 0.3s ease;
+  margin-top: 2px;
+}
+
+/* 专注时长部分 */
+.focus-progress {
+  background: #00c853;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* 娱乐时长部分 */
+.fun-progress {
+  background: #ff6b00;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* 调整布局结构 */
+.domain-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.page-list {
+  position: relative;
+  border-left: 2px solid #e0e0e0;
+  width: calc(100% - 30px); /* 继承父级宽度 */
+  padding-left: 12px; /*与连接线的间距*/
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out; /* 缺少过渡效果定义 */
+}
+.page-list.expanded {
+  max-height: 500px; /* 根据实际内容高度调整 */
+}
+
+.domain-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.subdomain-name {
+  font-size: 14px;
+  color: #666;
+}
+
+.page-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-width: 0; /* 关键属性：允许内容收缩 */
+}
+
+.page-title {
+  min-width: 0; /* 关键属性：允许文本截断 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  color: #888;
+}
+
+.page-time {
+  flex-shrink: 0;
+  margin-left: auto;
 }
