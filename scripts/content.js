@@ -95,14 +95,11 @@ if (SITE_CONFIG?.[parseDomain(location.hostname)]) {
 }
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName === "local" && changes.focus) {
+  console.log("storage.onChanged", changes, areaName)
+  if (areaName === "local" && (changes.focus || changes[generateWebsitesTimeKey()])) {
     checkAndRemove()
   }
-})
-
-// 监听limits变化
-chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "sync" && changes.limits) {
+  if (areaName === "sync" && changes.limits) {
     updateCachedMap(changes.limits.newValue || {})
   }
 })
