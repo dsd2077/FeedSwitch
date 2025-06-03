@@ -143,6 +143,14 @@ function setupDomainClickListener(domainElement, domain) {
     fetchSubDomainData(domain.mainDomain).then((subDomains) => {
       const sortedSubDomains = sortSubDomains(subDomains)
       renderSubDomains(domainElement, sortedSubDomains)
+
+      // 如果只有一个子域名，自动展开它
+      if (sortedSubDomains.length === 1) {
+        const subDomainElement = domainElement.querySelector(".subdomain-list")
+        if (subDomainElement) {
+          subDomainElement.click()
+        }
+      }
     })
   })
 }
