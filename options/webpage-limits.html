@@ -132,6 +132,133 @@
         white-space: nowrap; /* 防止文本换行 */
         width: 100%; /* 宽度与父容器对齐 */
       }
+
+      /* 时间限制选项样式 */
+      .time-limit-section {
+        margin: 15px 0;
+      }
+
+      .time-options {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 8px 0;
+      }
+
+      .time-options input[type="radio"] {
+        margin: 0;
+      }
+
+      .time-options label {
+        margin: 0;
+        font-weight: normal;
+      }
+
+      .time-options input[type="number"] {
+        width: 80px;
+        padding: 4px 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .time-options button {
+        padding: 4px 12px;
+        background: #f0f0f0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+
+      .time-options button:enabled:hover {
+        background: #e0e0e0;
+      }
+
+      .time-options button:disabled {
+        background: #f8f8f8;
+        color: #999;
+        cursor: not-allowed;
+      }
+
+      /* 自定义时间模态窗口样式 */
+      .weekly-schedule {
+        margin: 20px 0;
+      }
+
+      .day-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 6px 0;
+        padding: 6px 8px;
+        background: #f9f9f9;
+        border-radius: 3px;
+        font-size: 14px;
+      }
+
+      .day-row label {
+        min-width: 50px;
+        font-weight: 500;
+        margin: 0;
+        font-size: 13px;
+        padding-right: 50px;
+      }
+
+      .day-row input[type="number"] {
+        width: 60px;
+        padding: 4px 6px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        text-align: center;
+        font-size: 13px;
+      }
+
+      .day-row span {
+        color: #666;
+        font-size: 12px;
+      }
+
+      .modal-buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 15px;
+        padding-top: 12px;
+        border-top: 1px solid #eee;
+      }
+
+      .modal-buttons button {
+        padding: 6px 14px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        cursor: pointer;
+        background: white;
+        font-size: 13px;
+      }
+
+      .modal-buttons button:hover {
+        background: #f0f0f0;
+      }
+
+      #save-custom-time {
+        background: #007cba;
+        color: white;
+        border-color: #007cba;
+      }
+
+      #save-custom-time:hover {
+        background: #005a87;
+      }
+
+      /* 自定义时间模态窗口特定样式 */
+      #custom-time-modal .modal-content {
+        max-width: 250px;
+        padding: 16px;
+      }
+
+      #custom-time-modal h3 {
+        margin: 0 0 12px 0;
+        font-size: 16px;
+      }
     </style>
   </head>
 
@@ -160,7 +287,7 @@
             <input
               type="text"
               id="website-input"
-              placeholder="输入网站域名（如：example.com）"
+              placeholder="输入网站域名（如：bilibili.com）"
               autocomplete="off"
             />
             <!-- <button type="button" id="add-website-btn">+ 添加</button> -->
@@ -174,14 +301,145 @@
         </div>
 
         <!-- 时长输入 -->
-        <label for="daily-limit">每日娱乐时长（分钟）:</label>
-        <input
-          type="number"
-          id="daily-limit"
-          name="daily-limit"
-        /><br /><br />
+        <div class="time-limit-section">
+          <label>时间：</label>
+          <div class="time-options">
+            <input
+              type="radio"
+              id="daily-option"
+              name="time-type"
+              value="daily"
+              checked
+            />
+            <label for="daily-option">每天</label>
+            <input
+              type="number"
+              id="daily-limit"
+              name="daily-limit"
+              placeholder="0"
+              min="1"
+            />
+            <span>分钟</span>
+          </div>
+          <div class="time-options">
+            <input
+              type="radio"
+              id="custom-option"
+              name="time-type"
+              value="custom"
+            />
+            <label for="custom-option">自定义</label>
+            <button
+              type="button"
+              id="custom-time-btn"
+              disabled
+              >编辑...</button
+            >
+          </div> </div
+        ><br />
 
         <button id="save-limit-btn">保存</button>
+      </div>
+    </div>
+
+    <!-- 自定义时间设置对话框 -->
+    <div
+      id="custom-time-modal"
+      class="modal"
+    >
+      <div class="modal-content">
+        <span
+          class="close"
+          id="custom-time-close"
+          >&times;</span
+        >
+        <h3>每日时间限额</h3>
+
+        <div class="weekly-schedule">
+          <div class="day-row">
+            <label>星期日</label>
+            <input
+              type="number"
+              id="sunday-limit"
+              min="0"
+              placeholder="0"
+            />
+            <span>分钟</span>
+          </div>
+          <div class="day-row">
+            <label>星期一</label>
+            <input
+              type="number"
+              id="monday-limit"
+              min="0"
+              placeholder="0"
+            />
+            <span>分钟</span>
+          </div>
+          <div class="day-row">
+            <label>星期二</label>
+            <input
+              type="number"
+              id="tuesday-limit"
+              min="0"
+              placeholder="0"
+            />
+            <span>分钟</span>
+          </div>
+          <div class="day-row">
+            <label>星期三</label>
+            <input
+              type="number"
+              id="wednesday-limit"
+              min="0"
+              placeholder="0"
+            />
+            <span>分钟</span>
+          </div>
+          <div class="day-row">
+            <label>星期四</label>
+            <input
+              type="number"
+              id="thursday-limit"
+              min="0"
+              placeholder="0"
+            />
+            <span>分钟</span>
+          </div>
+          <div class="day-row">
+            <label>星期五</label>
+            <input
+              type="number"
+              id="friday-limit"
+              min="0"
+              placeholder="0"
+            />
+            <span>分钟</span>
+          </div>
+          <div class="day-row">
+            <label>星期六</label>
+            <input
+              type="number"
+              id="saturday-limit"
+              min="0"
+              placeholder="0"
+            />
+            <span>分钟</span>
+          </div>
+        </div>
+
+        <div class="modal-buttons">
+          <button
+            type="button"
+            id="cancel-custom-time"
+            >取消</button
+          >
+          <button
+            type="button"
+            id="save-custom-time"
+            >完成</button
+          >
+        </div>
       </div>
     </div>
 

@@ -68,9 +68,32 @@ function checkTimeLimit(domain, timeData = {}, limits = {}) {
       )
       return sum + domainTotal
     }, 0)
-    console.log(`domain:[${domain}] groupUsage:${groupUsage}`)
-    // 转换为分钟比较
-    return Math.floor(groupUsage / 60) >= limit.dailyLimit
+
+    // 转换为分钟
+    const usageMinutes = Math.floor(groupUsage / 60)
+    console.log(`domain:[${domain}] groupUsage:${groupUsage}秒 (${usageMinutes}分钟)`)
+
+    // 根据时间类型获取今日限制
+    let todayLimit = 0
+
+    if (limit.timeType === "daily") {
+      // 每日限制类型
+      todayLimit = limit.dailyLimit || 0
+    } else if (limit.timeType === "custom" && limit.customLimits) {
+      // 自定义限制类型 - 根据今天是星期几获取对应限制
+      const today = new Date()
+      const dayOfWeek = today.getDay() // 0=Sunday, 1=Monday, ..., 6=Saturday
+      const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+      const todayName = dayNames[dayOfWeek]
+      todayLimit = limit.customLimits[todayName] || 0
+    } else {
+      // 兼容旧数据格式
+      todayLimit = limit.dailyLimit || 0
+    }
+
+    console.log(`domain:[${domain}] 今日限制:${todayLimit}分钟, 已使用:${usageMinutes}分钟, 限制类型:${limit.timeType || "legacy"}`)
+
+    return usageMinutes >= todayLimit
   })
 }
 

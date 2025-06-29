@@ -1,4 +1,6 @@
 import psl from "../node_modules/psl/dist/psl.mjs"
+
+/* global Chart */
 ;(function () {
   let websitesTimeCache = null
   let faviconCache = null
@@ -305,7 +307,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
             },
             ticks: {
               display: true,
-              callback: function (value, index, values) {
+              callback: function (value) {
                 return type === "weekly" ? `${value}h` : `${value}m`
               },
               maxTicksLimit: 10, // 最多显示 10 个刻度
