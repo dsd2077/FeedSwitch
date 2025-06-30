@@ -20,6 +20,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
   const dailyOption = document.getElementById("daily-option")
   const customOption = document.getElementById("custom-option")
   const dailyLimitInput = document.getElementById("daily-limit")
+  const deleteLimitBtn = document.getElementById("delete-limit-btn")
 
   // 存储自定义时间设置
   let customTimeSettings = {
@@ -31,14 +32,170 @@ import { SITE_CONFIG } from "../scripts/config.js"
     friday: 0,
     saturday: 0,
   }
-  // console.log("suggestionList", suggestionList)
-  // console.log("SITE_CONFIG", SITE_CONFIG)
+
+  // 延迟生效相关变量和函数
+  const modalWarning = document.getElementById("modal-warning")
+
+  // 获取今天是星期几的索引 (0=Sunday, 1=Monday, ..., 6=Saturday)
+  function getTodayIndex() {
+    return new Date().getDay()
+  }
+
+  // 获取今天的星期名称
+  function getTodayName() {
+    const dayNames = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+    return dayNames[getTodayIndex()]
+  }
+
+  // 获取明天的日期字符串 (YYYY-MM-DD)
+  function getTomorrowDateString() {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    return tomorrow.toISOString().split("T")[0]
+  }
+
+  // 检查是否增加了当天的使用时间
+  function isIncreasingTodayTime(existingLimit, newLimitData) {
+    if (!existingLimit) return false
+
+    const todayName = getTodayName()
+    let oldTodayLimit = 0
+    let newTodayLimit = 0
+
+    // 获取旧的今日限制
+    if (existingLimit.timeType === "daily") {
+      oldTodayLimit = existingLimit.dailyLimit || 0
+    } else if (existingLimit.timeType === "custom" && existingLimit.customLimits) {
+      oldTodayLimit = existingLimit.customLimits[todayName] || 0
+    }
+
+    // 获取新的今日限制
+    if (newLimitData.timeType === "daily") {
+      newTodayLimit = newLimitData.dailyLimit || 0
+    } else if (newLimitData.timeType === "custom" && newLimitData.customLimits) {
+      newTodayLimit = newLimitData.customLimits[todayName] || 0
+    }
+
+    return newTodayLimit > oldTodayLimit
+  }
+
+  // 检查是否删除了网站
+  function isRemovingWebsites(existingLimit, newLimitData) {
+    if (!existingLimit) return false
+
+    const oldWebsites = new Set(existingLimit.websites || [])
+    const newWebsites = new Set(newLimitData.websites || [])
+
+    // 检查是否有网站被删除
+    for (const website of oldWebsites) {
+      if (!newWebsites.has(website)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  // 检查是否有任何需要延迟生效的更改
+  function hasDelayedChanges(existingLimit, newLimitData) {
+    if (!existingLimit) return false
+    return isIncreasingTodayTime(existingLimit, newLimitData) || isRemovingWebsites(existingLimit, newLimitData)
+  }
+
+  // 添加待生效的更改
+  function addPendingChange(action, limitData, newLimitData = null) {
+    const tomorrowDate = getTomorrowDateString()
+
+    chrome.storage.sync.get(["pendingChanges"], (result) => {
+      const pendingChanges = result.pendingChanges || {}
+      if (!pendingChanges[tomorrowDate]) {
+        pendingChanges[tomorrowDate] = []
+      }
+
+      const changeRecord = {
+        action: action,
+        limitId: limitData.id,
+        websites: limitData.websites,
+        timestamp: new Date().toISOString(),
+        ...(newLimitData && { newLimitData }), // 保存新的限制数据用于次日应用
+      }
+
+      // 避免重复添加相同的更改，按limitId查找
+      const existingIndex = pendingChanges[tomorrowDate].findIndex((change) => change.limitId === limitData.id)
+
+      if (existingIndex >= 0) {
+        pendingChanges[tomorrowDate][existingIndex] = changeRecord
+      } else {
+        pendingChanges[tomorrowDate].push(changeRecord)
+      }
+
+      chrome.storage.sync.set({ pendingChanges }, () => {
+        // 重新渲染以显示待生效的状态
+        chrome.storage.sync.get(["limits"], (limitsResult) => {
+          renderLimits(limitsResult.limits || {})
+        })
+      })
+    })
+  }
+
+  // 撤销待生效的更改
+  function cancelPendingChange(limitId) {
+    const tomorrowDate = getTomorrowDateString()
+
+    chrome.storage.sync.get(["pendingChanges"], (result) => {
+      const pendingChanges = result.pendingChanges || {}
+      const todayChanges = pendingChanges[tomorrowDate] || []
+
+      // 找到并移除对应的待生效更改
+      const updatedChanges = todayChanges.filter((change) => change.limitId !== limitId)
+
+      if (updatedChanges.length === 0) {
+        // 如果没有其他待生效更改，删除整个日期条目
+        delete pendingChanges[tomorrowDate]
+      } else {
+        pendingChanges[tomorrowDate] = updatedChanges
+      }
+
+      chrome.storage.sync.set({ pendingChanges }, () => {
+        if (chrome.runtime.lastError) {
+          console.error("撤销失败:", chrome.runtime.lastError)
+          alert("撤销失败，请重试")
+        } else {
+          console.log(`已撤销限制 ${limitId} 的待生效更改`)
+          // 重新渲染以移除待生效状态
+          chrome.storage.sync.get(["limits"], (limitsResult) => {
+            renderLimits(limitsResult.limits || {})
+          })
+        }
+      })
+    })
+  }
+
+  // 删除限额（延迟生效）
+  function deleteLimitWithDelay(limitId) {
+    chrome.storage.sync.get(["limits"], (result) => {
+      const limits = result.limits || {}
+      const existingLimit = limits[limitId]
+
+      if (!existingLimit) {
+        alert("找不到要删除的限制")
+        return
+      }
+
+      // 添加到待生效的删除列表
+      const limitWithId = { ...existingLimit, id: limitId }
+      addPendingChange("delete", limitWithId)
+
+      // alert("限额删除将于明天生效，以防止一时冲动解除限制。")
+      modal.style.display = "none"
+    })
+  }
 
   // 时间类型选择事件监听器
   dailyOption.addEventListener("change", function () {
     if (this.checked) {
       dailyLimitInput.disabled = false
       customTimeBtn.disabled = true
+      checkAndShowWarning()
     }
   })
 
@@ -46,8 +203,50 @@ import { SITE_CONFIG } from "../scripts/config.js"
     if (this.checked) {
       dailyLimitInput.disabled = true
       customTimeBtn.disabled = false
+      checkAndShowWarning()
     }
   })
+
+  // 监听时间输入变化
+  dailyLimitInput.addEventListener("input", checkAndShowWarning)
+
+  // 检查并显示警告的函数
+  function checkAndShowWarning() {
+    const editingId = document.getElementById("limit-id").value
+    if (!editingId) {
+      modalWarning.style.display = "none"
+      return
+    }
+
+    chrome.storage.sync.get(["limits"], (result) => {
+      const limits = result.limits || {}
+      const existingLimit = limits[editingId]
+
+      if (!existingLimit) {
+        modalWarning.style.display = "none"
+        return
+      }
+
+      // 获取当前表单数据
+      const websites = Array.from(document.querySelectorAll('[name="websites"]'))
+        .map((input) => input.value.trim())
+        .filter(Boolean)
+
+      const timeType = document.querySelector('input[name="time-type"]:checked').value
+      let newLimitData = { websites, timeType }
+
+      if (timeType === "daily") {
+        const dailyLimit = parseInt(document.getElementById("daily-limit").value, 10) || 0
+        newLimitData.dailyLimit = dailyLimit
+      } else if (timeType === "custom") {
+        newLimitData.customLimits = { ...customTimeSettings }
+      }
+
+      // 检查是否增加了当天时间
+      const isIncreasing = isIncreasingTodayTime(existingLimit, newLimitData)
+      modalWarning.style.display = isIncreasing ? "block" : "none"
+    })
+  }
 
   // 自定义时间按钮点击事件
   customTimeBtn.addEventListener("click", function () {
@@ -83,6 +282,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
     customTimeSettings.saturday = parseInt(document.getElementById("saturday-limit").value) || 0
 
     customTimeModal.style.display = "none"
+    checkAndShowWarning() // 检查是否需要显示警告
   })
 
   // 点击模态窗口外部关闭
@@ -94,6 +294,19 @@ import { SITE_CONFIG } from "../scripts/config.js"
 
   loadAndDisplayLimits()
 
+  // 删除限额按钮事件
+  deleteLimitBtn.addEventListener("click", () => {
+    const editingId = document.getElementById("limit-id").value
+    if (!editingId) {
+      alert("无法删除，请先选择一个限制")
+      return
+    }
+
+    if (confirm("确定要删除这个限额吗？删除操作将于明天生效。")) {
+      deleteLimitWithDelay(editingId)
+    }
+  })
+
   addLimitBtn.addEventListener("click", () => {
     console.log("addLimitBtn clicked")
     modal.style.display = "block"
@@ -103,6 +316,9 @@ import { SITE_CONFIG } from "../scripts/config.js"
 
     // 清空隐藏的ID字段，确保创建新记录而不是编辑现有记录
     document.getElementById("limit-id").value = ""
+
+    // 隐藏删除按钮（新建时不显示）
+    deleteLimitBtn.style.display = "none"
 
     // 重置时间选项
     dailyOption.checked = true
@@ -152,12 +368,6 @@ import { SITE_CONFIG } from "../scripts/config.js"
       }
       timeLimit = dailyLimit
     } else if (timeType === "custom") {
-      // 验证自定义时间设置
-      // const totalTime = Object.values(customTimeSettings).reduce((sum, time) => sum + time, 0)
-      // if (totalTime === 0) {
-      //   alert("请至少为一天设置时间限制")
-      //   return
-      // }
       customLimits = { ...customTimeSettings }
     }
     /* ********************************************
@@ -221,15 +431,28 @@ import { SITE_CONFIG } from "../scripts/config.js"
         return
       }
 
+      // 检查是否需要延迟生效
+      const needsDelayedEffect = hasDelayedChanges(existingLimit, newLimitData)
+
+      if (needsDelayedEffect) {
+        // 延迟生效的情况 - 保持原数据不变，但记录待生效的更改
+        const limitWithId = { ...existingLimit, id: editingId }
+        addPendingChange("update", limitWithId, newLimitData)
+
+        alert("删除网站或增加当天使用时间的设置将于明天生效，以防止一时冲动解除限制。")
+        modal.style.display = "none"
+        return
+      }
+
       if (existingLimit) {
-        // 更新现有记录
+        // 更新现有记录（立即生效的更改）
         console.log("更新现有记录")
         limits[editingId] = {
           ...existingLimit,
           ...newLimitData,
         }
       } else {
-        // 新增记录
+        // 新增记录（总是立即生效）
         const newId = generateId()
         limits[newId] = {
           id: newId,
@@ -363,83 +586,165 @@ import { SITE_CONFIG } from "../scripts/config.js"
   }
 
   function renderLimits(limits) {
-    limitsContainer.innerHTML = Object.values(limits)
-      .map((item) => {
-        let timeDisplay = ""
-        if (item.timeType === "daily") {
-          timeDisplay = `每日限制：${item.dailyLimit}分钟`
-        } else if (item.timeType === "custom") {
-          const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-          const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
-          const activeDays = days
-            .map((day, index) => (item.customLimits[day] > 0 ? `${dayNames[index]}:${item.customLimits[day]}分钟` : null))
-            .filter(Boolean)
-          timeDisplay = `自定义限制：${activeDays.join(", ")}`
-        } else {
-          // 兼容旧数据
-          timeDisplay = `每日限制：${item.dailyLimit || 0}分钟`
-        }
+    // 获取待生效的更改
+    chrome.storage.sync.get(["pendingChanges"], (result) => {
+      const pendingChanges = result.pendingChanges || {}
+      const tomorrowDate = getTomorrowDateString()
+      const pendingUpdates = pendingChanges[tomorrowDate] || []
 
-        return `<div class="limit-item" data-id="${item.id}" style="...">
-          ${item.websites.join(", ")} - ${timeDisplay}
-        </div>`
+      // 创建待生效更改的映射
+      const pendingMap = {}
+      pendingUpdates.forEach((change) => {
+        pendingMap[change.limitId] = change
       })
-      .join("")
 
-    // 添加点击事件
-    document.querySelectorAll(".limit-item").forEach((item) => {
-      item.addEventListener("click", () => {
-        const limit = limits[item.dataset.id]
-
-        // const websitesContainer = document.querySelector(".added-websites");
-        websitesContainer.innerHTML = ""
-
-        // 填充网站标签
-        limit.websites.forEach((website) => {
-          const tag = document.createElement("div")
-          tag.className = "website-tag"
-          tag.innerHTML = `
-                  ${website}
-                  <button class="remove-tag-btn">×</button>
-                  <input type="hidden" name="websites" value="${website}">
-              `
-          websitesContainer.appendChild(tag)
-        })
-
-        // 设置隐藏ID字段
-        document.getElementById("limit-id").value = limit.id
-
-        // 根据时间类型设置界面
-        if (limit.timeType === "custom") {
-          customOption.checked = true
-          dailyOption.checked = false
-          dailyLimitInput.disabled = true
-          customTimeBtn.disabled = false
-          document.getElementById("daily-limit").value = ""
-
-          // 设置自定义时间
-          customTimeSettings = { ...limit.customLimits }
-        } else {
-          // 默认为每日限制（兼容旧数据）
-          dailyOption.checked = true
-          customOption.checked = false
-          dailyLimitInput.disabled = false
-          customTimeBtn.disabled = true
-          document.getElementById("daily-limit").value = limit.dailyLimit || 0
-
-          // 重置自定义时间设置
-          customTimeSettings = {
-            sunday: 0,
-            monday: 0,
-            tuesday: 0,
-            wednesday: 0,
-            thursday: 0,
-            friday: 0,
-            saturday: 0,
+      limitsContainer.innerHTML = Object.values(limits)
+        .map((item) => {
+          let timeDisplay = ""
+          if (item.timeType === "daily") {
+            timeDisplay = `每日限制：${item.dailyLimit}分钟`
+          } else if (item.timeType === "custom") {
+            const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+            const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
+            const activeDays = days
+              .map((day, index) => (item.customLimits[day] > 0 ? `${dayNames[index]}:${item.customLimits[day]}分钟` : null))
+              .filter(Boolean)
+            timeDisplay = `自定义限制：${activeDays.join(", ")}`
+          } else {
+            // 兼容旧数据
+            timeDisplay = `每日限制：${item.dailyLimit || 0}分钟`
           }
-        }
 
-        modal.style.display = "block"
+          const pendingChange = pendingMap[item.id]
+          const isPendingUpdate = !!pendingChange && pendingChange.action === "update"
+          const isPendingDelete = !!pendingChange && pendingChange.action === "delete"
+
+          let itemClass = "limit-item"
+          if (isPendingUpdate) {
+            itemClass = "limit-item pending-update"
+          } else if (isPendingDelete) {
+            itemClass = "limit-item pending-delete"
+          }
+
+          let pendingPreview = ""
+          if (isPendingUpdate && pendingChange.newLimitData) {
+            const newData = pendingChange.newLimitData
+            let newTimeDisplay = ""
+
+            if (newData.timeType === "daily") {
+              newTimeDisplay = `每日限制：${newData.dailyLimit}分钟`
+            } else if (newData.timeType === "custom") {
+              const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
+              const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
+              const activeDays = days
+                .map((day, index) => (newData.customLimits[day] > 0 ? `${dayNames[index]}:${newData.customLimits[day]}分钟` : null))
+                .filter(Boolean)
+              newTimeDisplay = `自定义限制：${activeDays.join(", ")}`
+            }
+
+            pendingPreview = `
+              <div class="pending-changes-preview">
+                <div class="label">明日将更新为：</div>
+                <div class="change-row">
+                  <div class="change-content">${newData.websites.join(", ")} - ${newTimeDisplay}</div>
+                  <button class="cancel-pending-btn" data-limit-id="${item.id}">撤销</button>
+                </div>
+              </div>
+            `
+          } else if (isPendingDelete) {
+            pendingPreview = `
+              <div class="pending-changes-preview">
+                <div class="label">待删除：</div>
+                <div class="change-row">
+                  <div class="change-content">此限制将于明天被删除</div>
+                  <button class="cancel-pending-btn" data-limit-id="${item.id}">撤销删除</button>
+                </div>
+              </div>
+            `
+          }
+
+          return `<div class="${itemClass}" data-id="${item.id}">
+            <div>${item.websites.join(", ")} - ${timeDisplay}</div>
+            ${pendingPreview}
+          </div>`
+        })
+        .join("")
+
+      // 添加撤销按钮事件
+      document.querySelectorAll(".cancel-pending-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation() // 防止触发父元素的点击事件
+          const limitId = btn.getAttribute("data-limit-id")
+          if (confirm("确定要撤销这个待生效的更改吗？")) {
+            cancelPendingChange(limitId)
+          }
+        })
+      })
+
+      // 添加点击事件
+      document.querySelectorAll(".limit-item").forEach((item) => {
+        item.addEventListener("click", (e) => {
+          // 如果点击的是撤销按钮，不执行编辑操作
+          if (e.target.classList.contains("cancel-pending-btn")) {
+            return
+          }
+          const limit = limits[item.dataset.id]
+
+          // const websitesContainer = document.querySelector(".added-websites");
+          websitesContainer.innerHTML = ""
+
+          // 填充网站标签
+          limit.websites.forEach((website) => {
+            const tag = document.createElement("div")
+            tag.className = "website-tag"
+            tag.innerHTML = `
+                    ${website}
+                    <button class="remove-tag-btn">×</button>
+                    <input type="hidden" name="websites" value="${website}">
+                `
+            websitesContainer.appendChild(tag)
+          })
+
+          // 设置隐藏ID字段
+          document.getElementById("limit-id").value = limit.id
+
+          // 显示删除按钮（编辑现有限制时显示）
+          deleteLimitBtn.style.display = "block"
+
+          // 根据时间类型设置界面
+          if (limit.timeType === "custom") {
+            customOption.checked = true
+            dailyOption.checked = false
+            dailyLimitInput.disabled = true
+            customTimeBtn.disabled = false
+            document.getElementById("daily-limit").value = ""
+
+            // 设置自定义时间
+            customTimeSettings = { ...limit.customLimits }
+          } else {
+            // 默认为每日限制（兼容旧数据）
+            dailyOption.checked = true
+            customOption.checked = false
+            dailyLimitInput.disabled = false
+            customTimeBtn.disabled = true
+            document.getElementById("daily-limit").value = limit.dailyLimit || 0
+
+            // 重置自定义时间设置
+            customTimeSettings = {
+              sunday: 0,
+              monday: 0,
+              tuesday: 0,
+              wednesday: 0,
+              thursday: 0,
+              friday: 0,
+              saturday: 0,
+            }
+          }
+
+          // 清除警告显示
+          modalWarning.style.display = "none"
+          modal.style.display = "block"
+        })
       })
     })
   }

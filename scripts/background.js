@@ -317,6 +317,7 @@ function setDailyAlarm() {
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "resetDaily") {
     resetDailyAndAccumulateWeekly()
+    processPendingChanges() // 处理待生效的更改
   }
 })
 
@@ -451,4 +452,68 @@ function generateWebsitesTimeKey() {
 
 function generateHourlyUsageKey() {
   return "hourlyUsage-" + getTodayDate()
+}
+
+// 处理待生效的更改
+function processPendingChanges() {
+  const todayDate = new Date().toISOString().split("T")[0]
+
+  chrome.storage.sync.get(["pendingChanges", "limits"], (result) => {
+    const pendingChanges = result.pendingChanges || {}
+    const limits = result.limits || {}
+    const todayChanges = pendingChanges[todayDate] || []
+
+    if (todayChanges.length === 0) {
+      return
+    }
+
+    console.log(`Processing ${todayChanges.length} pending changes for ${todayDate}`)
+
+    todayChanges.forEach((change) => {
+      if (change.action === "update" && change.newLimitData) {
+        // 应用待生效的更改
+        if (limits[change.limitId]) {
+          console.log(`Applying pending changes for limit ID: ${change.limitId}`)
+          console.log(`Old: ${change.websites.join(", ")}`)
+          console.log(`New: ${change.newLimitData.websites.join(", ")}`)
+
+          // 更新限制数据
+          limits[change.limitId] = {
+            ...limits[change.limitId],
+            ...change.newLimitData,
+            updatedAt: new Date().toISOString(),
+          }
+        }
+      } else if (change.action === "delete") {
+        // 删除限制
+        if (limits[change.limitId]) {
+          console.log(`Deleting limit for websites: ${change.websites.join(", ")}`)
+          delete limits[change.limitId]
+        }
+      }
+    })
+
+    // 清除今天的待生效更改
+    delete pendingChanges[todayDate]
+
+    // 清理过期的待生效更改（超过7天的）
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+    const sevenDaysAgoString = sevenDaysAgo.toISOString().split("T")[0]
+
+    Object.keys(pendingChanges).forEach((date) => {
+      if (date < sevenDaysAgoString) {
+        delete pendingChanges[date]
+      }
+    })
+
+    // 保存更新后的数据
+    chrome.storage.sync.set({ limits, pendingChanges }, () => {
+      if (chrome.runtime.lastError) {
+        console.error("Failed to process pending changes:", chrome.runtime.lastError)
+      } else {
+        console.log("Pending changes processed successfully")
+      }
+    })
+  })
 }

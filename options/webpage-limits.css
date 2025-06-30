@@ -1,0 +1,466 @@
+.modal {
+  display: none;
+  /* 默认隐藏 */
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 500px;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 延迟生效警告样式 */
+.delay-warning {
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 14px;
+  color: #856404;
+}
+
+.delay-warning .warning-icon {
+  display: inline-block;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.delay-warning.info {
+  background: #d1ecf1;
+  border-color: #bee5eb;
+  color: #0c5460;
+}
+
+.delay-warning.danger {
+  background: #f8d7da;
+  border-color: #f5c6cb;
+  color: #721c24;
+}
+
+.pending-changes {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 15px;
+  margin: 20px 0;
+}
+
+.pending-changes h4 {
+  margin: 0 0 10px 0;
+  color: #495057;
+  font-size: 16px;
+}
+
+.pending-item {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 10px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+
+.pending-item .action-type {
+  font-weight: bold;
+  color: #dc3545;
+}
+
+.pending-item .websites {
+  color: #6c757d;
+  margin: 4px 0;
+}
+
+.pending-item .effective-date {
+  color: #28a745;
+  font-size: 12px;
+}
+
+.input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  position: relative; /* 新增 */
+}
+
+#website-input {
+  flex: 1;
+  padding: 8px;
+}
+
+.added-websites {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.website-tag {
+  background: #e0f0ff;
+  border-radius: 4px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.remove-tag-btn {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0;
+  font-size: 16px;
+}
+
+.remove-tag-btn:hover {
+  color: #ff4444;
+}
+
+.limit-item {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 5px 0;
+  padding: 8px;
+  position: relative;
+}
+
+.limit-item.pending-update {
+  border-color: #ffc107;
+  background: #fff8e1;
+  position: relative;
+}
+
+.limit-item.pending-update::after {
+  content: "待更新 - 次日生效";
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: #ffc107;
+  color: #212529;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.limit-item.pending-delete {
+  border-color: #dc3545;
+  background: #fff5f5;
+  opacity: 0.7;
+}
+
+.limit-item.pending-delete::after {
+  content: "待删除 - 次日生效";
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  background: #dc3545;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.limit-item.pending-update .pending-changes-preview {
+  margin-top: 8px;
+  padding: 6px;
+  background: #f8f9fa;
+  border-radius: 3px;
+  border-left: 3px solid #28a745;
+  font-size: 12px;
+  color: #495057;
+}
+
+.limit-item.pending-update .pending-changes-preview .label {
+  font-weight: bold;
+  color: #28a745;
+}
+
+.cancel-pending-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: background 0.2s;
+}
+
+.cancel-pending-btn:hover {
+  background: #c82333;
+}
+
+.pending-changes-preview .change-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.pending-changes-preview .change-content {
+  flex: 1;
+}
+
+.suggestions-container {
+  display: none; /* 初始隐藏 */
+  position: absolute;
+  top: 100%; /* 紧贴输入框下方 */
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ddd;
+  border-top: none;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.input-group.active .suggestions-container {
+  display: block;
+}
+
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.suggestion-item:hover,
+.suggestion-item.active {
+  background: #f0f8ff;
+}
+
+#suggestions div.active {
+  background-color: #f0f0f0;
+  color: #333;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+#suggestions div:hover {
+  background-color: #f5f5f5;
+  transform: translateX(3px);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#suggestions div {
+  transition: background-color 0.2s ease;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin: 2px 0;
+  overflow: hidden;
+  text-overflow: ellipsis; /* 超长文本显示省略号 */
+  width: 100%;
+}
+
+#suggestions {
+  overflow-x: hidden; /* 隐藏横向滚动条 */
+  white-space: nowrap; /* 防止文本换行 */
+  width: 100%; /* 宽度与父容器对齐 */
+}
+
+/* 时间限制选项样式 */
+.time-limit-section {
+  margin: 15px 0;
+}
+
+.time-options {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.time-options input[type="radio"] {
+  margin: 0;
+}
+
+.time-options label {
+  margin: 0;
+  font-weight: normal;
+}
+
+.time-options input[type="number"] {
+  width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.time-options button {
+  padding: 4px 12px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.time-options button:enabled:hover {
+  background: #e0e0e0;
+}
+
+.time-options button:disabled {
+  background: #f8f8f8;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* 自定义时间模态窗口样式 */
+.weekly-schedule {
+  margin: 20px 0;
+}
+
+.day-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+  padding: 6px 8px;
+  background: #f9f9f9;
+  border-radius: 3px;
+  font-size: 14px;
+}
+
+.day-row label {
+  min-width: 50px;
+  font-weight: 500;
+  margin: 0;
+  font-size: 13px;
+  padding-right: 50px;
+}
+
+.day-row input[type="number"] {
+  width: 60px;
+  padding: 4px 6px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.day-row span {
+  color: #666;
+  font-size: 12px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.modal-buttons button {
+  padding: 6px 14px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  cursor: pointer;
+  background: white;
+  font-size: 13px;
+}
+
+.modal-buttons button:hover {
+  background: #f0f0f0;
+}
+
+#save-custom-time {
+  background: #007cba;
+  color: white;
+  border-color: #007cba;
+}
+
+#save-custom-time:hover {
+  background: #005a87;
+}
+
+/* 自定义时间模态窗口特定样式 */
+#custom-time-modal .modal-content {
+  max-width: 250px;
+  padding: 16px;
+}
+
+#custom-time-modal h3 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+/* 模态窗口按钮组样式 */
+.modal-action-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+  justify-content: space-between;
+}
+
+.modal-action-buttons .left-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.modal-action-buttons .right-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* 删除限额按钮样式 */
+#delete-limit-btn {
+  background: #dc3545;
+  color: white;
+  border: 1px solid #dc3545;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#delete-limit-btn:hover {
+  background: #c82333;
+  border-color: #c82333;
+}
+
+#delete-limit-btn:disabled {
+  background: #6c757d;
+  border-color: #6c757d;
+  cursor: not-allowed;
+}
+
+/* 保存按钮样式 */
+#save-limit-btn {
+  background: #007bff;
+  color: white;
+  border: 1px solid #007bff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+#save-limit-btn:hover {
+  background: #0056b3;
+  border-color: #0056b3;
+}

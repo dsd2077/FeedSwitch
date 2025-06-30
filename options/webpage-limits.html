@@ -3,267 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <title>网页限额管理</title>
-    <style>
-      .modal {
-        display: none;
-        /* 默认隐藏 */
-        position: fixed;
-        z-index: 1;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
-        background-color: rgba(0, 0, 0, 0.4);
-      }
-
-      .modal-content {
-        background-color: #fefefe;
-        margin: 15% auto;
-        padding: 20px;
-        border: 1px solid #888;
-        width: 80%;
-        max-width: 500px;
-      }
-
-      .close {
-        color: #aaa;
-        float: right;
-        font-size: 28px;
-        font-weight: bold;
-        cursor: pointer;
-      }
-      .input-group {
-        display: flex;
-        gap: 8px;
-        margin-top: 10px;
-        position: relative; /* 新增 */
-      }
-
-      #website-input {
-        flex: 1;
-        padding: 8px;
-      }
-
-      .added-websites {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin: 10px 0;
-      }
-
-      .website-tag {
-        background: #e0f0ff;
-        border-radius: 4px;
-        padding: 4px 8px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .remove-tag-btn {
-        background: none;
-        border: none;
-        color: #666;
-        cursor: pointer;
-        padding: 0;
-        font-size: 16px;
-      }
-
-      .remove-tag-btn:hover {
-        color: #ff4444;
-      }
-      .limit-item {
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        margin: 5px 0;
-        padding: 8px;
-      }
-      .suggestions-container {
-        display: none; /* 初始隐藏 */
-        position: absolute;
-        top: 100%; /* 紧贴输入框下方 */
-        left: 0;
-        width: 100%;
-        background: white;
-        border: 1px solid #ddd;
-        border-top: none;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index: 1000;
-      }
-      .input-group.active .suggestions-container {
-        display: block;
-      }
-      .suggestion-item {
-        padding: 8px;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-
-      .suggestion-item:hover,
-      .suggestion-item.active {
-        background: #f0f8ff;
-      }
-      #suggestions div.active {
-        background-color: #f0f0f0;
-        color: #333;
-        font-weight: 500;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-      }
-      #suggestions div:hover {
-        background-color: #f5f5f5;
-        transform: translateX(3px);
-        transition: all 0.2s ease;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-
-      #suggestions div {
-        transition: background-color 0.2s ease;
-        padding: 8px 12px;
-        border-radius: 4px;
-        margin: 2px 0;
-        overflow: hidden;
-        text-overflow: ellipsis; /* 超长文本显示省略号 */
-        width: 100%;
-      }
-      #suggestions {
-        overflow-x: hidden; /* 隐藏横向滚动条 */
-        white-space: nowrap; /* 防止文本换行 */
-        width: 100%; /* 宽度与父容器对齐 */
-      }
-
-      /* 时间限制选项样式 */
-      .time-limit-section {
-        margin: 15px 0;
-      }
-
-      .time-options {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin: 8px 0;
-      }
-
-      .time-options input[type="radio"] {
-        margin: 0;
-      }
-
-      .time-options label {
-        margin: 0;
-        font-weight: normal;
-      }
-
-      .time-options input[type="number"] {
-        width: 80px;
-        padding: 4px 8px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-      }
-
-      .time-options button {
-        padding: 4px 12px;
-        background: #f0f0f0;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-
-      .time-options button:enabled:hover {
-        background: #e0e0e0;
-      }
-
-      .time-options button:disabled {
-        background: #f8f8f8;
-        color: #999;
-        cursor: not-allowed;
-      }
-
-      /* 自定义时间模态窗口样式 */
-      .weekly-schedule {
-        margin: 20px 0;
-      }
-
-      .day-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin: 6px 0;
-        padding: 6px 8px;
-        background: #f9f9f9;
-        border-radius: 3px;
-        font-size: 14px;
-      }
-
-      .day-row label {
-        min-width: 50px;
-        font-weight: 500;
-        margin: 0;
-        font-size: 13px;
-        padding-right: 50px;
-      }
-
-      .day-row input[type="number"] {
-        width: 60px;
-        padding: 4px 6px;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        text-align: center;
-        font-size: 13px;
-      }
-
-      .day-row span {
-        color: #666;
-        font-size: 12px;
-      }
-
-      .modal-buttons {
-        display: flex;
-        justify-content: flex-end;
-        gap: 8px;
-        margin-top: 15px;
-        padding-top: 12px;
-        border-top: 1px solid #eee;
-      }
-
-      .modal-buttons button {
-        padding: 6px 14px;
-        border: 1px solid #ddd;
-        border-radius: 3px;
-        cursor: pointer;
-        background: white;
-        font-size: 13px;
-      }
-
-      .modal-buttons button:hover {
-        background: #f0f0f0;
-      }
-
-      #save-custom-time {
-        background: #007cba;
-        color: white;
-        border-color: #007cba;
-      }
-
-      #save-custom-time:hover {
-        background: #005a87;
-      }
-
-      /* 自定义时间模态窗口特定样式 */
-      #custom-time-modal .modal-content {
-        max-width: 250px;
-        padding: 16px;
-      }
-
-      #custom-time-modal h3 {
-        margin: 0 0 12px 0;
-        font-size: 16px;
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="webpage-limits.css"
+    />
   </head>
 
   <body>
     <h2>网页限额</h2>
+
+    <!-- 延迟生效提示区域 -->
+    <div class="delay-warning info">
+      <span class="warning-icon">ℹ️</span>
+      <strong>重要提醒：</strong>为防止一时冲动解除限制，删除网站和增加当天使用时间的设置将于次日生效。
+    </div>
+
     <button id="add-limit-btn">添加限额</button>
 
     <!-- 添加限额对话框 -->
@@ -335,10 +89,33 @@
               disabled
               >编辑...</button
             >
-          </div> </div
-        ><br />
+          </div>
+          <hr />
+        </div>
 
-        <button id="save-limit-btn">保存</button>
+        <!-- 模态窗口内的警告 -->
+        <div
+          class="delay-warning danger"
+          id="modal-warning"
+          style="display: none"
+        >
+          <span class="warning-icon">⚠️</span>
+          <strong>注意：</strong>增加当天使用时间将于次日生效！
+        </div>
+
+        <!-- 按钮组 -->
+        <div class="modal-action-buttons">
+          <div class="left-buttons">
+            <button
+              id="delete-limit-btn"
+              style="display: none"
+              >移除限额</button
+            >
+          </div>
+          <div class="right-buttons">
+            <button id="save-limit-btn">保存</button>
+          </div>
+        </div>
       </div>
     </div>
 
