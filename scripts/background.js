@@ -275,28 +275,6 @@ function updateDomainTime(pageUrl, seconds, title, type) {
   })
 }
 
-function resetDailyAndAccumulateWeekly() {
-  // chrome.storage.local.get(["websiteTimesDaily"], (result) => {
-  // 深度合并每日数据到周数据
-  // for (const [mainDomain, subDomains] of Object.entries(websiteTimesDaily)) {
-  //   websiteTimesWeekly[mainDomain] = websiteTimesWeekly[mainDomain] || {}
-  //   for (const [subDomain, pages] of Object.entries(subDomains)) {
-  //     websiteTimesWeekly[mainDomain][subDomain] = websiteTimesWeekly[mainDomain][subDomain] || {}
-  //     for (const [normalizedUrl, pageInfo] of Object.entries(pages)) {
-  //       websiteTimesWeekly[mainDomain][subDomain][normalizedUrl] = {
-  //         time: (websiteTimesWeekly[mainDomain][subDomain][normalizedUrl]?.time || 0) + pageInfo.time,
-  //         title: pageInfo.title,
-  //       }
-  //     }
-  //   }
-  // }
-  // chrome.storage.local.set({
-  //   websiteTimesDaily: {},
-  //   websiteTimesDailyFun: {},
-  // })
-  // })
-}
-
 // 新增函数：设置每日凌晨的闹钟
 function setDailyAlarm() {
   const now = new Date()
@@ -316,7 +294,6 @@ function setDailyAlarm() {
 // 新增事件监听器：处理闹钟触发事件
 chrome.alarms.onAlarm.addListener((alarm) => {
   if (alarm.name === "resetDaily") {
-    resetDailyAndAccumulateWeekly()
     processPendingChanges() // 处理待生效的更改
   }
 })

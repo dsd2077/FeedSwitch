@@ -138,7 +138,7 @@
 .limit-item {
   border: 1px solid #ddd;
   border-radius: 4px;
-  margin: 5px 0;
+  margin: 10px 0;
   padding: 8px;
   position: relative;
 }
@@ -217,6 +217,12 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
+}
+
+/* 当撤销按钮是唯一子元素时，右对齐 */
+.pending-changes-preview .change-row .cancel-pending-btn:only-child {
+  margin-left: auto;
+  margin-top: 10px;
 }
 
 .pending-changes-preview .change-content {

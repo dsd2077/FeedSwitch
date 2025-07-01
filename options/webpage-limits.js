@@ -654,10 +654,8 @@ import { SITE_CONFIG } from "../scripts/config.js"
           } else if (isPendingDelete) {
             pendingPreview = `
               <div class="pending-changes-preview">
-                <div class="label">待删除：</div>
                 <div class="change-row">
-                  <div class="change-content">此限制将于明天被删除</div>
-                  <button class="cancel-pending-btn" data-limit-id="${item.id}">撤销删除</button>
+                  <button class="cancel-pending-btn" data-limit-id="${item.id}">撤销</button>
                 </div>
               </div>
             `
