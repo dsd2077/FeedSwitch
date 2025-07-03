@@ -4,6 +4,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 /// <reference lib="DOM"/>
 let websitesTimeCache = null
 let faviconCache = null
+let pinnedWebsites = null // 添加pin状态缓存
 
 document.addEventListener("DOMContentLoaded", () => {
   const trackingSwitch = document.getElementById("tracking-switch")
@@ -47,9 +48,10 @@ document.querySelector("#go-to-options").addEventListener("click", function () {
 
 function updateWebsiteList(websiteList) {
   const websitesTimeKey = generateWebsitesTimeKey()
-  chrome.storage.local.get([websitesTimeKey, "faviconCache"], (result) => {
+  chrome.storage.local.get([websitesTimeKey, "faviconCache", "pinnedWebsites"], (result) => {
     websitesTimeCache = result[websitesTimeKey] || {} // 缓存数据
     faviconCache = result.faviconCache || {}
+    pinnedWebsites = result.pinnedWebsites || [] // 缓存pin状态
     const processedData = processStorageData()
     renderWebsiteList(websiteList, processedData)
   })
@@ -57,13 +59,22 @@ function updateWebsiteList(websiteList) {
 
 // 处理存储数据
 function processStorageData() {
-  return Object.entries(websitesTimeCache)
+  const domainData = Object.entries(websitesTimeCache)
     .map(([mainDomain, subDomains]) => ({
       mainDomain,
       totalTime: calculateTotalTime(subDomains),
       funTime: calculateFunTime(subDomains),
+      isPinned: pinnedWebsites.includes(mainDomain),
     }))
-    .sort((a, b) => b.totalTime - a.totalTime)
+    .sort((a, b) => {
+      // 首先按pin状态排序，被pin的网站排在前面
+      if (a.isPinned && !b.isPinned) return -1
+      if (!a.isPinned && b.isPinned) return 1
+      // 然后按总时长排序
+      return b.totalTime - a.totalTime
+    })
+
+  return domainData
 }
 
 // 计算总时长
@@ -141,30 +152,54 @@ function createDomainElement(domain, maxTotalTime) {
 // 构建域名HTML模板
 function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage) {
   const timeDisplay = domain.funTime > 0 ? `${formatTime(domain.totalTime)} (娱乐: ${formatTime(domain.funTime)})` : formatTime(domain.totalTime)
+  const pinClass = domain.isPinned ? "pinned" : ""
+  const pinIcon = domain.isPinned ? "📌" : "📍"
+  const pinTitle = domain.isPinned ? "取消固定" : "固定到顶部"
 
   return `
-    <div class="domain-item">
-      <div class="domain-icon">
-        <img class="domain-icon" 
-             src="${encodeURI(faviconCache[domain.mainDomain] || getDefaultIconUrl())}" 
-             alt=""
-             onerror="this.onerror=null;this.src='${chrome.runtime.getURL("icons/broken_pic.png")}'">
-      </div>
-      <div class="domain-info">
-        <span class="domain-name">${domain.mainDomain}</span>
-        <span class="domain-time">${timeDisplay}</span>
-        <div class="progress-bar" data-width="${widthPercentage}">
-          <div class="focus-progress" data-width="${focusPercentage}"></div>
-          <div class="fun-progress" data-width="${funPercentage}"></div>
+    <div class="domain-header">
+      <div class="domain-item">
+        <div class="domain-icon">
+          <img class="domain-icon" 
+               src="${encodeURI(faviconCache[domain.mainDomain] || getDefaultIconUrl())}" 
+               alt=""
+               onerror="this.onerror=null;this.src='${chrome.runtime.getURL("icons/broken_pic.png")}'">
+        </div>
+        <div class="domain-info">
+          <span class="domain-name">${domain.mainDomain}</span>
+          <span class="domain-time">${timeDisplay}</span>
+          <div class="progress-bar" data-width="${widthPercentage}">
+            <div class="focus-progress" data-width="${focusPercentage}"></div>
+            <div class="fun-progress" data-width="${funPercentage}"></div>
+          </div>
         </div>
       </div>
+      <button class="pin-button ${pinClass}" 
+              data-domain="${domain.mainDomain}"
+              title="${pinTitle}">
+        ${pinIcon}
+      </button>
     </div>
   `
 }
 
 // 设置域名点击事件
 function setupDomainClickListener(domainElement, domain) {
-  domainElement.addEventListener("click", () => {
+  // 添加pin按钮事件监听
+  const pinButton = domainElement.querySelector(".pin-button")
+  pinButton.addEventListener("click", (event) => {
+    event.stopPropagation() // 防止触发域名展开
+    togglePinStatus(domain.mainDomain)
+  })
+
+  // 获取domain-header来处理点击事件
+  const domainHeader = domainElement.querySelector(".domain-header")
+  domainHeader.addEventListener("click", (event) => {
+    // 如果点击的是pin按钮，不处理展开逻辑
+    if (event.target.classList.contains("pin-button")) {
+      return
+    }
+
     domainElement.classList.toggle("active")
 
     if (hasExistingSubdomain(domainElement)) {
@@ -330,6 +365,26 @@ function createPageItem(pageUrl, pageInfo) {
 // 计算百分比
 function calculatePercentage(value, total) {
   return total > 0 ? ((value / total) * 100).toFixed(1) : 0
+}
+
+// 切换pin状态
+function togglePinStatus(domain) {
+  const isPinned = pinnedWebsites.includes(domain)
+
+  if (isPinned) {
+    // 取消pin
+    pinnedWebsites = pinnedWebsites.filter((d) => d !== domain)
+  } else {
+    // 添加pin
+    pinnedWebsites.push(domain)
+  }
+
+  // 保存到存储
+  chrome.storage.local.set({ pinnedWebsites: pinnedWebsites }, () => {
+    // 重新加载列表
+    const websiteList = document.getElementById("website-list")
+    updateWebsiteList(websiteList)
+  })
 }
 
 function formatTime(seconds) {

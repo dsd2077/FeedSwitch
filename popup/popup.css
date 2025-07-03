@@ -140,27 +140,43 @@ input:checked + .slider .off {
   border-radius: 6px;
   width: 100%;
 }
+
+.domain-header {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  align-items: center;
+}
 .domain-list.expanded {
   max-height: 1000px; /* 根据实际内容调整 */
 }
 /* 展开状态旋转箭头 */
-.domain-list.active .domain-item::after {
+.domain-list.active .domain-header::after {
   transform: rotate(-90deg);
 }
 
 .domain-item {
   display: flex;
-  width: 100%;
+  flex: 1;
   align-items: center; /* 顶部对齐 */
   gap: 10px;
   padding: 4px 0;
 }
-.domain-item:hover {
+.domain-header:hover {
   background: rgba(0, 0, 0, 0.09);
   border-radius: 4px;
 }
+
+/* 防止pin-button继承domain-header的悬停效果 */
+.domain-header:hover .pin-button {
+  background: transparent;
+}
+
+.domain-header:hover .pin-button:hover {
+  background: rgba(33, 150, 243, 0.1); /* 恢复pin-button自己的悬停效果 */
+}
 /* 添加展开指示箭头 */
-.domain-item::after {
+.domain-header::after {
   content: "◀";
   color: #999;
   font-size: 10px;
@@ -266,12 +282,7 @@ input:checked + .slider .off {
   transition: width 0.6s ease-out 0.4s;
 }
 
-/* 调整布局结构 */
-.domain-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 4px;
-}
+/* 调整布局结构 - 删除旧的定义 */
 
 .page-list {
   position: relative;
@@ -316,4 +327,33 @@ input:checked + .slider .off {
 .page-time {
   flex-shrink: 0;
   margin-left: auto;
+}
+
+/* 添加pin按钮样式 */
+.pin-button {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  opacity: 0.6;
+  transition: opacity 0.2s, transform 0.1s;
+  flex-shrink: 0;
+  width: 28px; /* 固定宽度 */
+  height: 28px; /* 固定高度 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pin-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  background: rgba(33, 150, 243, 0.1); /* 淡蓝色悬停背景 */
+}
+
+.pin-button.pinned {
+  opacity: 1;
+  color: #2196f3;
 }
