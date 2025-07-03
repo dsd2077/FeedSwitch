@@ -4,7 +4,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 /// <reference lib="DOM"/>
 let websitesTimeCache = null
 let faviconCache = null
-let pinnedWebsites = null // 添加pin状态缓存
+let pinnedWebsites = null // 添加pin状态缓存，格式：{domain: timestamp}
 
 document.addEventListener("DOMContentLoaded", () => {
   const trackingSwitch = document.getElementById("tracking-switch")
@@ -51,7 +51,22 @@ function updateWebsiteList(websiteList) {
   chrome.storage.local.get([websitesTimeKey, "faviconCache", "pinnedWebsites"], (result) => {
     websitesTimeCache = result[websitesTimeKey] || {} // 缓存数据
     faviconCache = result.faviconCache || {}
-    pinnedWebsites = result.pinnedWebsites || [] // 缓存pin状态
+
+    // 处理数据兼容性：如果是旧的数组格式，转换为新的对象格式
+    let pinnedData = result.pinnedWebsites || {}
+    if (Array.isArray(pinnedData)) {
+      // 转换数组格式为对象格式
+      const newPinnedData = {}
+      pinnedData.forEach((domain) => {
+        newPinnedData[domain] = Date.now()
+      })
+      pinnedWebsites = newPinnedData
+      // 立即保存新格式到存储
+      chrome.storage.local.set({ pinnedWebsites: pinnedWebsites })
+    } else {
+      pinnedWebsites = pinnedData
+    }
+
     const processedData = processStorageData()
     renderWebsiteList(websiteList, processedData)
   })
@@ -64,13 +79,20 @@ function processStorageData() {
       mainDomain,
       totalTime: calculateTotalTime(subDomains),
       funTime: calculateFunTime(subDomains),
-      isPinned: pinnedWebsites.includes(mainDomain),
+      isPinned: mainDomain in pinnedWebsites,
+      pinTimestamp: pinnedWebsites[mainDomain] || 0,
     }))
     .sort((a, b) => {
       // 首先按pin状态排序，被pin的网站排在前面
       if (a.isPinned && !b.isPinned) return -1
       if (!a.isPinned && b.isPinned) return 1
-      // 然后按总时长排序
+
+      // 如果都被pin，按pin时间降序排列（最近pin的在前）
+      if (a.isPinned && b.isPinned) {
+        return b.pinTimestamp - a.pinTimestamp
+      }
+
+      // 如果都未被pin，按总时长排序
       return b.totalTime - a.totalTime
     })
 
@@ -187,39 +209,45 @@ function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage
 function setupDomainClickListener(domainElement, domain) {
   // 添加pin按钮事件监听
   const pinButton = domainElement.querySelector(".pin-button")
-  pinButton.addEventListener("click", (event) => {
-    event.stopPropagation() // 防止触发域名展开
-    togglePinStatus(domain.mainDomain)
-  })
+  if (pinButton) {
+    pinButton.addEventListener("click", (event) => {
+      event.stopPropagation() // 防止触发域名展开
+      togglePinStatus(domain.mainDomain)
+    })
+  }
 
   // 获取domain-header来处理点击事件
   const domainHeader = domainElement.querySelector(".domain-header")
-  domainHeader.addEventListener("click", (event) => {
-    // 如果点击的是pin按钮，不处理展开逻辑
-    if (event.target.classList.contains("pin-button")) {
-      return
-    }
-
-    domainElement.classList.toggle("active")
-
-    if (hasExistingSubdomain(domainElement)) {
-      toggleSubdomainExpansion(domainElement)
-      return
-    }
-
-    fetchSubDomainData(domain.mainDomain).then((subDomains) => {
-      const sortedSubDomains = sortSubDomains(subDomains)
-      renderSubDomains(domainElement, sortedSubDomains)
-
-      // 如果只有一个子域名，自动展开它
-      if (sortedSubDomains.length === 1) {
-        const subDomainElement = domainElement.querySelector(".subdomain-list")
-        if (subDomainElement) {
-          subDomainElement.click()
-        }
+  if (domainHeader) {
+    domainHeader.addEventListener("click", (event) => {
+      // 如果点击的是pin按钮，不处理展开逻辑
+      if (event.target.classList.contains("pin-button")) {
+        return
       }
+
+      domainElement.classList.toggle("active")
+
+      if (hasExistingSubdomain(domainElement)) {
+        toggleSubdomainExpansion(domainElement)
+        return
+      }
+
+      fetchSubDomainData(domain.mainDomain).then((subDomains) => {
+        const sortedSubDomains = sortSubDomains(subDomains)
+        renderSubDomains(domainElement, sortedSubDomains)
+
+        // 如果只有一个子域名，自动展开它
+        if (sortedSubDomains.length === 1) {
+          const subDomainElement = domainElement.querySelector(".subdomain-list")
+          if (subDomainElement) {
+            subDomainElement.click()
+          }
+        }
+      })
     })
-  })
+  } else {
+    console.error("未找到domain-header:", domainElement)
+  }
 }
 
 // 检查是否存在子域名
@@ -369,14 +397,14 @@ function calculatePercentage(value, total) {
 
 // 切换pin状态
 function togglePinStatus(domain) {
-  const isPinned = pinnedWebsites.includes(domain)
+  const isPinned = domain in pinnedWebsites
 
   if (isPinned) {
     // 取消pin
-    pinnedWebsites = pinnedWebsites.filter((d) => d !== domain)
+    delete pinnedWebsites[domain]
   } else {
-    // 添加pin
-    pinnedWebsites.push(domain)
+    // 添加pin，记录当前时间戳，新pin的项目会排在最前面
+    pinnedWebsites[domain] = Date.now()
   }
 
   // 保存到存储
