@@ -88,6 +88,38 @@ function renderWebsiteList(websiteList, domains) {
     const domainElement = createDomainElement(domain, maxTotalTime)
     websiteList.appendChild(domainElement)
   })
+
+  // 触发进度条动画
+  setTimeout(() => {
+    animateProgressBars(websiteList)
+  }, 100) // 延迟100ms确保DOM已完全渲染
+}
+
+// 触发进度条动画
+function animateProgressBars(container) {
+  const progressBars = container.querySelectorAll(".progress-bar")
+  progressBars.forEach((bar, index) => {
+    const focusProgress = bar.querySelector(".focus-progress")
+    const funProgress = bar.querySelector(".fun-progress")
+
+    // 延迟每个进度条的动画，创建波浪效果
+    setTimeout(() => {
+      // 设置进度条容器宽度
+      const barWidth = bar.getAttribute("data-width")
+      bar.style.width = barWidth + "%"
+      bar.classList.add("animate")
+
+      // 设置专注时长进度条宽度
+      const focusWidth = focusProgress.getAttribute("data-width")
+      focusProgress.style.width = focusWidth + "%"
+      focusProgress.classList.add("animate")
+
+      // 设置娱乐时长进度条宽度
+      const funWidth = funProgress.getAttribute("data-width")
+      funProgress.style.width = funWidth + "%"
+      funProgress.classList.add("animate")
+    }, index * 100) // 每个进度条延迟100ms
+  })
 }
 
 // 创建域名元素
@@ -121,9 +153,9 @@ function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage
       <div class="domain-info">
         <span class="domain-name">${domain.mainDomain}</span>
         <span class="domain-time">${timeDisplay}</span>
-        <div class="progress-bar" style="width:${widthPercentage}%">
-          <div class="focus-progress" style="width:${focusPercentage}%"></div>
-          <div class="fun-progress" style="width:${funPercentage}%"></div>
+        <div class="progress-bar" data-width="${widthPercentage}">
+          <div class="focus-progress" data-width="${focusPercentage}"></div>
+          <div class="fun-progress" data-width="${funPercentage}"></div>
         </div>
       </div>
     </div>

@@ -138,7 +138,6 @@ input:checked + .slider .off {
   padding: 4px 0;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   border-radius: 6px;
-  transition: all 0.2s;
   width: 100%;
 }
 .domain-list.expanded {
@@ -177,7 +176,6 @@ input:checked + .slider .off {
   max-height: 0;
   overflow: hidden;
   padding-left: 12px; /*与连接线的间距*/
-  transition: max-height 0.3s ease-out;
   width: calc(100% - 30px); /* 保持宽度计算 */
 }
 
@@ -219,7 +217,6 @@ input:checked + .slider .off {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  transition: transform 0.2s;
 }
 
 .domain-info {
@@ -230,27 +227,43 @@ input:checked + .slider .off {
 /* 进度条容器 */
 .progress-bar {
   display: flex;
-  width: 100%;
+  width: 0%;
   height: 2px;
   background: #eee;
   border-radius: 3px;
   overflow: hidden;
-  transition: width 0.3s ease;
+  transition: width 0.8s ease-out;
   margin-top: 2px;
+}
+
+/* 进度条动画激活状态 */
+.progress-bar.animate {
+  transition: width 0.8s ease-out;
 }
 
 /* 专注时长部分 */
 .focus-progress {
   background: #00c853;
   height: 100%;
-  transition: width 0.3s ease;
+  width: 0%;
+  transition: width 0.6s ease-out 0.2s; /* 延迟0.2秒开始 */
 }
 
 /* 娱乐时长部分 */
 .fun-progress {
   background: #ff6b00;
   height: 100%;
-  transition: width 0.3s ease;
+  width: 0%;
+  transition: width 0.6s ease-out 0.4s; /* 延迟0.4秒开始 */
+}
+
+/* 动画激活状态 */
+.focus-progress.animate {
+  transition: width 0.6s ease-out 0.2s;
+}
+
+.fun-progress.animate {
+  transition: width 0.6s ease-out 0.4s;
 }
 
 /* 调整布局结构 */
@@ -267,7 +280,6 @@ input:checked + .slider .off {
   padding-left: 12px; /*与连接线的间距*/
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out; /* 缺少过渡效果定义 */
 }
 .page-list.expanded {
   max-height: 500px; /* 根据实际内容高度调整 */
