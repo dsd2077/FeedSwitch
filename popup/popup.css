@@ -4,6 +4,61 @@ body {
   padding: 2px;
 }
 
+.date-navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 16px 0 16px 0;
+  gap: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f8f9ff 0%, #e6e9ff 100%);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+}
+
+.date-navigation button {
+  width: 14px;
+  height: 14px;
+  border: none;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #667eea;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+.date-navigation button:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.date-navigation button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.date-navigation span {
+  font-weight: 600;
+  font-size: 15px;
+  color: #2d3748;
+  min-width: 120px;
+  text-align: center;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  border-radius: 8px;
+}
+
+.date-navigation span:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
 h1,
 h2 {
   margin-top: 0;
@@ -356,4 +411,31 @@ input:checked + .slider .off {
 .pin-button.pinned {
   opacity: 1;
   color: #2196f3;
+}
+
+#go-to-options {
+  width: 100%;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  margin-top: 16px;
+}
+
+#go-to-options:hover {
+  background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+#go-to-options:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }

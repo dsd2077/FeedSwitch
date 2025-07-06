@@ -5,6 +5,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 let websitesTimeCache = null
 let faviconCache = null
 let pinnedWebsites = null // 添加pin状态缓存，格式：{domain: timestamp}
+let currentDate = new Date() // 当前选择的日期
 
 document.addEventListener("DOMContentLoaded", () => {
   const trackingSwitch = document.getElementById("tracking-switch")
@@ -15,8 +16,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })
 
+  // 初始化日期显示
+  updateDateDisplay()
+
   const websiteList = document.getElementById("website-list")
   updateWebsiteList(websiteList)
+
+  // 添加日期导航按钮的事件监听器
+  document.getElementById("prevDay").addEventListener("click", () => {
+    changeDate(-1)
+  })
+
+  document.getElementById("currentDate").addEventListener("click", () => {
+    if (chrome.runtime.openOptionsPage) {
+      chrome.runtime.openOptionsPage()
+    } else {
+      window.open(chrome.runtime.getURL("options.html"))
+    }
+  })
+
+  document.getElementById("nextDay").addEventListener("click", () => {
+    changeDate(1)
+  })
 
   // 修改开关变化事件监听
   trackingSwitch.addEventListener("change", (event) => {
@@ -437,10 +458,9 @@ function getDefaultIconUrl() {
 }
 
 function getTodayDate() {
-  const today = new Date()
-  const year = today.getFullYear()
-  const month = String(today.getMonth() + 1).padStart(2, "0") // 月份从0开始，需要+1并补零
-  const day = String(today.getDate()).padStart(2, "0") // 日期补零
+  const year = currentDate.getFullYear()
+  const month = String(currentDate.getMonth() + 1).padStart(2, "0") // 月份从0开始，需要+1并补零
+  const day = String(currentDate.getDate()).padStart(2, "0") // 日期补零
 
   return `${year}-${month}-${day}`
 }
@@ -461,4 +481,42 @@ function parseDomain(domain) {
     console.error("Domain parse error:", domain, e)
     return domain
   }
+}
+
+// 更新日期显示
+function updateDateDisplay() {
+  const dateElement = document.getElementById("currentDate")
+  if (dateElement) {
+    const today = new Date()
+    const isToday = currentDate.toDateString() === today.toDateString()
+    const month = currentDate.getMonth() + 1
+    const day = currentDate.getDate()
+    const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
+    const weekday = weekdays[currentDate.getDay()]
+
+    if (isToday) {
+      dateElement.textContent = `今天 ${weekday}`
+    } else {
+      dateElement.textContent = `${month}月${day}日 ${weekday}`
+    }
+  }
+}
+
+// 改变日期
+function changeDate(days) {
+  const newDate = new Date(currentDate)
+  newDate.setDate(currentDate.getDate() + days)
+
+  // 不能选择未来的日期
+  const today = new Date()
+  if (newDate > today) {
+    return
+  }
+
+  currentDate = newDate
+  updateDateDisplay()
+
+  // 重新加载数据
+  const websiteList = document.getElementById("website-list")
+  updateWebsiteList(websiteList)
 }
