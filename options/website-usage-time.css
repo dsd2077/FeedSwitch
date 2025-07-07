@@ -69,6 +69,7 @@ button {
   flex: 1;
   min-width: 300px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  list-style: none; /* 移除默认的列表项标记 */
 }
 
 .domain-list {
@@ -81,6 +82,7 @@ button {
   border-radius: 6px;
   transition: all 0.2s;
   width: 100%;
+  list-style: none; /* 移除默认的列表项标记 */
 }
 .domain-list.expanded {
   max-height: 1000px; /* 根据实际内容调整 */
@@ -120,6 +122,7 @@ button {
   padding-left: 12px; /*与连接线的间距*/
   transition: max-height 0.3s ease-out;
   width: calc(100% - 30px); /* 保持宽度计算 */
+  list-style: none; /* 移除默认的列表项标记 */
 }
 
 .subdomain-list.expanded {
@@ -209,6 +212,7 @@ button {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-out; /* 缺少过渡效果定义 */
+  list-style: none; /* 移除默认的列表项标记 */
 }
 .page-list.expanded {
   max-height: 500px; /* 根据实际内容高度调整 */

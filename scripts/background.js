@@ -394,8 +394,9 @@ function cacheFavicon(mainDomain, iconUrl) {
     const cache = result.faviconCache || {}
 
     // 新增过滤条件
-    const shouldCache =
-      iconUrl && !iconUrl.startsWith("data:image/svg+xml") && !iconUrl.includes("chrome-extension://") && /\.(png|jpe?g|gif|webp|ico)$/i.test(iconUrl)
+    // const shouldCache =
+    // iconUrl && !iconUrl.startsWith("data:image/svg+xml") && !iconUrl.includes("chrome-extension://") && /\.(png|jpe?g|gif|webp|ico)$/i.test(iconUrl)
+    const shouldCache = iconUrl && !iconUrl.startsWith("data:image/svg+xml") && !iconUrl.includes("chrome-extension://")
 
     if (shouldCache && !cache[mainDomain]) {
       cache[mainDomain] = iconUrl
