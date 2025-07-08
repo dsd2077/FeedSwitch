@@ -324,6 +324,9 @@ function updateBadgeStatus(isFocus) {
 chrome.runtime.onMessage.addListener((request) => {
   if (request.type === "toggleTracking") {
     updateBadgeStatus(request.isFocus)
+  } else if (request.type === "recacheIcon") {
+    // 重新缓存图标
+    cacheFavicon(request.domain, request.url)
   }
 })
 
@@ -389,18 +392,93 @@ chrome.commands.onCommand.addListener((command) => {
   }
 })
 
-function cacheFavicon(mainDomain, iconUrl) {
+// 缓存管理配置
+const CACHE_CONFIG = {
+  CACHE_EXPIRY: 7 * 24 * 60 * 60 * 1000, // 7天过期时间
+  CLEANUP_INTERVAL: 24 * 60 * 60 * 1000, // 24小时清理间隔
+}
+
+// 清理过期缓存
+function cleanupExpiredCache() {
   chrome.storage.local.get(["faviconCache"], (result) => {
     const cache = result.faviconCache || {}
+    const now = Date.now()
+    let cleaned = false
 
-    // 新增过滤条件
-    // const shouldCache =
-    // iconUrl && !iconUrl.startsWith("data:image/svg+xml") && !iconUrl.includes("chrome-extension://") && /\.(png|jpe?g|gif|webp|ico)$/i.test(iconUrl)
-    const shouldCache = iconUrl && !iconUrl.startsWith("data:image/svg+xml") && !iconUrl.includes("chrome-extension://")
+    Object.keys(cache).forEach((domain) => {
+      const entry = cache[domain]
+      if (entry.timestamp && now - entry.timestamp > CACHE_CONFIG.CACHE_EXPIRY) {
+        delete cache[domain]
+        cleaned = true
+      }
+    })
 
-    if (shouldCache && !cache[mainDomain]) {
-      cache[mainDomain] = iconUrl
-      chrome.storage.local.set({ faviconCache: cache })
+    if (cleaned) {
+      chrome.storage.local.set({
+        faviconCache: cache,
+      })
+    }
+  })
+}
+
+function cacheFavicon(mainDomain, iconUrl) {
+  chrome.storage.local.get(["faviconCache", "faviconUrls"], (result) => {
+    const cache = result.faviconCache || {}
+    const urls = result.faviconUrls || {}
+
+    if (!iconUrl) {
+      return
+    }
+
+    if (!urls[mainDomain]) {
+      urls[mainDomain] = iconUrl
+      chrome.storage.local.set({ faviconUrls: urls })
+    }
+
+    if (!cache[mainDomain]) {
+      if (iconUrl.startsWith("data:")) {
+        const cacheEntry = {
+          data: iconUrl,
+          timestamp: Date.now(),
+          size: iconUrl.length,
+        }
+
+        cache[mainDomain] = cacheEntry
+        chrome.storage.local.set({ faviconCache: cache })
+
+        return
+      }
+
+      // 获取图标数据并转换为base64
+      fetch(iconUrl)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`)
+          }
+          return response.blob()
+        })
+        .then((blob) => {
+          // 转换为base64
+          const reader = new FileReader()
+          reader.onload = function () {
+            const cacheEntry = {
+              data: reader.result,
+              timestamp: Date.now(),
+              size: reader.result.length,
+            }
+
+            cache[mainDomain] = cacheEntry
+            chrome.storage.local.set({ faviconCache: cache })
+            console.log(`Cached icon for ${mainDomain} (${cacheEntry.size} bytes)`)
+          }
+          reader.onerror = function () {
+            console.error(`Failed to read icon for ${mainDomain}`)
+          }
+          reader.readAsDataURL(blob)
+        })
+        .catch((error) => {
+          console.error(`Failed to cache icon for ${mainDomain}:`, error)
+        })
     }
   })
 }
@@ -495,3 +573,9 @@ function processPendingChanges() {
     })
   })
 }
+
+// 设置定期清理
+setInterval(cleanupExpiredCache, CACHE_CONFIG.CLEANUP_INTERVAL)
+
+// 启动时清理一次
+cleanupExpiredCache()

@@ -4,6 +4,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 ;(function () {
   let websitesTimeCache = null
   let faviconCache = null
+  let faviconUrls = null
 
   // 全局状态管理
   const state = {
@@ -385,10 +386,25 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   // ------------------------------------------------------------------------------------
   function updateWebsiteList(websiteList, date) {
     const websitesTimeKey = generateWebsitesTimeKey(date)
-    chrome.storage.local.get([websitesTimeKey, "faviconCache"], (result) => {
+    chrome.storage.local.get([websitesTimeKey, "faviconCache", "faviconUrls"], (result) => {
       websitesTimeCache = result[websitesTimeKey] || {} // 缓存数据
       faviconCache = result.faviconCache || {}
+      faviconUrls = result.faviconUrls || {}
       const processedData = processStorageData()
+      // 自动重新缓存没有缓存但有URL的图标
+      processedData.forEach((domain) => {
+        const cachedIcon = faviconCache[domain.mainDomain]
+        const iconUrl = faviconUrls[domain.mainDomain]
+
+        if (iconUrl && !cachedIcon) {
+          // 触发重新缓存
+          chrome.runtime.sendMessage({
+            type: "recacheIcon",
+            domain: domain.mainDomain,
+            url: iconUrl,
+          })
+        }
+      })
       renderWebsiteList(websiteList, processedData)
     })
   }
@@ -444,6 +460,31 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     return domainList
   }
 
+  // 获取图标源地址
+  function getIconSrc(domain) {
+    const cachedIcon = faviconCache[domain]
+    const iconUrl = faviconUrls[domain]
+
+    // 优先使用缓存的图标
+    if (cachedIcon) {
+      return cachedIcon.data
+    }
+
+    // 如果缓存不存在但有URL，使用URL并触发重新缓存
+    if (iconUrl && !cachedIcon) {
+      // 触发重新缓存（通过消息传递给background script）
+      chrome.runtime.sendMessage({
+        type: "recacheIcon",
+        domain: domain,
+        url: iconUrl,
+      })
+      return encodeURI(iconUrl)
+    }
+
+    // 否则使用默认图标
+    return getDefaultIconUrl()
+  }
+
   // 构建域名HTML模板
   function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage) {
     const timeDisplay = domain.funTime > 0 ? `${formatTime(domain.totalTime)} (娱乐: ${formatTime(domain.funTime)})` : formatTime(domain.totalTime)
@@ -452,7 +493,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     <div class="domain-item">
       <div class="domain-icon">
         <img class="domain-icon" 
-             src="${encodeURI(faviconCache[domain.mainDomain] || getDefaultIconUrl())}" 
+             src="${getIconSrc(domain.mainDomain)}" 
              alt=""
              onerror="this.onerror=null;this.src='${chrome.runtime.getURL("icons/broken_pic.png")}'">
       </div>

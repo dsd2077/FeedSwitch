@@ -4,6 +4,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 /// <reference lib="DOM"/>
 let websitesTimeCache = null
 let faviconCache = null
+let faviconUrls = null
 let pinnedWebsites = null // 添加pin状态缓存，格式：{domain: timestamp}
 let currentDate = new Date() // 当前选择的日期
 
@@ -69,9 +70,10 @@ document.querySelector("#go-to-options").addEventListener("click", function () {
 
 function updateWebsiteList(websiteList) {
   const websitesTimeKey = generateWebsitesTimeKey()
-  chrome.storage.local.get([websitesTimeKey, "faviconCache", "pinnedWebsites"], (result) => {
+  chrome.storage.local.get([websitesTimeKey, "faviconCache", "faviconUrls", "pinnedWebsites"], (result) => {
     websitesTimeCache = result[websitesTimeKey] || {} // 缓存数据
     faviconCache = result.faviconCache || {}
+    faviconUrls = result.faviconUrls || {}
 
     // 处理数据兼容性：如果是旧的数组格式，转换为新的对象格式
     let pinnedData = result.pinnedWebsites || {}
@@ -89,6 +91,21 @@ function updateWebsiteList(websiteList) {
     }
 
     const processedData = processStorageData()
+    // 自动重新缓存没有缓存但有URL的图标
+    processedData.forEach((domain) => {
+      const cachedIcon = faviconCache[domain.mainDomain]
+      const iconUrl = faviconUrls[domain.mainDomain]
+
+      if (iconUrl && !cachedIcon) {
+        // 触发重新缓存
+        chrome.runtime.sendMessage({
+          type: "recacheIcon",
+          domain: domain.mainDomain,
+          url: iconUrl,
+        })
+      }
+    })
+
     renderWebsiteList(websiteList, processedData)
   })
 }
@@ -192,6 +209,31 @@ function createDomainElement(domain, maxTotalTime) {
   return domainList
 }
 
+// 获取图标源地址
+function getIconSrc(domain) {
+  const cachedIcon = faviconCache[domain]
+  const iconUrl = faviconUrls[domain]
+
+  // 优先使用缓存的图标
+  if (cachedIcon) {
+    return cachedIcon.data
+  }
+
+  // 如果缓存不存在但有URL，使用URL并触发重新缓存
+  if (iconUrl && !cachedIcon) {
+    // 触发重新缓存（通过消息传递给background script）
+    chrome.runtime.sendMessage({
+      type: "recacheIcon",
+      domain: domain,
+      url: iconUrl,
+    })
+    return encodeURI(iconUrl)
+  }
+
+  // 否则使用默认图标
+  return getDefaultIconUrl()
+}
+
 // 构建域名HTML模板
 function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage) {
   const timeDisplay = domain.funTime > 0 ? `${formatTime(domain.totalTime)} (娱乐: ${formatTime(domain.funTime)})` : formatTime(domain.totalTime)
@@ -204,7 +246,7 @@ function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage
       <div class="domain-item">
         <div class="domain-icon">
           <img class="domain-icon" 
-               src="${encodeURI(faviconCache[domain.mainDomain] || getDefaultIconUrl())}" 
+               src="${getIconSrc(domain.mainDomain)}" 
                alt=""
                onerror="this.onerror=null;this.src='${chrome.runtime.getURL("icons/broken_pic.png")}'">
         </div>
