@@ -174,8 +174,13 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       updateCharts()
     })
 
-    const websiteList = document.getElementById("website-list")
-    updateWebsiteList(websiteList, state.currentDate)
+    // 更新每日网站列表
+    const dailyWebsiteList = document.getElementById("daily-website-list")
+    updateWebsiteList(dailyWebsiteList, state.currentDate, 'daily')
+    
+    // 更新周网站列表
+    const weeklyWebsiteList = document.getElementById("weekly-website-list")
+    updateWebsiteList(weeklyWebsiteList, state.currentWeek, 'weekly')
   }
 
   // 更新统计信息
@@ -382,29 +387,91 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   // 初始化应用
   init()
 
-  function updateWebsiteList(websiteList, date) {
-    const websitesTimeKey = generateWebsitesTimeKey(date)
-    chrome.storage.local.get([websitesTimeKey, "faviconCache", "faviconUrls"], (result) => {
-      websitesTimeCache = result[websitesTimeKey] || {} // 缓存数据
-      faviconCache = result.faviconCache || {}
-      faviconUrls = result.faviconUrls || {}
-      const processedData = processStorageData()
-      // 自动重新缓存没有缓存但有URL的图标
-      processedData.forEach((domain) => {
-        const cachedIcon = faviconCache[domain.mainDomain]
-        const iconUrl = faviconUrls[domain.mainDomain]
+  function updateWebsiteList(websiteList, dateOrDates, type = 'daily') {
+    if (type === 'daily') {
+      // 单日数据处理
+      const websitesTimeKey = generateWebsitesTimeKey(dateOrDates)
+      chrome.storage.local.get([websitesTimeKey, "faviconCache", "faviconUrls"], (result) => {
+        websitesTimeCache = result[websitesTimeKey] || {} // 缓存数据
+        faviconCache = result.faviconCache || {}
+        faviconUrls = result.faviconUrls || {}
+        const processedData = processStorageData()
+        // 自动重新缓存没有缓存但有URL的图标
+        processedData.forEach((domain) => {
+          const cachedIcon = faviconCache[domain.mainDomain]
+          const iconUrl = faviconUrls[domain.mainDomain]
 
-        if (iconUrl && !cachedIcon) {
-          // 触发重新缓存
-          chrome.runtime.sendMessage({
-            type: "recacheIcon",
-            domain: domain.mainDomain,
-            url: iconUrl,
-          })
-        }
+          if (iconUrl && !cachedIcon) {
+            // 触发重新缓存
+            chrome.runtime.sendMessage({
+              type: "recacheIcon",
+              domain: domain.mainDomain,
+              url: iconUrl,
+            })
+          }
+        })
+        renderWebsiteList(websiteList, processedData)
       })
-      renderWebsiteList(websiteList, processedData)
-    })
+    } else if (type === 'weekly') {
+      // 周数据处理 - 需要聚合多天的数据
+      const websitesTimeKeys = dateOrDates.map(date => generateWebsitesTimeKey(date))
+      const allKeys = [...websitesTimeKeys, "faviconCache", "faviconUrls"]
+      
+      chrome.storage.local.get(allKeys, (result) => {
+        faviconCache = result.faviconCache || {}
+        faviconUrls = result.faviconUrls || {}
+        
+        // 聚合一周的数据
+        const aggregatedData = {}
+        websitesTimeKeys.forEach(key => {
+          const dayData = result[key] || {}
+          // 遍历每天的数据并聚合
+          Object.entries(dayData).forEach(([mainDomain, subDomains]) => {
+            if (!aggregatedData[mainDomain]) {
+              aggregatedData[mainDomain] = {}
+            }
+            // 聚合子域名数据
+            Object.entries(subDomains).forEach(([subDomain, pages]) => {
+              if (!aggregatedData[mainDomain][subDomain]) {
+                aggregatedData[mainDomain][subDomain] = {}
+              }
+              // 聚合页面数据
+              Object.entries(pages).forEach(([pageUrl, pageInfo]) => {
+                if (!aggregatedData[mainDomain][subDomain][pageUrl]) {
+                  aggregatedData[mainDomain][subDomain][pageUrl] = {
+                    time: 0,
+                    funTime: 0,
+                    title: pageInfo.title
+                  }
+                }
+                aggregatedData[mainDomain][subDomain][pageUrl].time += pageInfo.time || 0
+                aggregatedData[mainDomain][subDomain][pageUrl].funTime += pageInfo.funTime || 0
+              })
+            })
+          })
+        })
+        
+        websitesTimeCache = aggregatedData
+        const processedData = processStorageData()
+        
+        // 自动重新缓存没有缓存但有URL的图标
+        processedData.forEach((domain) => {
+          const cachedIcon = faviconCache[domain.mainDomain]
+          const iconUrl = faviconUrls[domain.mainDomain]
+
+          if (iconUrl && !cachedIcon) {
+            // 触发重新缓存
+            chrome.runtime.sendMessage({
+              type: "recacheIcon",
+              domain: domain.mainDomain,
+              url: iconUrl,
+            })
+          }
+        })
+        
+        renderWebsiteList(websiteList, processedData)
+      })
+    }
   }
 
   // 处理存储数据
@@ -435,9 +502,14 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   function renderWebsiteList(websiteList, domains) {
     websiteList.innerHTML = ""
     const maxTotalTime = Math.max(...domains.map((d) => d.totalTime), 0)
+    
+    // 从容器元素的 id 判断是 weekly 还是 daily
+    const isWeekly = websiteList.id === 'weekly-website-list'
 
     domains.forEach((domain) => {
       const domainElement = createDomainElement(domain, maxTotalTime)
+      // 在元素上存储数据类型，供后续使用
+      domainElement.dataset.type = isWeekly ? 'weekly' : 'daily'
       websiteList.appendChild(domainElement)
     })
   }
@@ -516,8 +588,11 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         toggleSubdomainExpansion(domainElement)
         return
       }
+      
+      // 获取数据类型
+      const dataType = domainElement.dataset.type || 'daily'
 
-      fetchSubDomainData(domain.mainDomain).then((subDomains) => {
+      fetchSubDomainData(domain.mainDomain, dataType).then((subDomains) => {
         const sortedSubDomains = sortSubDomains(subDomains)
         renderSubDomains(domainElement, sortedSubDomains)
       })
@@ -535,16 +610,20 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   }
 
   // 获取子域名数据
-  function fetchSubDomainData(mainDomain) {
+  function fetchSubDomainData(mainDomain, dataType = 'daily') {
     return new Promise((resolve) => {
-      if (websitesTimeCache && websitesTimeCache[mainDomain]) {
+      // 对于周数据，websitesTimeCache 已经包含了聚合后的数据
+      if (dataType === 'weekly' && websitesTimeCache && websitesTimeCache[mainDomain]) {
         resolve(websitesTimeCache[mainDomain])
-      } else {
-        const websitesTimeKey = generateWebsitesTimeKey()
+      } else if (dataType === 'daily') {
+        // 对于日数据，需要重新获取当前日期的数据
+        const websitesTimeKey = generateWebsitesTimeKey(state.currentDate)
         chrome.storage.local.get([websitesTimeKey], (result) => {
-          websitesTimeCache = result[websitesTimeKey] || {}
-          resolve(websitesTimeCache[mainDomain] || {})
+          const dayCache = result[websitesTimeKey] || {}
+          resolve(dayCache[mainDomain] || {})
         })
+      } else {
+        resolve({})
       }
     })
   }
@@ -604,8 +683,12 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         subDomainItem.querySelector(".page-list").classList.toggle("expanded")
         return
       }
+      
+      // 获取数据类型（从父元素向上查找）
+      const domainListElement = subDomainItem.closest('.domain-list')
+      const dataType = domainListElement ? domainListElement.dataset.type : 'daily'
 
-      fetchPageData(subDomain).then((pages) => {
+      fetchPageData(subDomain, dataType).then((pages) => {
         const sortedPages = sortPages(pages)
         renderPages(subDomainItem, sortedPages)
       })
@@ -613,17 +696,22 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   }
 
   // 获取页面数据
-  function fetchPageData(subDomain) {
+  function fetchPageData(subDomain, dataType = 'daily') {
     return new Promise((resolve) => {
       const mainDomain = parseDomain(subDomain)
-      if (websitesTimeCache && websitesTimeCache[mainDomain]?.[subDomain]) {
+      
+      if (dataType === 'weekly' && websitesTimeCache && websitesTimeCache[mainDomain]?.[subDomain]) {
+        // 对于周数据，直接使用缓存的聚合数据
         resolve(websitesTimeCache[mainDomain][subDomain])
-      } else {
-        const websitesTimeKey = generateWebsitesTimeKey()
+      } else if (dataType === 'daily') {
+        // 对于日数据，重新获取当前日期的数据
+        const websitesTimeKey = generateWebsitesTimeKey(state.currentDate)
         chrome.storage.local.get([websitesTimeKey], (result) => {
-          websitesTimeCache = result[websitesTimeKey] || {}
-          resolve(websitesTimeCache[mainDomain]?.[subDomain] || {})
+          const dayCache = result[websitesTimeKey] || {}
+          resolve(dayCache[mainDomain]?.[subDomain] || {})
         })
+      } else {
+        resolve({})
       }
     })
   }
