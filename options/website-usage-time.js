@@ -382,8 +382,6 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   // 初始化应用
   init()
 
-  // ------------------------------------------------------------------------------------
-  // ------------------------------------------------------------------------------------
   function updateWebsiteList(websiteList, date) {
     const websitesTimeKey = generateWebsitesTimeKey(date)
     chrome.storage.local.get([websitesTimeKey, "faviconCache", "faviconUrls"], (result) => {
@@ -568,44 +566,48 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
   // 渲染子域名
   function renderSubDomains(domainElement, subDomains) {
+    // 创建一个容器来包含所有子域名
+    const subdomainContainer = document.createElement("ul")
+    subdomainContainer.className = "subdomain-list expanded"
+    
     subDomains.forEach(({ subDomain, time }) => {
-      const subDomainElement = createSubDomainElement(subDomain, time)
-      setupSubDomainListener(subDomainElement, subDomain)
-      domainElement.appendChild(subDomainElement)
+      const subDomainItem = createSubDomainItem(subDomain, time)
+      setupSubDomainItemListener(subDomainItem, subDomain)
+      subdomainContainer.appendChild(subDomainItem)
     })
+    
+    domainElement.appendChild(subdomainContainer)
   }
 
-  // 创建子域名元素
-  function createSubDomainElement(subDomain, time) {
-    const subDomainElement = document.createElement("ul")
-    subDomainElement.className = "subdomain-list expanded"
+  // 创建子域名项元素
+  function createSubDomainItem(subDomain, time) {
+    const subDomainItem = document.createElement("li")
+    subDomainItem.className = "subdomain-item"
 
-    subDomainElement.innerHTML = `
-    <div class="subdomain-item">
+    subDomainItem.innerHTML = `
       <div class="subdomain-info">
         <span class="subdomain-name">${subDomain}</span>
         <span class="subdomain-time">${formatTime(time)}</span>
       </div>
-    </div>
-  `
+    `
 
-    return subDomainElement
+    return subDomainItem
   }
 
-  // 设置子域名点击事件
-  function setupSubDomainListener(subDomainElement, subDomain) {
-    subDomainElement.addEventListener("click", (event) => {
+  // 设置子域名项点击事件
+  function setupSubDomainItemListener(subDomainItem, subDomain) {
+    subDomainItem.addEventListener("click", (event) => {
       event.stopPropagation()
-      subDomainElement.classList.toggle("active")
+      subDomainItem.classList.toggle("active")
 
-      if (subDomainElement.querySelector(".page-list")) {
-        subDomainElement.querySelector(".page-list").classList.toggle("expanded")
+      if (subDomainItem.querySelector(".page-list")) {
+        subDomainItem.querySelector(".page-list").classList.toggle("expanded")
         return
       }
 
       fetchPageData(subDomain).then((pages) => {
         const sortedPages = sortPages(pages)
-        renderPages(subDomainElement, sortedPages)
+        renderPages(subDomainItem, sortedPages)
       })
     })
   }

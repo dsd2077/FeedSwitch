@@ -78,9 +78,10 @@ button {
   position: relative;
   align-items: flex-start;
   padding: 4px 0;
+  margin-bottom: 4px; /* 添加底部间距，避免收缩后留下大空隙 */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   border-radius: 6px;
-  transition: all 0.2s;
+  /* transition: all 0.2s; */
   width: 100%;
   list-style: none; /* 移除默认的列表项标记 */
 }
@@ -113,15 +114,15 @@ button {
 }
 
 .subdomain-list {
-  padding: 0px 4;
-  margin-left: 30px; /* 图标宽度18+ padding2 + gap10*/
+  padding: 0;
+  padding-left: 12px; /* 始终保持左侧内边距 */
+  margin: 0;
+  margin-left: 20px; /* 减小左边距 */
   position: relative;
-  border-left: 2px solid #eee; /* 添加层级连接线 */
+  border-left: 2px solid #eee; /* 始终显示连接线 */
   max-height: 0;
   overflow: hidden;
-  padding-left: 12px; /*与连接线的间距*/
-  transition: max-height 0.3s ease-out;
-  width: calc(100% - 30px); /* 保持宽度计算 */
+  width: calc(100% - 20px); /* 相应调整宽度计算 */
   list-style: none; /* 移除默认的列表项标记 */
 }
 
@@ -130,10 +131,9 @@ button {
 }
 
 .subdomain-item {
-  display: flex;
+  display: block; /* 改为block使内容上下排列 */
   width: calc(100% - 12px);
-  align-items: center; /* 顶部对齐 */
-  padding: 4px 0;
+  padding: 6px 0; /* 增加上下间距，从4px改为6px */
 }
 /* 子域名项 */
 .subdomain-item:hover {
@@ -141,17 +141,22 @@ button {
   border-radius: 4px;
 }
 
-/* 添加展开指示箭头 */
-.subdomain-item::after {
+/* 移除子域名项的箭头，因为它现在是block布局 */
+.subdomain-item.active .subdomain-info::after {
   content: "◀";
   color: #999;
   font-size: 10px;
-  margin-left: auto; /* 靠右显示 */
+  margin-left: 10px;
   transition: transform 0.2s;
+  transform: rotate(-90deg);
 }
 
-.subdomain-list.active .subdomain-item::after {
-  transform: rotate(-90deg);
+.subdomain-info::after {
+  content: "◀";
+  color: #999;
+  font-size: 10px;
+  margin-left: 10px;
+  transition: transform 0.2s;
 }
 
 /* 页面项 */
@@ -163,7 +168,6 @@ button {
   width: 18px;
   height: 18px;
   flex-shrink: 0;
-  transition: transform 0.2s;
 }
 
 .domain-info {
@@ -206,12 +210,14 @@ button {
 
 .page-list {
   position: relative;
-  border-left: 2px solid #e0e0e0;
-  width: calc(100% - 30px); /* 继承父级宽度 */
-  padding-left: 12px; /*与连接线的间距*/
+  width: calc(100% - 20px); /* 调整宽度计算 */
+  padding: 0;
+  padding-left: 16px; /* 始终保持左侧内边距 */
+  margin: 0;
+  border-left: 2px solid #e0e0e0; /* 始终显示连接线 */
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.3s ease-out; /* 缺少过渡效果定义 */
+  /* transition: max-height 0.3s ease-out; */
   list-style: none; /* 移除默认的列表项标记 */
 }
 .page-list.expanded {
@@ -229,12 +235,26 @@ button {
   color: #666;
 }
 
+.subdomain-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.subdomain-time {
+  font-size: 13px;
+  color: #999;
+  margin-left: auto;
+}
+
 .page-info {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
   min-width: 0; /* 关键属性：允许内容收缩 */
+  padding: 3px 0; /* 增加页面项的上下间距 */
 }
 
 .page-title {
