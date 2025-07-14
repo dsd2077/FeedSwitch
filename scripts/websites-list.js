@@ -60,6 +60,14 @@ function createDomainElement(domain, maxTotalTime) {
 
   domainList.innerHTML = buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage)
 
+  // 添加图片错误处理
+  const imgElement = domainList.querySelector('.domain-icon img')
+  if (imgElement) {
+    imgElement.addEventListener('error', function() {
+      this.src = chrome.runtime.getURL("icons/broken_pic.png")
+    })
+  }
+
   setupDomainClickListener(domainList, domain)
   return domainList
 }
@@ -74,7 +82,7 @@ function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage
         <img class="domain-icon" 
              src="${encodeURI(faviconCache[domain.mainDomain] || getDefaultIconUrl())}" 
              alt=""
-             onerror="this.onerror=null;this.src='${chrome.runtime.getURL("icons/broken_pic.png")}'">
+             data-domain="${domain.mainDomain}">
       </div>
       <div class="domain-info">
         <span class="domain-name">${domain.mainDomain}</span>
