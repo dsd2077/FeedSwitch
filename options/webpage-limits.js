@@ -480,49 +480,75 @@ import { SITE_CONFIG } from "../scripts/config.js"
     }
   })
 
+  // 创建建议项的函数
+  function createSuggestionItem(match) {
+    const div = document.createElement("div")
+    div.textContent = match
+    div.style.padding = "5px"
+    div.style.cursor = "pointer"
+    div.onclick = () => {
+      suggestionsDiv.innerHTML = ""
+      websiteInput.value = ""
+      // 创建标签元素
+      const tag = document.createElement("div")
+      tag.className = "website-tag"
+      tag.innerHTML = `
+            ${match}
+            <button class="remove-tag-btn">×</button>
+            <input type="hidden" name="websites" value="${match}">
+        `
+      websitesContainer.appendChild(tag)
+    }
+    // 添加悬停事件
+    div.addEventListener("mouseenter", () => {
+      // 移除所有激活状态
+      suggestionsDiv.querySelectorAll("div").forEach((item) => {
+        item.classList.remove("active")
+      })
+      // 设置当前项激活
+      div.classList.add("active")
+    })
+    div.addEventListener("mouseleave", () => {
+      div.classList.remove("active")
+    })
+    return div
+  }
+
+  // 显示建议的函数
+  function showSuggestions(matches) {
+    suggestionsDiv.innerHTML = ""
+    websiteInput.closest(".input-group").classList.add("active")
+    
+    matches.forEach((match) => {
+      const div = createSuggestionItem(match)
+      suggestionsDiv.appendChild(div)
+    })
+  }
+
+  // 输入框获得焦点时显示所有建议
+  websiteInput.addEventListener("focus", function (e) {
+    const input = e.target.value.toLowerCase()
+    
+    if (input.length > 0) {
+      // 如果有输入内容，按现有逻辑过滤显示
+      const matches = suggestionList.filter((item) => item.toLowerCase().includes(input))
+      showSuggestions(matches)
+    } else {
+      // 如果没有输入内容，显示所有建议
+      showSuggestions(suggestionList) // 显示全部建议
+    }
+  })
+
   websiteInput.addEventListener("input", function (e) {
     const input = e.target.value.toLowerCase()
     suggestionsDiv.innerHTML = ""
 
     if (input.length > 0) {
-      // 添加激活状态（触发CSS显示）
-      websiteInput.closest(".input-group").classList.add("active")
-      const matches = suggestionList.filter((item) => item.toLowerCase().includes(input)).slice(0, 5) // 显示最多5条建议
-
-      matches.forEach((match) => {
-        const div = document.createElement("div")
-        div.textContent = match
-        div.style.padding = "5px"
-        div.style.cursor = "pointer"
-        div.onclick = () => {
-          suggestionsDiv.innerHTML = ""
-          websiteInput.value = ""
-          // 创建标签元素
-          const tag = document.createElement("div")
-          tag.className = "website-tag"
-          tag.innerHTML = `
-                ${match}
-                <button class="remove-tag-btn">×</button>
-                <input type="hidden" name="websites" value="${match}">
-            `
-          websitesContainer.appendChild(tag)
-        }
-        // 添加悬停事件
-        div.addEventListener("mouseenter", () => {
-          // 移除所有激活状态
-          suggestionsDiv.querySelectorAll("div").forEach((item) => {
-            item.classList.remove("active")
-          })
-          // 设置当前项激活
-          div.classList.add("active")
-        })
-        div.addEventListener("mouseleave", () => {
-          div.classList.remove("active")
-        })
-        suggestionsDiv.appendChild(div)
-      })
+      const matches = suggestionList.filter((item) => item.toLowerCase().includes(input)) // 显示所有匹配的建议
+      showSuggestions(matches)
     } else {
-      websiteInput.closest(".input-group").classList.remove("active")
+      // 输入为空时显示所有建议
+      showSuggestions(suggestionList) // 显示全部建议
     }
   })
 

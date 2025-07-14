@@ -239,9 +239,29 @@
   background: white;
   border: 1px solid #ddd;
   border-top: none;
-  max-height: 200px;
+  max-height: 200px; /* 增加最大高度以显示更多建议 */
   overflow-y: auto;
   z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+}
+
+/* 自定义滚动条样式 */
+.suggestions-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.suggestions-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.suggestions-container::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 
 .input-group.active .suggestions-container {
