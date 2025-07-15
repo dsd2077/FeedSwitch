@@ -29,15 +29,7 @@
   },
   "content_scripts": [
     {
-      "matches": [
-        "*://*.bilibili.com/*",
-        "*://*.baidu.com/*",
-        "*://*.zhihu.com/*",
-        "*://*.blog.csdn.net/*",
-        "*://*.juejin.cn/*",
-        "*://*.xiaohongshu.com/*",
-        "*://*.jianshu.com/*"
-      ],
+      "matches": ["<all_urls>"],
       "js": ["dist/content.js"],
       "run_at": "document_start"
     }
