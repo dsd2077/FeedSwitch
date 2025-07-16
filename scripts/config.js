@@ -79,30 +79,12 @@ export const SITE_CONFIG = {
     targets: [
       // 首页信息流（仅限首页，不影响订阅页面）
       "ytd-browse[page-subtype='home'] ytd-rich-grid-renderer",
-      // "td-browse[page-subtype='home'] ytd-rich-syection-renderer",
-      // "ytd-browse[page-subtype='home'] #contents.ytd-rich-grid-renderer",
-
-      // Shorts信息流
-      "ytd-browse[page-subtype='shorts']",
-      "ytd-shorts",
-      "ytd-reel-shelf-renderer",
-
-      // Explore页面
-      "ytd-browse[page-subtype='explore']",
-      "ytd-browse[page-subtype='trending']",
 
       // 侧边栏导航项（首页、Shorts等）
       "ytd-guide-entry-renderer:has([title*='首页'])",
       "ytd-guide-entry-renderer:has([title*='Home'])",
       "ytd-guide-entry-renderer:has([title*='Shorts'])",
       "ytd-guide-entry-renderer:has([title*='短片'])",
-      "ytd-guide-entry-renderer:has([title*='时下流行'])",
-      "ytd-guide-entry-renderer:has([title*='Trending'])",
-      // 移动端导航
-      ".ytm-pivot-bar-item-container:has([aria-label*='Home'])",
-      ".ytm-pivot-bar-item-container:has([aria-label*='Shorts'])",
-      ".ytm-pivot-bar-item-container:has([aria-label*='首页'])",
-      ".ytm-pivot-bar-item-container:has([aria-label*='短片'])",
     ],
     extraCheck: (root) => {
       // 隐藏通知数字标题
@@ -197,6 +179,25 @@ export const SITE_CONFIG = {
 
       // 执行探索部分屏蔽
       removeExploreSection()
+    },
+  },
+  "douyin.com": {
+    targets: [
+      "#douyin-right-container > div.Da2ISZXp.route-scroll-container.IhmVuo1S",
+
+      // 精选导航项 - 使用类名选择器更精确
+      "div.tab-discover",
+      "div.tab-recommend",
+      "div.tab-live",
+      "div.tab-vs",
+      "div.tab-series",
+    ],
+    extraCheck: () => {
+      // 重定向到AI搜索页面
+      const currentUrl = window.location.href
+      if (currentUrl.includes("douyin.com/?recommend=1")) {
+        window.location.replace("https://www.douyin.com/jingxuan")
+      }
     },
   },
 }
