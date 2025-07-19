@@ -518,7 +518,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
   function showSuggestions(matches) {
     suggestionsDiv.innerHTML = ""
     websiteInput.closest(".input-group").classList.add("active")
-    
+
     matches.forEach((match) => {
       const div = createSuggestionItem(match)
       suggestionsDiv.appendChild(div)
@@ -528,7 +528,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
   // 输入框获得焦点时显示所有建议
   websiteInput.addEventListener("focus", function (e) {
     const input = e.target.value.toLowerCase()
-    
+
     if (input.length > 0) {
       // 如果有输入内容，按现有逻辑过滤显示
       const matches = suggestionList.filter((item) => item.toLowerCase().includes(input))
@@ -628,17 +628,31 @@ import { SITE_CONFIG } from "../scripts/config.js"
         .map((item) => {
           let timeDisplay = ""
           if (item.timeType === "daily") {
-            timeDisplay = `每日限制：${item.dailyLimit}分钟`
+            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")} ${chrome.i18n.getMessage("limitLabel")}：${
+              item.dailyLimit
+            }${chrome.i18n.getMessage("minutesUnit")}`
           } else if (item.timeType === "custom") {
             const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-            const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
+            const dayNames = [
+              chrome.i18n.getMessage("weekdaySunday"),
+              chrome.i18n.getMessage("weekdayMonday"),
+              chrome.i18n.getMessage("weekdayTuesday"),
+              chrome.i18n.getMessage("weekdayWednesday"),
+              chrome.i18n.getMessage("weekdayThursday"),
+              chrome.i18n.getMessage("weekdayFriday"),
+              chrome.i18n.getMessage("weekdaySaturday"),
+            ]
             const activeDays = days
-              .map((day, index) => (item.customLimits[day] > 0 ? `${dayNames[index]}:${item.customLimits[day]}分钟` : null))
+              .map((day, index) =>
+                item.customLimits[day] > 0 ? `${dayNames[index]}:${item.customLimits[day]}${chrome.i18n.getMessage("minutesUnit")}` : null,
+              )
               .filter(Boolean)
-            timeDisplay = `自定义限制：${activeDays.join(", ")}`
+            timeDisplay = `${chrome.i18n.getMessage("customOptionLabel")} ${chrome.i18n.getMessage("limitLabel")}：${activeDays.join(", ")}`
           } else {
             // 兼容旧数据
-            timeDisplay = `每日限制：${item.dailyLimit || 0}分钟`
+            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")} ${chrome.i18n.getMessage("limitLabel")}：${
+              item.dailyLimit || 0
+            }${chrome.i18n.getMessage("minutesUnit")}`
           }
 
           const pendingChange = pendingMap[item.id]
@@ -670,10 +684,10 @@ import { SITE_CONFIG } from "../scripts/config.js"
 
             pendingPreview = `
               <div class="pending-changes-preview">
-                <div class="label">明日将更新为：</div>
+                <div class="label">${chrome.i18n.getMessage("pendingChangesPreviewLabel")}</div>
                 <div class="change-row">
                   <div class="change-content">${newData.websites.join(", ")} - ${newTimeDisplay}</div>
-                  <button class="cancel-pending-btn" data-limit-id="${item.id}">撤销</button>
+                  <button class="cancel-pending-btn" data-limit-id="${item.id}">${chrome.i18n.getMessage("cancelButton")}</button>
                 </div>
               </div>
             `
@@ -681,7 +695,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
             pendingPreview = `
               <div class="pending-changes-preview">
                 <div class="change-row">
-                  <button class="cancel-pending-btn" data-limit-id="${item.id}">撤销</button>
+                  <button class="cancel-pending-btn" data-limit-id="${item.id}">${chrome.i18n.getMessage("cancelButton")}</button>
                 </div>
               </div>
             `
@@ -699,7 +713,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
         btn.addEventListener("click", (e) => {
           e.stopPropagation() // 防止触发父元素的点击事件
           const limitId = btn.getAttribute("data-limit-id")
-          if (confirm("确定要撤销这个待生效的更改吗？")) {
+          if (confirm(chrome.i18n.getMessage("confirmCancelPendingChange"))) {
             cancelPendingChange(limitId)
           }
         })

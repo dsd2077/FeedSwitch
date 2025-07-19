@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "FeedBlock",
+  "name": "__MSG_appName__",
   "version": "1.0",
-  "description": "A Chrome extension to manage website usage time and set limits.",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
   "permissions": ["tabs", "storage", "activeTab", "scripting", "alarms", "idle", "windows", "contextMenus"],
   "host_permissions": ["<all_urls>"],
   "background": {
@@ -11,7 +12,7 @@
   },
   "action": {
     "default_popup": "popup/popup.html",
-    "default_title": "网页使用时间",
+    "default_title": "__MSG_appActionTitle__",
     "default_icon": {
       "16": "icons/sandglass16.png",
       "48": "icons/sandglass48.png",

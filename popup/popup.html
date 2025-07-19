@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>FeedBlock</title>
+    <title data-i18n="popupTitle"></title>
     <link
       rel="stylesheet"
       type="text/css"
@@ -19,8 +19,8 @@
           hidden
         />
         <div class="slider">
-          <span class="on">专注</span>
-          <span class="off">娱乐</span>
+          <span class="on" data-i18n="focusLabel"></span>
+          <span class="off" data-i18n="funLabel"></span>
           <div class="button"></div>
         </div>
       </label>
@@ -31,8 +31,9 @@
       <button id="nextDay">›</button>
     </div>
     <ul id="website-list"></ul>
-    <button id="go-to-options">Go to options</button>
+    <button id="go-to-options" data-i18n="goToOptionsLabel"></button>
 
+    <script src="../scripts/i18n.js"></script>
     <script
       src="popup.js"
       type="module"

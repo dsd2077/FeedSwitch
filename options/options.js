@@ -18,6 +18,11 @@ function loadPage(page) {
     .then((data) => {
       contentArea.innerHTML = data
 
+      // Apply translations to the newly loaded content
+      if (window.applyTranslations) {
+        window.applyTranslations(contentArea);
+      }
+
       const scripts = Array.from(contentArea.querySelectorAll("script"))
       scripts.forEach((oldScript) => {
         const newScript = document.createElement("script")

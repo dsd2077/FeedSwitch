@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
   <head>
-    <title>时间管理选项</title>
+    <title data-i18n="optionsTitle"></title>
     <meta charset="UTF-8" />
 
     <style>
@@ -76,14 +76,15 @@
 
   <body>
     <div class="sidebar">
-      <a href="#" data-page="website-usage-time">网站使用时间</a>
-      <a href="#" data-page="webpage-limits">网页限额</a>
-      <a href="#" data-page="disable-time">停用时间</a>
+      <a href="#" data-page="website-usage-time" data-i18n="optionsNavWebsiteUsageTime"></a>
+      <a href="#" data-page="webpage-limits" data-i18n="optionsNavWebpageLimits"></a>
+      <a href="#" data-page="disable-time" data-i18n="optionsNavDisableTime"></a>
     </div>
     <div class="content" id="content-area">
       <!-- 内容将在这里动态加载 -->
     </div>
 
+    <script src="../scripts/i18n.js"></script>
     <script src="options.js"></script>
   </body>
 </html>

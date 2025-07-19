@@ -2,7 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <title>网页限额管理</title>
+    <title data-i18n="webpageLimitsTitle"></title>
     <link
       rel="stylesheet"
       href="webpage-limits.css"
@@ -10,15 +10,16 @@
   </head>
 
   <body>
-    <h2>网页限额</h2>
+    <h2 data-i18n="webpageLimitsHeading"></h2>
 
     <!-- 延迟生效提示区域 -->
     <div class="delay-warning info">
       <span class="warning-icon">ℹ️</span>
-      <strong>重要提醒：</strong>为防止一时冲动解除限制，删除网站和增加当天使用时间的设置将于次日生效。
+      <strong data-i18n="importantReminder"></strong>
+      <span data-i18n="delayWarningText"></span>
     </div>
 
-    <button id="add-limit-btn">添加限额</button>
+    <button id="add-limit-btn" data-i18n="addLimitButton"></button>
 
     <!-- 添加限额对话框 -->
     <div
@@ -27,7 +28,7 @@
     >
       <div class="modal-content">
         <span class="close">&times;</span>
-        <h3>添加限额</h3>
+        <h3 data-i18n="addLimitModalTitle"></h3>
 
         <!-- 新增隐藏字段在此 -->
         <input
@@ -41,7 +42,7 @@
             <input
               type="text"
               id="website-input"
-              placeholder="输入网站域名（如：bilibili.com）"
+              data-i18n-placeholder="websiteInputPlaceholder"
               autocomplete="off"
             />
             <!-- <button type="button" id="add-website-btn">+ 添加</button> -->
@@ -56,7 +57,7 @@
 
         <!-- 时长输入 -->
         <div class="time-limit-section">
-          <label>时间：</label>
+          <label data-i18n="timeLabel"></label>
           <div class="time-options">
             <input
               type="radio"
@@ -65,7 +66,7 @@
               value="daily"
               checked
             />
-            <label for="daily-option">每天</label>
+            <label for="daily-option" data-i18n="dailyOptionLabel"></label>
             <input
               type="number"
               id="daily-limit"
@@ -73,7 +74,7 @@
               placeholder="0"
               min="1"
             />
-            <span>分钟</span>
+            <span data-i18n="minutesUnit"></span>
           </div>
           <div class="time-options">
             <input
@@ -82,13 +83,12 @@
               name="time-type"
               value="custom"
             />
-            <label for="custom-option">自定义</label>
+            <label for="custom-option" data-i18n="customOptionLabel"></label>
             <button
               type="button"
               id="custom-time-btn"
               disabled
-              >编辑...</button
-            >
+              data-i18n="editButton"></button>
           </div>
           <hr />
         </div>
@@ -100,7 +100,8 @@
           style="display: none"
         >
           <span class="warning-icon">⚠️</span>
-          <strong>注意：</strong>增加当天使用时间将于次日生效！
+          <strong data-i18n="noteLabel"></strong>
+          <span data-i18n="modalWarningText"></span>
         </div>
 
         <!-- 按钮组 -->
@@ -109,11 +110,10 @@
             <button
               id="delete-limit-btn"
               style="display: none"
-              >移除限额</button
-            >
+              data-i18n="removeLimitButton"></button>
           </div>
           <div class="right-buttons">
-            <button id="save-limit-btn">保存</button>
+            <button id="save-limit-btn" data-i18n="saveButton"></button>
           </div>
         </div>
       </div>
@@ -130,78 +130,78 @@
           id="custom-time-close"
           >&times;</span
         >
-        <h3>每日时间限额</h3>
+        <h3 data-i18n="customTimeModalTitle"></h3>
 
         <div class="weekly-schedule">
           <div class="day-row">
-            <label>星期日</label>
+            <label data-i18n="weekdaySunday"></label>
             <input
               type="number"
               id="sunday-limit"
               min="0"
               placeholder="0"
             />
-            <span>分钟</span>
+            <span data-i18n="minutesUnit"></span>
           </div>
           <div class="day-row">
-            <label>星期一</label>
+            <label data-i18n="weekdayMonday"></label>
             <input
               type="number"
               id="monday-limit"
               min="0"
               placeholder="0"
             />
-            <span>分钟</span>
+            <span data-i18n="minutesUnit"></span>
           </div>
           <div class="day-row">
-            <label>星期二</label>
+            <label data-i18n="weekdayTuesday"></label>
             <input
               type="number"
               id="tuesday-limit"
               min="0"
               placeholder="0"
             />
-            <span>分钟</span>
+            <span data-i18n="minutesUnit"></span>
           </div>
           <div class="day-row">
-            <label>星期三</label>
+            <label data-i18n="weekdayWednesday"></label>
             <input
               type="number"
               id="wednesday-limit"
               min="0"
               placeholder="0"
             />
-            <span>分钟</span>
+            <span data-i18n="minutesUnit"></span>
           </div>
           <div class="day-row">
-            <label>星期四</label>
+            <label data-i18n="weekdayThursday"></label>
             <input
               type="number"
               id="thursday-limit"
               min="0"
               placeholder="0"
             />
-            <span>分钟</span>
+            <span data-i18n="minutesUnit"></span>
           </div>
           <div class="day-row">
-            <label>星期五</label>
+            <label data-i18n="weekdayFriday"></label>
             <input
               type="number"
               id="friday-limit"
               min="0"
               placeholder="0"
             />
-            <span>分钟</span>
+            <span data-i18n="minutesUnit"></span>
           </div>
           <div class="day-row">
-            <label>星期六</label>
+            <label data-i18n="weekdaySaturday"></label>
             <input
               type="number"
               id="saturday-limit"
               min="0"
               placeholder="0"
             />
-            <span>分钟</span>
+            <span data-i18n="minutesUnit"></span>
           </div>
         </div>
 
@@ -209,13 +209,11 @@
           <button
             type="button"
             id="cancel-custom-time"
-            >取消</button
-          >
+            data-i18n="cancelButton"></button>
           <button
             type="button"
             id="save-custom-time"
-            >完成</button
-          >
+            data-i18n="doneButton"></button>
         </div>
       </div>
     </div>
@@ -224,7 +222,7 @@
       id="limits-list"
       style="margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px"
     >
-      <h3>已设置的限额</h3>
+      <h3 data-i18n="setLimitsHeading"></h3>
       <div id="limits-container"></div>
     </div>
     <script src="webpage-limits.js"></script>

@@ -304,7 +304,7 @@ startIntervalUpdate() // 新增此行
 
 // 统一更新徽章的方法
 function updateBadgeStatus(isFocus) {
-  const text = isFocus ? "专注" : "娱乐"
+  const text = isFocus ? chrome.i18n.getMessage("focusLabel") : chrome.i18n.getMessage("funLabel")
   const color = isFocus ? BADGE_COLORS.focus : BADGE_COLORS.fun
 
   // 同步设置初始状态

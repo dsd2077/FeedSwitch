@@ -9,7 +9,7 @@
       name="viewport"
       content="width=device-width,initial-scale=1"
     />
-    <title>网站使用时间</title>
+    <title data-i18n="websiteUsageTimeTitle"></title>
     <script
       src="../node_modules/chart.js/dist/chart.umd.js"
       defer
@@ -20,14 +20,14 @@
     />
   </head>
   <body>
-    <h2>网页使用时间</h2>
+    <h2 data-i18n="websiteUsageTimeTitle"></h2>
     <div class="chart-container">
       <!-- Weekly Data Section -->
       <div class="weeklyData">
         <div class="info-chart">
           <div class="info-section">
             <div class="info-item">
-              <span>时间范围</span>
+              <span data-i18n="timeRangeLabel"></span>
               <div>
                 <button id="prevWeek">‹</button>
                 <span id="weeklyDateRange">04/23 - 04/29</span>
@@ -36,11 +36,11 @@
             </div>
 
             <div class="info-item">
-              <span>总时长</span>
+              <span data-i18n="totalDurationLabel"></span>
               <span id="weeklyTotalDuration">18h 43m 1s</span>
             </div>
             <div class="info-item">
-              <span>平均时长</span>
+              <span data-i18n="averageDurationLabel"></span>
               <span id="weeklyAverageDuration">2h 40m 25s</span>
             </div>
           </div>
@@ -56,7 +56,7 @@
         <div class="info-chart">
           <div class="info-section">
             <div class="info-item">
-              <span>日期</span>
+              <span data-i18n="dateLabel"></span>
               <div>
                 <button id="prevDay">‹</button>
                 <span id="dailyDate">04/29</span>
@@ -64,11 +64,11 @@
               </div>
             </div>
             <div class="info-item">
-              <span>总时长</span>
+              <span data-i18n="totalDurationLabel"></span>
               <span id="dailyTotalDuration">2h 37m 19s</span>
             </div>
             <div class="info-item">
-              <span>网站</span>
+              <span data-i18n="websitesLabel"></span>
               <span id="dailyWebsiteCount">16</span>
             </div>
           </div>

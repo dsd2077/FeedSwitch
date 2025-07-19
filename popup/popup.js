@@ -244,10 +244,10 @@ function getIconSrc(domain) {
 
 // 构建域名HTML模板
 function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage) {
-  const timeDisplay = domain.funTime > 0 ? `${formatTime(domain.totalTime)} (娱乐: ${formatTime(domain.funTime)})` : formatTime(domain.totalTime)
+  const timeDisplay = domain.funTime > 0 ? `${formatTime(domain.totalTime)} (${chrome.i18n.getMessage('timeDisplayFun')}: ${formatTime(domain.funTime)})` : formatTime(domain.totalTime)
   const pinClass = domain.isPinned ? "pinned" : ""
   const pinIcon = domain.isPinned ? "📌" : "📍"
-  const pinTitle = domain.isPinned ? "取消固定" : "固定到顶部"
+  const pinTitle = domain.isPinned ? chrome.i18n.getMessage('pinTitleUnpin') : chrome.i18n.getMessage('pinTitlePin')
 
   return `
     <div class="domain-header">
@@ -541,13 +541,21 @@ function updateDateDisplay() {
     const isToday = currentDate.toDateString() === today.toDateString()
     const month = currentDate.getMonth() + 1
     const day = currentDate.getDate()
-    const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"]
+    const weekdays = [
+      chrome.i18n.getMessage("dateWeekdaySun"),
+      chrome.i18n.getMessage("dateWeekdayMon"),
+      chrome.i18n.getMessage("dateWeekdayTue"),
+      chrome.i18n.getMessage("dateWeekdayWed"),
+      chrome.i18n.getMessage("dateWeekdayThu"),
+      chrome.i18n.getMessage("dateWeekdayFri"),
+      chrome.i18n.getMessage("dateWeekdaySat"),
+    ]
     const weekday = weekdays[currentDate.getDay()]
 
     if (isToday) {
-      dateElement.textContent = `今天 ${weekday}`
+      dateElement.textContent = `${chrome.i18n.getMessage("dateToday")} ${weekday}`
     } else {
-      dateElement.textContent = `${month}月${day}日 ${weekday}`
+      dateElement.textContent = `${month}${chrome.i18n.getMessage("dateMonthUnit")}${day}${chrome.i18n.getMessage("dateDayUnit")} ${weekday}`
     }
   }
 }

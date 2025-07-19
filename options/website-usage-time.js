@@ -176,11 +176,11 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
     // 更新每日网站列表
     const dailyWebsiteList = document.getElementById("daily-website-list")
-    updateWebsiteList(dailyWebsiteList, state.currentDate, 'daily')
-    
+    updateWebsiteList(dailyWebsiteList, state.currentDate, "daily")
+
     // 更新周网站列表
     const weeklyWebsiteList = document.getElementById("weekly-website-list")
-    updateWebsiteList(weeklyWebsiteList, state.currentWeek, 'weekly')
+    updateWebsiteList(weeklyWebsiteList, state.currentWeek, "weekly")
   }
 
   // 更新统计信息
@@ -226,7 +226,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
   // 创建图表配置
   function createChartConfig(type) {
-    const labels = type === "weekly" ? ["周日", "周一", "周二", "周三", "周四", "周五", "周六"] : Array.from({ length: 24 }, (_, i) => i.toString())
+    const labels = type === "weekly" ? chrome.i18n.getMessage("chartLabelWeekdays").split(",") : Array.from({ length: 24 }, (_, i) => i.toString())
 
     let data = type === "weekly" ? state.weeklyData : state.dailyData
 
@@ -260,7 +260,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     // 构建 datasets
     const datasets = [
       {
-        label: "娱乐",
+        label: chrome.i18n.getMessage("funLabel"),
         data: data.fun,
         borderWidth: 1,
         backgroundColor: "#ff6b00",
@@ -268,7 +268,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       },
 
       {
-        label: "专注",
+        label: chrome.i18n.getMessage("focusLabel"),
         data: data.total,
         borderWidth: 1,
         backgroundColor: "rgba(0, 200, 83, 0.5)",
@@ -278,7 +278,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     // 只在 weekly 图表上添加浅色条形
     if (type === "weekly") {
       datasets.push({
-        label: "今天",
+        label: chrome.i18n.getMessage("dateToday"),
         data: todayData,
         borderWidth: 0,
         backgroundColor: "rgba(0, 200, 83, 0.1)", // 浅色条形
@@ -300,7 +300,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
           tooltip: {
             // 使用 filter 过滤掉 label 匹配的数据集
             filter: function (tooltipItem) {
-              return tooltipItem.dataset.label !== "今天"
+              return tooltipItem.dataset.label !== chrome.i18n.getMessage("dateToday")
             },
           },
         },
@@ -387,8 +387,8 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   // 初始化应用
   init()
 
-  function updateWebsiteList(websiteList, dateOrDates, type = 'daily') {
-    if (type === 'daily') {
+  function updateWebsiteList(websiteList, dateOrDates, type = "daily") {
+    if (type === "daily") {
       // 单日数据处理
       const websitesTimeKey = generateWebsitesTimeKey(dateOrDates)
       chrome.storage.local.get([websitesTimeKey, "faviconCache", "faviconUrls"], (result) => {
@@ -412,18 +412,18 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         })
         renderWebsiteList(websiteList, processedData)
       })
-    } else if (type === 'weekly') {
+    } else if (type === "weekly") {
       // 周数据处理 - 需要聚合多天的数据
-      const websitesTimeKeys = dateOrDates.map(date => generateWebsitesTimeKey(date))
+      const websitesTimeKeys = dateOrDates.map((date) => generateWebsitesTimeKey(date))
       const allKeys = [...websitesTimeKeys, "faviconCache", "faviconUrls"]
-      
+
       chrome.storage.local.get(allKeys, (result) => {
         faviconCache = result.faviconCache || {}
         faviconUrls = result.faviconUrls || {}
-        
+
         // 聚合一周的数据
         const aggregatedData = {}
-        websitesTimeKeys.forEach(key => {
+        websitesTimeKeys.forEach((key) => {
           const dayData = result[key] || {}
           // 遍历每天的数据并聚合
           Object.entries(dayData).forEach(([mainDomain, subDomains]) => {
@@ -441,7 +441,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
                   aggregatedData[mainDomain][subDomain][pageUrl] = {
                     time: 0,
                     funTime: 0,
-                    title: pageInfo.title
+                    title: pageInfo.title,
                   }
                 }
                 aggregatedData[mainDomain][subDomain][pageUrl].time += pageInfo.time || 0
@@ -450,10 +450,10 @@ import psl from "../node_modules/psl/dist/psl.mjs"
             })
           })
         })
-        
+
         websitesTimeCache = aggregatedData
         const processedData = processStorageData()
-        
+
         // 自动重新缓存没有缓存但有URL的图标
         processedData.forEach((domain) => {
           const cachedIcon = faviconCache[domain.mainDomain]
@@ -468,7 +468,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
             })
           }
         })
-        
+
         renderWebsiteList(websiteList, processedData)
       })
     }
@@ -502,14 +502,14 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   function renderWebsiteList(websiteList, domains) {
     websiteList.innerHTML = ""
     const maxTotalTime = Math.max(...domains.map((d) => d.totalTime), 0)
-    
+
     // 从容器元素的 id 判断是 weekly 还是 daily
-    const isWeekly = websiteList.id === 'weekly-website-list'
+    const isWeekly = websiteList.id === "weekly-website-list"
 
     domains.forEach((domain) => {
       const domainElement = createDomainElement(domain, maxTotalTime)
       // 在元素上存储数据类型，供后续使用
-      domainElement.dataset.type = isWeekly ? 'weekly' : 'daily'
+      domainElement.dataset.type = isWeekly ? "weekly" : "daily"
       websiteList.appendChild(domainElement)
     })
   }
@@ -527,9 +527,9 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     domainList.innerHTML = buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage)
 
     // 添加图片错误处理
-    const imgElement = domainList.querySelector('.domain-icon img')
+    const imgElement = domainList.querySelector(".domain-icon img")
     if (imgElement) {
-      imgElement.addEventListener('error', function() {
+      imgElement.addEventListener("error", function () {
         this.src = chrome.runtime.getURL("icons/broken_pic.png")
       })
     }
@@ -565,7 +565,10 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
   // 构建域名HTML模板
   function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage) {
-    const timeDisplay = domain.funTime > 0 ? `${formatTime(domain.totalTime)} (娱乐: ${formatTime(domain.funTime)})` : formatTime(domain.totalTime)
+    const timeDisplay =
+      domain.funTime > 0
+        ? `${formatTime(domain.totalTime)} (${chrome.i18n.getMessage("timeDisplayFun")}: ${formatTime(domain.funTime)})`
+        : formatTime(domain.totalTime)
 
     return `
     <div class="domain-item">
@@ -596,9 +599,9 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         toggleSubdomainExpansion(domainElement)
         return
       }
-      
+
       // 获取数据类型
-      const dataType = domainElement.dataset.type || 'daily'
+      const dataType = domainElement.dataset.type || "daily"
 
       fetchSubDomainData(domain.mainDomain, dataType).then((subDomains) => {
         const sortedSubDomains = sortSubDomains(subDomains)
@@ -618,12 +621,12 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   }
 
   // 获取子域名数据
-  function fetchSubDomainData(mainDomain, dataType = 'daily') {
+  function fetchSubDomainData(mainDomain, dataType = "daily") {
     return new Promise((resolve) => {
       // 对于周数据，websitesTimeCache 已经包含了聚合后的数据
-      if (dataType === 'weekly' && websitesTimeCache && websitesTimeCache[mainDomain]) {
+      if (dataType === "weekly" && websitesTimeCache && websitesTimeCache[mainDomain]) {
         resolve(websitesTimeCache[mainDomain])
-      } else if (dataType === 'daily') {
+      } else if (dataType === "daily") {
         // 对于日数据，需要重新获取当前日期的数据
         const websitesTimeKey = generateWebsitesTimeKey(state.currentDate)
         chrome.storage.local.get([websitesTimeKey], (result) => {
@@ -656,13 +659,13 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     // 创建一个容器来包含所有子域名
     const subdomainContainer = document.createElement("ul")
     subdomainContainer.className = "subdomain-list expanded"
-    
+
     subDomains.forEach(({ subDomain, time }) => {
       const subDomainItem = createSubDomainItem(subDomain, time)
       setupSubDomainItemListener(subDomainItem, subDomain)
       subdomainContainer.appendChild(subDomainItem)
     })
-    
+
     domainElement.appendChild(subdomainContainer)
   }
 
@@ -691,10 +694,10 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         subDomainItem.querySelector(".page-list").classList.toggle("expanded")
         return
       }
-      
+
       // 获取数据类型（从父元素向上查找）
-      const domainListElement = subDomainItem.closest('.domain-list')
-      const dataType = domainListElement ? domainListElement.dataset.type : 'daily'
+      const domainListElement = subDomainItem.closest(".domain-list")
+      const dataType = domainListElement ? domainListElement.dataset.type : "daily"
 
       fetchPageData(subDomain, dataType).then((pages) => {
         const sortedPages = sortPages(pages)
@@ -704,14 +707,14 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   }
 
   // 获取页面数据
-  function fetchPageData(subDomain, dataType = 'daily') {
+  function fetchPageData(subDomain, dataType = "daily") {
     return new Promise((resolve) => {
       const mainDomain = parseDomain(subDomain)
-      
-      if (dataType === 'weekly' && websitesTimeCache && websitesTimeCache[mainDomain]?.[subDomain]) {
+
+      if (dataType === "weekly" && websitesTimeCache && websitesTimeCache[mainDomain]?.[subDomain]) {
         // 对于周数据，直接使用缓存的聚合数据
         resolve(websitesTimeCache[mainDomain][subDomain])
-      } else if (dataType === 'daily') {
+      } else if (dataType === "daily") {
         // 对于日数据，重新获取当前日期的数据
         const websitesTimeKey = generateWebsitesTimeKey(state.currentDate)
         chrome.storage.local.get([websitesTimeKey], (result) => {
