@@ -26,6 +26,21 @@
   margin: 0 5px;
 }
 
+/* 放大特定元素的字体 */
+#dailyDate,
+#dailyTotalDuration,
+#dailyWebsiteCount,
+#weeklyDateRange,
+#weeklyTotalDuration,
+#weeklyAverageDuration {
+  font-size: 18px;
+  font-weight: 300;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI Light", "Roboto Light", "Helvetica Neue Light", "PingFang SC", "Source Han Sans SC",
+    "Noto Sans CJK SC", "Microsoft YaHei UI Light", sans-serif;
+  /* color: #2c3e50; */
+  letter-spacing: 0.5px;
+}
+
 button {
   background: none;
   border: none;
@@ -59,6 +74,31 @@ button {
   flex: 1;
   /* min-width: 300px; */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  /* margin-bottom: 2.5rem; */
+  position: relative;
+}
+
+/* .info-chart::after {
+  content: '';
+  position: absolute;
+  bottom: -1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e0e0e0 20%, #e0e0e0 80%, transparent);
+} */
+
+.website-list {
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  padding: 8px;
+  flex: 1;
+  min-width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  list-style: none; /* 移除默认的列表项标记 */
+  border-top: 2px solid #e8ecf0;
 }
 
 #website-list {
@@ -70,6 +110,7 @@ button {
   min-width: 300px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   list-style: none; /* 移除默认的列表项标记 */
+  border-top: 2px solid #e8ecf0;
 }
 
 .domain-list {
@@ -230,6 +271,10 @@ button {
   color: #333;
 }
 
+.domain-time {
+  color: #999;
+}
+
 .subdomain-name {
   font-size: 14px;
   color: #666;
@@ -269,6 +314,7 @@ button {
 .page-time {
   flex-shrink: 0;
   margin-left: auto;
+  margin-right: 5px;
 }
 
 /* 分页控件样式 */
@@ -279,8 +325,6 @@ button {
   gap: 8px;
   margin: 12px 0 0;
   padding: 6px 12px;
-  background: #ffffff;
-
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
