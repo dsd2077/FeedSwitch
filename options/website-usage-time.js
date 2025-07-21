@@ -14,6 +14,19 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     dailyData: {},
     weeklyChart: null,
     dailyChart: null,
+    // 分页状态
+    weeklyPagination: {
+      currentPage: 1,
+      itemsPerPage: 10,
+      totalItems: 0,
+      totalPages: 1
+    },
+    dailyPagination: {
+      currentPage: 1,
+      itemsPerPage: 10,
+      totalItems: 0,
+      totalPages: 1
+    }
   }
 
   const weeklyDateRange = document.getElementById("weeklyDateRange")
@@ -24,6 +37,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     document.getElementById("nextWeek").disabled = true
     initializeDateUI()
     setupEventListeners()
+    setupPaginationEventListeners()
     loadDataAndRender()
   }
 
@@ -59,6 +73,8 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       updateDateDisplay("weeklyDateRange", state.currentWeek)
       updateDateDisplay("dailyDate", state.currentDate)
       document.getElementById("nextWeek").disabled = false
+      // 重置分页到第一页
+      state.weeklyPagination.currentPage = 1
       loadDataAndRender()
     })
 
@@ -73,6 +89,8 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       updateDateDisplay("weeklyDateRange", state.currentWeek)
       updateDateDisplay("dailyDate", state.currentDate)
 
+      // 重置分页到第一页
+      state.weeklyPagination.currentPage = 1
       loadDataAndRender()
 
       if (isThisWeek()) {
@@ -89,6 +107,8 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         state.currentWeek = getPreviousWeek()
         updateDateDisplay("weeklyDateRange", state.currentWeek)
       }
+      // 重置日分页到第一页
+      state.dailyPagination.currentPage = 1
       loadDataAndRender()
       document.getElementById("nextDay").disabled = false
     })
@@ -103,6 +123,8 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       }
 
       updateDateDisplay("dailyDate", state.currentDate)
+      // 重置日分页到第一页
+      state.dailyPagination.currentPage = 1
       loadDataAndRender()
       if (isSameDay(state.currentDate, new Date())) {
         document.getElementById("nextDay").disabled = true
@@ -504,14 +526,115 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     const maxTotalTime = Math.max(...domains.map((d) => d.totalTime), 0)
 
     // 从容器元素的 id 判断是 weekly 还是 daily
-    const isWeekly = websiteList.id === "weekly-website-list"
+    const type = websiteList.id === "weekly-website-list" ? "weekly" : "daily"
 
-    domains.forEach((domain) => {
+    // 为两种类型都应用分页
+    renderPaginatedWebsiteList(websiteList, domains, maxTotalTime, type)
+  }
+
+  // 渲染分页的网站列表
+  function renderPaginatedWebsiteList(websiteList, domains, maxTotalTime, type) {
+    // 获取对应的分页状态
+    const pagination = type === "weekly" ? state.weeklyPagination : state.dailyPagination
+    
+    // 更新分页状态
+    pagination.totalItems = domains.length
+    pagination.totalPages = Math.ceil(domains.length / pagination.itemsPerPage)
+    
+    // 确保当前页不超出范围
+    if (pagination.currentPage > pagination.totalPages) {
+      pagination.currentPage = Math.max(1, pagination.totalPages)
+    }
+
+    // 计算当前页的数据范围
+    const startIndex = (pagination.currentPage - 1) * pagination.itemsPerPage
+    const endIndex = startIndex + pagination.itemsPerPage
+    const currentPageDomains = domains.slice(startIndex, endIndex)
+
+    // 渲染当前页的域名
+    currentPageDomains.forEach((domain) => {
       const domainElement = createDomainElement(domain, maxTotalTime)
-      // 在元素上存储数据类型，供后续使用
-      domainElement.dataset.type = isWeekly ? "weekly" : "daily"
+      domainElement.dataset.type = type
       websiteList.appendChild(domainElement)
     })
+
+    // 更新分页控件
+    updatePaginationControls(type)
+  }
+
+  // 更新分页控件
+  function updatePaginationControls(type) {
+    const pagination = type === "weekly" ? state.weeklyPagination : state.dailyPagination
+    const prefix = type === "weekly" ? "weekly" : "daily"
+    
+    const paginationContainer = document.getElementById(`${prefix}-pagination`)
+    const pageInfo = document.getElementById(`${prefix}-page-info`)
+    const prevBtn = document.getElementById(`${prefix}-prev-page`)
+    const nextBtn = document.getElementById(`${prefix}-next-page`)
+
+    // 如果只有一页或没有数据，隐藏分页控件
+    if (pagination.totalPages <= 1) {
+      if (paginationContainer) {
+        paginationContainer.classList.add('hidden')
+      }
+      return
+    }
+
+    // 显示分页控件
+    if (paginationContainer) {
+      paginationContainer.classList.remove('hidden')
+    }
+
+    if (pageInfo) {
+      pageInfo.textContent = `第 ${pagination.currentPage} 页，共 ${pagination.totalPages} 页`
+    }
+
+    if (prevBtn) {
+      prevBtn.disabled = pagination.currentPage <= 1
+    }
+
+    if (nextBtn) {
+      nextBtn.disabled = pagination.currentPage >= pagination.totalPages
+    }
+  }
+
+  // 分页事件处理
+  function setupPaginationEventListeners() {
+    // 设置周分页事件监听器
+    setupTypeSpecificPaginationListeners("weekly")
+    // 设置日分页事件监听器
+    setupTypeSpecificPaginationListeners("daily")
+  }
+
+  // 设置特定类型的分页事件监听器
+  function setupTypeSpecificPaginationListeners(type) {
+    const prevBtn = document.getElementById(`${type}-prev-page`)
+    const nextBtn = document.getElementById(`${type}-next-page`)
+    const pagination = type === "weekly" ? state.weeklyPagination : state.dailyPagination
+
+    if (prevBtn) {
+      prevBtn.addEventListener("click", () => {
+        if (pagination.currentPage > 1) {
+          pagination.currentPage--
+          // 重新渲染对应的网站列表
+          const websiteList = document.getElementById(`${type}-website-list`)
+          const dateData = type === "weekly" ? state.currentWeek : state.currentDate
+          updateWebsiteList(websiteList, dateData, type)
+        }
+      })
+    }
+
+    if (nextBtn) {
+      nextBtn.addEventListener("click", () => {
+        if (pagination.currentPage < pagination.totalPages) {
+          pagination.currentPage++
+          // 重新渲染对应的网站列表
+          const websiteList = document.getElementById(`${type}-website-list`)
+          const dateData = type === "weekly" ? state.currentWeek : state.currentDate
+          updateWebsiteList(websiteList, dateData, type)
+        }
+      })
+    }
   }
 
   // 创建域名元素

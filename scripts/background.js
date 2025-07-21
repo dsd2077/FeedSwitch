@@ -26,7 +26,7 @@ function startIntervalUpdate() {
       const duration = Math.round((now - activeTabs[activeTabId].startTime) / 1000)
 
       // 更新存储并刷新开始时间
-      updateDomainTime(activeTabs[activeTabId].url, duration, activeTabs[activeTabId].title, "interval")
+      updateDomainTime(activeTabs?.[activeTabId]?.url, duration, activeTabs?.[activeTabId]?.title, "interval")
       activeTabs[activeTabId].startTime = now - ((now - activeTabs[activeTabId].startTime) % 1000)
     }
     console.log(`Interval update. Active Tab ID: ${activeTabId}, URL: ${activeTabs?.[activeTabId]?.url || "N/A"}`)
@@ -224,6 +224,7 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 // })
 
 function updateDomainTime(pageUrl, seconds, title, type) {
+  if (!pageUrl) return
   const normalizedUrl = normalizeUrl(pageUrl)
   const domain = new URL(normalizedUrl).hostname // 提取域名
   if (!isSystemActive || !isBrowserFocused || !normalizedUrl || seconds <= 0 || !isValidDomain(domain)) return
@@ -476,9 +477,7 @@ function cacheFavicon(mainDomain, iconUrl) {
           }
           reader.readAsDataURL(blob)
         })
-        .catch((error) => {
-          console.error(`Failed to cache icon for ${mainDomain}:`, error)
-        })
+        .catch(() => {})
     }
   })
 }

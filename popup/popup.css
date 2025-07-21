@@ -203,7 +203,7 @@ input:checked + .slider .off {
   align-items: center;
 }
 .domain-list.expanded {
-  max-height: 1000px; /* 根据实际内容调整 */
+  max-height: none;
 }
 /* 展开状态旋转箭头 */
 .domain-list.active .domain-header::after {
@@ -251,7 +251,7 @@ input:checked + .slider .off {
 }
 
 .subdomain-list.expanded {
-  max-height: 1000px; /* 根据实际内容调整 */
+  max-height: none;
 }
 
 .subdomain-item {
@@ -348,7 +348,7 @@ input:checked + .slider .off {
   overflow: hidden;
 }
 .page-list.expanded {
-  max-height: 500px; /* 根据实际内容高度调整 */
+  max-height: none;
 }
 
 .domain-name {

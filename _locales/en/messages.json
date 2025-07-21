@@ -1,6 +1,6 @@
 {
   "appName": { "message": "FeedBlock", "description": "The name of the extension." },
-  "appDesc": { "message": "A Chrome extension to manage website usage time and set limits.", "description": "The description of the extension." },
+  "appDesc": { "message": "Remove everything that distract you;", "description": "The description of the extension." },
   "appActionTitle": { "message": "Website Usage Time", "description": "The title of the browser action." },
   "popupTitle": { "message": "FeedBlock", "description": "The title of the popup page." },
   "focusLabel": { "message": "Focus", "description": "Label for the 'Focus' state on the toggle switch." },
