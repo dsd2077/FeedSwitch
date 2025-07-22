@@ -6,7 +6,7 @@
 
     <style>
       body {
-        font-family: Arial, sans-serif;
+        font-family: PingFang SC, DFPKingGothicGB-Regular, sans-serif;
         margin: 0;
         padding: 0;
         display: flex;
@@ -14,10 +14,9 @@
 
       .sidebar {
         width: 220px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: rgb(242, 243, 245);
         height: 100vh;
         padding: 30px 0;
-        box-shadow: 4px 0 15px rgba(0, 0, 0, 0.15);
         position: fixed;
         left: 0;
         top: 0;
@@ -26,29 +25,37 @@
       }
 
       .sidebar a {
-        display: block;
-        color: #ffffff;
+        display: flex;
+        align-items: center;
+        color: #495057;
         padding: 15px 25px;
         text-decoration: none;
         margin: 8px 15px;
         border-radius: 10px;
         transition: all 0.3s ease;
         font-weight: 500;
-        font-size: 14px;
+        font-size: 16px;
+        line-height: 26px;
         border-left: 4px solid transparent;
       }
 
+      .sidebar a .icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        opacity: 0.7;
+      }
+
       .sidebar a:hover {
-        background-color: rgba(255, 255, 255, 0.2);
-        border-left: 4px solid #ffffff;
+        background-color: rgba(73, 80, 87, 0.1);
         transform: translateX(5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
 
       .sidebar a.active {
-        background-color: rgba(255, 255, 255, 0.25);
-        border-left: 4px solid #ffffff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        background-color: rgba(73, 80, 87, 0.15);
+        border-left: 4px solid #495057;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       }
 
       .content {
@@ -102,18 +109,36 @@
       <a
         href="#"
         data-page="website-usage-time"
-        data-i18n="optionsNavWebsiteUsageTime"
-      ></a>
+      >
+        <img
+          src="../icons/统计.png"
+          class="icon"
+          alt=""
+        />
+        <span data-i18n="optionsNavWebsiteUsageTime"></span>
+      </a>
       <a
         href="#"
         data-page="webpage-limits"
-        data-i18n="optionsNavWebpageLimits"
-      ></a>
+      >
+        <img
+          src="../icons/沙漏.png"
+          class="icon"
+          alt=""
+        />
+        <span data-i18n="optionsNavWebpageLimits"></span>
+      </a>
       <a
         href="#"
         data-page="disable-time"
-        data-i18n="optionsNavDisableTime"
-      ></a>
+      >
+        <img
+          src="../icons/沙漏.png"
+          class="icon"
+          alt=""
+        />
+        <span data-i18n="optionsNavDisableTime"></span>
+      </a>
     </div>
     <div
       class="content"
