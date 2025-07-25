@@ -99,33 +99,66 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     })
 
     document.getElementById("prevDay")?.addEventListener("click", () => {
-      state.currentDate = getPreviousDay(state.currentDate)
-      updateDateDisplay("dailyDate", state.currentDate)
+      const previousDate = getPreviousDay(state.currentDate)
+      const previousWeek = [...state.currentWeek]
+      let weekChanged = false
 
       // 判断是否需要切换周
-      if (!isDateInWeek(state.currentDate, state.currentWeek)) {
-        state.currentWeek = getPreviousWeek()
-        updateDateDisplay("weeklyDateRange", state.currentWeek)
+      if (!isDateInWeek(previousDate, state.currentWeek)) {
+        previousWeek.splice(0, previousWeek.length, ...getPreviousWeek())
+        weekChanged = true
       }
+
+      state.currentDate = previousDate
+      updateDateDisplay("dailyDate", state.currentDate)
+
+      if (weekChanged) {
+        state.currentWeek = previousWeek
+        updateDateDisplay("weeklyDateRange", state.currentWeek)
+        // 如果周改变了，需要重新加载所有数据
+        state.weeklyPagination.currentPage = 1
+        loadDataAndRender()
+      } else {
+        // 如果只是日期改变，只更新图表中"今天"的位置
+        updateWeeklyChartTodayPosition()
+        // 只更新日数据
+        updateDailyDataOnly()
+      }
+
       // 重置日分页到第一页
       state.dailyPagination.currentPage = 1
-      loadDataAndRender()
       document.getElementById("nextDay").disabled = false
     })
 
     document.getElementById("nextDay")?.addEventListener("click", () => {
-      state.currentDate = getNextDay(state.currentDate)
+      const nextDate = getNextDay(state.currentDate)
+      const nextWeek = [...state.currentWeek]
+      let weekChanged = false
 
       // 判断是否需要切换周
-      if (!isDateInWeek(state.currentDate, state.currentWeek)) {
-        state.currentWeek = getNextWeek()
-        updateDateDisplay("weeklyDateRange", state.currentWeek)
+      if (!isDateInWeek(nextDate, state.currentWeek)) {
+        nextWeek.splice(0, nextWeek.length, ...getNextWeek())
+        weekChanged = true
       }
 
+      state.currentDate = nextDate
       updateDateDisplay("dailyDate", state.currentDate)
+
+      if (weekChanged) {
+        state.currentWeek = nextWeek
+        updateDateDisplay("weeklyDateRange", state.currentWeek)
+        // 如果周改变了，需要重新加载所有数据
+        state.weeklyPagination.currentPage = 1
+        loadDataAndRender()
+      } else {
+        // 如果只是日期改变，只更新图表中"今天"的位置
+        updateWeeklyChartTodayPosition()
+        // 只更新日数据
+        updateDailyDataOnly()
+      }
+
       // 重置日分页到第一页
       state.dailyPagination.currentPage = 1
-      loadDataAndRender()
       if (isSameDay(state.currentDate, new Date())) {
         document.getElementById("nextDay").disabled = true
       }
@@ -246,11 +279,74 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     }
   }
 
+  // 只更新周图表中"今天"的位置
+  function updateWeeklyChartTodayPosition() {
+    if (!state.weeklyChart) return
+
+    // 确定"今天"的索引
+    const todayIndex = state.currentWeek.findIndex((date) => isSameDay(date, state.currentDate))
+
+    if (todayIndex === -1) return
+
+    // 获取当前数据
+    const data = state.weeklyData
+    const maxValue = Math.max(...data.total)
+    const chartMaxHeight = Math.ceil(maxValue)
+
+    // 创建新的"今天"数据
+    const todayData = Array(data.total.length).fill(0)
+    todayData[todayIndex] = chartMaxHeight
+
+    // 更新图表中"今天"数据集的数据
+    const todayDatasetIndex = state.weeklyChart.data.datasets.findIndex((dataset) => dataset.label === chrome.i18n.getMessage("dateToday"))
+
+    if (todayDatasetIndex !== -1) {
+      state.weeklyChart.data.datasets[todayDatasetIndex].data = todayData
+      state.weeklyChart.update("none")
+    }
+  }
+
+  // 只更新日数据（不重新加载周数据）
+  function updateDailyDataOnly() {
+    // 获取当前日期的数据
+    const dailyKey = `hourlyUsage-${getFormattedDate(state.currentDate)}`
+
+    chrome.storage.local.get([dailyKey], (result) => {
+      state.dailyData = result[dailyKey] || {
+        total: Array(24).fill(0),
+        fun: Array(24).fill(0),
+      }
+
+      // 更新日统计信息
+      document.getElementById("dailyTotalDuration").textContent = formatDuration(calculateTotalDuration(state.dailyData))
+      document.getElementById("dailyWebsiteCount").textContent = state.dailyData.length
+
+      // 更新日图表
+      if (state.dailyChart) {
+        state.dailyChart.destroy()
+      }
+      const dailyChartCtx = document.getElementById("dailyChart")?.getContext("2d")
+      if (dailyChartCtx) {
+        state.dailyChart = new Chart(dailyChartCtx, createChartConfig("daily"))
+      }
+
+      // 更新日网站列表
+      const dailyWebsiteList = document.getElementById("daily-website-list")
+      updateWebsiteList(dailyWebsiteList, state.currentDate, "daily")
+    })
+  }
+
   // 创建图表配置
   function createChartConfig(type) {
     const labels = type === "weekly" ? chrome.i18n.getMessage("chartLabelWeekdays").split(",") : Array.from({ length: 24 }, (_, i) => i.toString())
 
     let data = type === "weekly" ? state.weeklyData : state.dailyData
+
+    // 保存原始数据用于tooltip计算
+    const originalData = {
+      total: [...data.total],
+      fun: [...data.fun],
+    }
 
     // 将 daily 数据从秒转换为分钟
     if (type === "daily") {
@@ -264,21 +360,31 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       data.fun = data.fun.map((seconds) => Math.round((seconds / 3600) * 10) / 10)
     }
 
-    // 确定“今天”的索引
+    // 确定"今天"的索引
     let todayIndex = -1
     if (type === "weekly") {
       todayIndex = state.currentWeek.findIndex((date) => isSameDay(date, state.currentDate))
     }
 
-    // 创建“今天”的数据集
+    // 创建"今天"的数据集
     const todayData = Array(data.total.length).fill(0)
     const maxValue = Math.max(...data.total)
     if (todayIndex !== -1) {
-      todayData[todayIndex] = maxValue + maxValue * 0.02
+      // 计算图表的实际显示高度
+      // 由于设置了stepSize: 1，Chart.js会向上取整到最近的整数
+      const chartMaxHeight = type === "weekly" ? Math.ceil(maxValue) : maxValue
+      todayData[todayIndex] = chartMaxHeight
     }
 
     // 判断是否显示纵轴标尺
     const showYAxis = data.total.some((value) => value !== 0)
+
+    // 计算专注时长（总时长 - 娱乐时长）
+    // const focusData = data.total.map((total, index) => total - data.fun[index])
+
+    // 创建 hover 显示数据（用于显示选中状态）
+    const hoverData = Array(data.total.length).fill(0)
+
     // 构建 datasets
     const datasets = [
       {
@@ -288,7 +394,6 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         backgroundColor: "#ff6b00",
         barPercentage: type === "weekly" ? 0.5 : 0.9,
       },
-
       {
         label: chrome.i18n.getMessage("focusLabel"),
         data: data.total,
@@ -296,7 +401,18 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         backgroundColor: "rgba(0, 200, 83, 0.5)",
         barPercentage: type === "weekly" ? 0.5 : 0.9,
       },
+      // 添加 hover 指示层
+      {
+        label: "hover",
+        data: hoverData,
+        borderWidth: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.05)", // 浅灰色背景
+        barPercentage: 1,
+        categoryPercentage: 1,
+        showTooltip: false,
+      },
     ]
+
     // 只在 weekly 图表上添加浅色条形
     if (type === "weekly") {
       datasets.push({
@@ -306,7 +422,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         backgroundColor: "rgba(0, 200, 83, 0.1)", // 浅色条形
         barPercentage: 1, // 更宽的条形
         categoryPercentage: 1,
-        showTooltip: true, // 默认为 true，也可以显式设置
+        showTooltip: false,
       })
     }
 
@@ -315,14 +431,87 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        interaction: {
+          mode: "index",
+          intersect: false,
+        },
+        onHover: (event, activeElements) => {
+          // 获取 hover 数据集
+          const hoverDatasetIndex = datasets.findIndex((d) => d.label === "hover")
+          if (hoverDatasetIndex === -1) return
+
+          // 重置所有 hover 数据
+          datasets[hoverDatasetIndex].data = Array(data.total.length).fill(0)
+
+          // 如果有激活的元素，设置对应位置的 hover 数据
+          if (activeElements.length > 0) {
+            const index = activeElements[0].index
+            const chartMaxHeight = type === "weekly" ? Math.ceil(maxValue) : maxValue
+            datasets[hoverDatasetIndex].data[index] = chartMaxHeight || 1
+          }
+
+          // 更新图表
+          event.chart.update("none")
+        },
         plugins: {
           legend: {
-            enabled: false,
+            enabled: true,
+            labels: {
+              filter: function (legendItem) {
+                // 隐藏hover数据集
+                return legendItem.text !== "hover"
+              },
+            },
           },
           tooltip: {
-            // 使用 filter 过滤掉 label 匹配的数据集
+            mode: "index",
+            intersect: false,
+            position: "nearest",
+            callbacks: {
+              title: function (tooltipItems) {
+                const index = tooltipItems[0].dataIndex
+                if (type === "weekly") {
+                  const date = state.currentWeek[index]
+                  return formatDate(date)
+                } else {
+                  return `${tooltipItems[0].label}:00`
+                }
+              },
+              label: function (context) {
+                const datasetLabel = context.dataset.label
+                const unit = type === "weekly" ? "h" : "m"
+
+                if (datasetLabel === chrome.i18n.getMessage("dateToday")) {
+                  return null
+                }
+
+                // 使用原始数据（以秒为单位）进行计算
+                const index = context.dataIndex
+                const totalValue = originalData.total[index]
+                const funValue = originalData.fun[index]
+                const focusValue = totalValue - funValue
+
+                if (datasetLabel === chrome.i18n.getMessage("funLabel")) {
+                  return `${chrome.i18n.getMessage("funLabel")}: ${
+                    type === "weekly" ? Math.round((funValue / 3600) * 10) / 10 : Math.round(funValue / 60)
+                  }${unit}`
+                } else if (datasetLabel === chrome.i18n.getMessage("focusLabel")) {
+                  return `${chrome.i18n.getMessage("focusLabel")}: ${
+                    type === "weekly" ? Math.round((focusValue / 3600) * 10) / 10 : Math.round(focusValue / 60)
+                  }${unit}`
+                }
+              },
+              footer: function (tooltipItems) {
+                const index = tooltipItems[0].dataIndex
+                const totalValue = originalData.total[index]
+                const unit = type === "weekly" ? "h" : "m"
+
+                // 显示总时长
+                return `总计: ${type === "weekly" ? Math.round((totalValue / 3600) * 10) / 10 : Math.round(totalValue / 60)}${unit}`
+              },
+            },
             filter: function (tooltipItem) {
-              return tooltipItem.dataset.label !== chrome.i18n.getMessage("dateToday")
+              return tooltipItem.dataset.label !== chrome.i18n.getMessage("dateToday") && tooltipItem.dataset.label !== "hover"
             },
           },
         },
@@ -338,18 +527,19 @@ import psl from "../node_modules/psl/dist/psl.mjs"
               callback: function (value) {
                 return type === "weekly" ? `${value}h` : `${value}m`
               },
-              maxTicksLimit: 10, // 最多显示 10 个刻度
+              maxTicksLimit: 10,
+              stepSize: type === "weekly" ? 1 : undefined,
             },
           },
           x: {
             grid: {
-              display: true, // 移除纵轴的网格线
-              drawTicks: true, // 添加小刻线
-              tickLength: 10, // 小刻线长度
-              drawOnChartArea: false, // 不绘制在图表区域
+              display: true,
+              drawTicks: true,
+              tickLength: 10,
+              drawOnChartArea: false,
             },
-            barPercentage: 0.3, // 示例：让条形更窄
-            categoryPercentage: 0.5, // 可选，用于多数据集的情况
+            barPercentage: 0.3,
+            categoryPercentage: 0.5,
             stacked: true,
           },
         },
