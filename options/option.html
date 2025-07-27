@@ -39,6 +39,27 @@
         border-left: 4px solid transparent;
       }
 
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        padding: 13.44px 10px;
+        margin: 0px 15px 20px 15px;
+        border-bottom: 1px solid rgba(73, 80, 87, 0.1);
+      }
+
+      .sidebar-header .header-icon {
+        width: 28px;
+        height: 28px;
+        margin-right: 12px;
+      }
+
+      .sidebar-header .header-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #495057;
+        letter-spacing: 0.5px;
+      }
+
       .sidebar a .icon {
         width: 24px;
         height: 24px;
@@ -106,6 +127,14 @@
 
   <body>
     <div class="sidebar">
+      <div class="sidebar-header">
+        <img
+          src="../icons/icon.png"
+          class="header-icon"
+          alt="FeedBlockPlus"
+        />
+        <span class="header-title">FeedBlockPlus</span>
+      </div>
       <a
         href="#"
         data-page="website-usage-time"
@@ -130,14 +159,14 @@
       </a>
       <a
         href="#"
-        data-page="disable-time"
+        data-page="about"
       >
         <img
-          src="../icons/沙漏.png"
+          src="../icons/关于.png"
           class="icon"
           alt=""
         />
-        <span data-i18n="optionsNavDisableTime"></span>
+        <span data-i18n="optionsNavAbout"></span>
       </a>
     </div>
     <div

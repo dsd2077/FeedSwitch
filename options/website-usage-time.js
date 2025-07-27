@@ -336,7 +336,6 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
     let data = type === "weekly" ? state.weeklyData : state.dailyData
 
-
     // 保存原始数据用于tooltip计算
     const originalData = {
       total: [...data.total],
@@ -354,8 +353,8 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     // 将 weekly 数据从秒转换为小时
     if (type === "weekly") {
       data = {
-        total: data.total.map((seconds) => Math.round((seconds / 3600) * 10) / 10),
-        fun: data.fun.map((seconds) => Math.round((seconds / 3600) * 10) / 10),
+        total: data.total.map((seconds) => Math.round((seconds / 3600) * 100) / 100),
+        fun: data.fun.map((seconds) => Math.round((seconds / 3600) * 100) / 100),
       }
     }
 
@@ -376,7 +375,6 @@ import psl from "../node_modules/psl/dist/psl.mjs"
         },
         formatter: function (params) {
           const index = params[0].dataIndex
-          const unit = type === "weekly" ? "h" : "m"
 
           if (type === "weekly") {
             const date = state.currentWeek[index]
@@ -387,9 +385,9 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
             return (
               `${title}<br/>` +
-              `${chrome.i18n.getMessage("funLabel")}: ${Math.round((funValue / 3600) * 10) / 10}${unit}<br/>` +
-              `${chrome.i18n.getMessage("focusLabel")}: ${Math.round((focusValue / 3600) * 10) / 10}${unit}<br/>` +
-              `总计: ${Math.round((totalValue / 3600) * 10) / 10}${unit}`
+              `${chrome.i18n.getMessage("funLabel")}: ${formatTimeForTooltip(funValue)}<br/>` +
+              `${chrome.i18n.getMessage("focusLabel")}: ${formatTimeForTooltip(focusValue)}<br/>` +
+              `总计: ${formatTimeForTooltip(totalValue)}`
             )
           } else {
             const title = `${params[0].name}:00`
@@ -399,9 +397,9 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
             return (
               `${title}<br/>` +
-              `${chrome.i18n.getMessage("funLabel")}: ${Math.round(funValue / 60)}${unit}<br/>` +
-              `${chrome.i18n.getMessage("focusLabel")}: ${Math.round(focusValue / 60)}${unit}<br/>` +
-              `总计: ${Math.round(totalValue / 60)}${unit}`
+              `${chrome.i18n.getMessage("funLabel")}: ${formatTimeForTooltip(funValue)}<br/>` +
+              `${chrome.i18n.getMessage("focusLabel")}: ${formatTimeForTooltip(focusValue)}<br/>` +
+              `总计: ${formatTimeForTooltip(totalValue)}`
             )
           }
         },
@@ -440,18 +438,6 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       series: [],
     }
 
-    // 添加专注时长系列
-    option.series.push({
-      name: chrome.i18n.getMessage("focusLabel"),
-      type: "bar",
-      stack: "total",
-      data: focusData,
-      itemStyle: {
-        color: "rgba(0, 200, 83, 0.8)",
-      },
-      barMaxWidth: type === "weekly" ? 40 : 20,
-    })
-
     // 添加娱乐时长系列
     option.series.push({
       name: chrome.i18n.getMessage("funLabel"),
@@ -464,24 +450,31 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       barMaxWidth: type === "weekly" ? 40 : 20,
     })
 
+    // 添加专注时长系列
+    option.series.push({
+      name: chrome.i18n.getMessage("focusLabel"),
+      type: "bar",
+      stack: "total",
+      data: focusData,
+      itemStyle: {
+        color: "rgba(0, 200, 83, 0.8)",
+      },
+      barMaxWidth: type === "weekly" ? 40 : 20,
+    })
+
     // 在周图表中添加"今天"指示器 - 使用 markArea
     if (type === "weekly" && todayIndex !== -1) {
       // 为专注时长系列添加 markArea（假设这是第一个系列）
-      const focusSeriesIndex = option.series.findIndex(s => s.name === chrome.i18n.getMessage("focusLabel"))
+      const focusSeriesIndex = option.series.findIndex((s) => s.name === chrome.i18n.getMessage("focusLabel"))
       if (focusSeriesIndex !== -1) {
         option.series[focusSeriesIndex].markArea = {
           silent: true,
           itemStyle: {
-            color: 'rgba(0, 200, 83, 0.08)',
-            borderColor: 'rgba(0, 200, 83, 0.2)',
-            borderWidth: 1
+            color: "rgba(0, 200, 83, 0.08)",
+            borderColor: "rgba(0, 200, 83, 0.2)",
+            borderWidth: 1,
           },
-          data: [
-            [
-              { xAxis: todayIndex - 0.4 },
-              { xAxis: todayIndex + 0.4 }
-            ]
-          ]
+          data: [[{ xAxis: todayIndex - 0.4 }, { xAxis: todayIndex + 0.4 }]],
         }
       }
     }
@@ -1032,6 +1025,22 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     if (secs > 0) parts.push(`${secs}s`)
 
     return parts.join(" ")
+  }
+
+  // 格式化时间为 xxhxxm 格式（用于tooltip）
+  function formatTimeForTooltip(seconds) {
+    const hours = Math.floor(seconds / 3600)
+    const minutes = Math.floor((seconds % 3600) / 60)
+
+    if (hours > 0 && minutes > 0) {
+      return `${hours}h ${minutes}m`
+    } else if (hours > 0) {
+      return `${hours}h`
+    } else if (minutes > 0) {
+      return `${minutes}m`
+    } else {
+      return "0m"
+    }
   }
 
   function generateWebsitesTimeKey(date) {
