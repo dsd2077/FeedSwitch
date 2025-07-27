@@ -23,7 +23,7 @@
   "optionsNavWebsiteUsageTime": { "message": "网站统计", "description": "“网站使用时间”页面的导航链接文本。" },
   "optionsNavWebpageLimits": { "message": "网页限额", "description": "“网页限额”页面的导航链接文本。" },
   "optionsNavAbout": { "message": "关于插件", "description": "关于插件”页面的导航链接文本。" },
-  "disableTimeTitle": { "message": "停用时间", "description": "“停用时间”部分的标题。" },
+  "AboutTitle": { "message": "关于FeedBlockPlus", "description": "“停用时间”部分的标题。" },
   "disableTimeContent": { "message": "这里是停用时间的内容。", "description": "“停用时间”部分的内容。" },
   "webpageLimitsTitle": { "message": "网页限额管理" },
   "webpageLimitsHeading": { "message": "网页限额" },

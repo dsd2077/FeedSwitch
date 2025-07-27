@@ -23,7 +23,7 @@
   "optionsNavWebsiteUsageTime": { "message": "Website Statistic", "description": "Navigation link text for the Website Usage Time page." },
   "optionsNavWebpageLimits": { "message": "Webpage Limits", "description": "Navigation link text for the Webpage Limits page." },
   "optionsNavAbout": { "message": "About", "description": "Navigation link text for About this extension." },
-  "disableTimeTitle": { "message": "Disable Time", "description": "Title for the Disable Time section." },
+  "AboutTitle": { "message": "About FeedBlockPlus", "description": "Title for the Disable Time section." },
   "disableTimeContent": { "message": "This is the content for the disable time section.", "description": "Content for the Disable Time section." },
   "webpageLimitsTitle": { "message": "Webpage Limit Management" },
   "webpageLimitsHeading": { "message": "Webpage Limits" },

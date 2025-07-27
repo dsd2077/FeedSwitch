@@ -1,5 +1,4 @@
 import psl from "../node_modules/psl/dist/psl.mjs"
-
 ;(function () {
   let websitesTimeCache = null
   let faviconCache = null
@@ -263,20 +262,20 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   // 等待ECharts加载
   function waitForECharts() {
     return new Promise((resolve) => {
-      if (typeof window.echarts !== 'undefined') {
-        resolve();
-        return;
+      if (typeof window.echarts !== "undefined") {
+        resolve()
+        return
       }
-      
+
       const checkEcharts = () => {
-        if (typeof window.echarts !== 'undefined') {
-          resolve();
+        if (typeof window.echarts !== "undefined") {
+          resolve()
         } else {
-          setTimeout(checkEcharts, 50);
+          setTimeout(checkEcharts, 50)
         }
-      };
-      checkEcharts();
-    });
+      }
+      checkEcharts()
+    })
   }
 
   // 创建/更新图表
@@ -290,7 +289,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     }
 
     // 等待ECharts加载完成
-    await waitForECharts();
+    await waitForECharts()
 
     // 创建新图表
     const weeklyChartElement = document.getElementById("weeklyChart")
@@ -342,7 +341,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       const dailyChartElement = document.getElementById("dailyChart")
       if (dailyChartElement) {
         // 等待ECharts加载完成
-        await waitForECharts();
+        await waitForECharts()
         state.dailyChart = window.echarts.init(dailyChartElement)
         state.dailyChart.setOption(createEChartsConfig("daily"))
       }
