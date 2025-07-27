@@ -22,7 +22,7 @@
       <div class="problem-card">
         <div class="problem-icon">⏰</div>
         <h3>时间黑洞</h3>
-        <p>原本只想"快速浏览"一下社交媒体，结果一看就是几个小时</p>
+        <p>原本只想娱乐一会，结果社交媒体一刷就是几个小时</p>
       </div>
 
       <div class="problem-card">
@@ -33,8 +33,13 @@
 
       <div class="problem-card">
         <div class="problem-icon">😵‍💫</div>
-        <h3>精神内耗 </h3>
+        <h3>精神内耗</h3>
         <p>无聊时不自觉地刷信息流打发时间，但刷完后反而感到更加空虚和迷茫</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-icon">🎯❌</div>
+        <h3>目标偏离</h3>
+        <p>本想学习或解决问题，却被推荐内容吸引偏离目标，一小时后才发现完全忘了最初要做什么</p>
       </div>
     </div>
 
@@ -212,11 +217,15 @@
     padding: 0;
   }
 
+  #about-page p:not(.hero-subtitle) {
+    font-size: 14px;
+  }
+
   /* Hero Section */
   .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 80px 40px;
+    padding: 80px 8px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -278,7 +287,7 @@
 
   /* Section Styling */
   section {
-    padding: 80px 40px;
+    padding: 80px 8px;
     max-width: 1200px;
     margin: 0 auto;
   }
@@ -298,9 +307,9 @@
 
   .problem-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    margin-bottom: 60px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    /* margin-bottom: 60px; */
   }
 
   .problem-card {
@@ -332,7 +341,7 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 30px;
-    margin-top: 60px;
+    margin-top: 30px;
   }
 
   .stat-card {
@@ -483,7 +492,7 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     text-align: center;
-    padding: 80px 40px;
+    padding: 80px 8px;
   }
 
   .cta-section h2 {
