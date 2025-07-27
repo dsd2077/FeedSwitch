@@ -1,6 +1,5 @@
 import psl from "../node_modules/psl/dist/psl.mjs"
 
-/* global echarts */
 ;(function () {
   let websitesTimeCache = null
   let faviconCache = null
@@ -261,8 +260,27 @@ import psl from "../node_modules/psl/dist/psl.mjs"
     return Math.round(calculateTotalDuration(data) / data.total.length)
   }
 
+  // 等待ECharts加载
+  function waitForECharts() {
+    return new Promise((resolve) => {
+      if (typeof window.echarts !== 'undefined') {
+        resolve();
+        return;
+      }
+      
+      const checkEcharts = () => {
+        if (typeof window.echarts !== 'undefined') {
+          resolve();
+        } else {
+          setTimeout(checkEcharts, 50);
+        }
+      };
+      checkEcharts();
+    });
+  }
+
   // 创建/更新图表
-  function updateCharts() {
+  async function updateCharts() {
     // 销毁旧图表
     if (state.weeklyChart) {
       state.weeklyChart.dispose()
@@ -271,16 +289,19 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       state.dailyChart.dispose()
     }
 
+    // 等待ECharts加载完成
+    await waitForECharts();
+
     // 创建新图表
     const weeklyChartElement = document.getElementById("weeklyChart")
     const dailyChartElement = document.getElementById("dailyChart")
 
     if (weeklyChartElement) {
-      state.weeklyChart = echarts.init(weeklyChartElement)
+      state.weeklyChart = window.echarts.init(weeklyChartElement)
       state.weeklyChart.setOption(createEChartsConfig("weekly"))
     }
     if (dailyChartElement) {
-      state.dailyChart = echarts.init(dailyChartElement)
+      state.dailyChart = window.echarts.init(dailyChartElement)
       state.dailyChart.setOption(createEChartsConfig("daily"))
     }
   }
@@ -300,11 +321,11 @@ import psl from "../node_modules/psl/dist/psl.mjs"
   }
 
   // 只更新日数据（不重新加载周数据）
-  function updateDailyDataOnly() {
+  async function updateDailyDataOnly() {
     // 获取当前日期的数据
     const dailyKey = `hourlyUsage-${getFormattedDate(state.currentDate)}`
 
-    chrome.storage.local.get([dailyKey], (result) => {
+    chrome.storage.local.get([dailyKey], async (result) => {
       state.dailyData = result[dailyKey] || {
         total: Array(24).fill(0),
         fun: Array(24).fill(0),
@@ -320,7 +341,9 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       }
       const dailyChartElement = document.getElementById("dailyChart")
       if (dailyChartElement) {
-        state.dailyChart = echarts.init(dailyChartElement)
+        // 等待ECharts加载完成
+        await waitForECharts();
+        state.dailyChart = window.echarts.init(dailyChartElement)
         state.dailyChart.setOption(createEChartsConfig("daily"))
       }
 
