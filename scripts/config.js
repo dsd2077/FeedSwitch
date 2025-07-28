@@ -113,57 +113,57 @@ export const SITE_CONFIG = {
       }
 
       // 自动禁用自动播放功能
-      const disableAutoplay = () => {
-        // 桌面端自动播放按钮
-        const autonavButton = root.querySelector(".ytp-autonav-toggle-button")
-        if (autonavButton && autonavButton.getAttribute("aria-checked") === "true") {
-          autonavButton.click()
-        }
+      // const disableAutoplay = () => {
+      //   // 桌面端自动播放按钮
+      //   const autonavButton = root.querySelector(".ytp-autonav-toggle-button")
+      //   if (autonavButton && autonavButton.getAttribute("aria-checked") === "true") {
+      //     autonavButton.click()
+      //   }
 
-        // 移动端自动播放按钮
-        const mobileAutonavContainer = root.querySelector(".ytm-autonav-toggle-button-container")
-        if (mobileAutonavContainer && mobileAutonavContainer.getAttribute("aria-pressed") === "true") {
-          mobileAutonavContainer.click()
-        }
+      //   // 移动端自动播放按钮
+      //   const mobileAutonavContainer = root.querySelector(".ytm-autonav-toggle-button-container")
+      //   if (mobileAutonavContainer && mobileAutonavContainer.getAttribute("aria-pressed") === "true") {
+      //     mobileAutonavContainer.click()
+      //   }
 
-        // 在ytd-watch-flexy中查找自动播放按钮
-        const watchFlexy = root.querySelector("ytd-watch-flexy")
-        if (watchFlexy && !watchFlexy.hidden) {
-          const autonavInWatch = watchFlexy.querySelector(".ytp-autonav-toggle-button")
-          if (autonavInWatch && autonavInWatch.getAttribute("aria-checked") === "true") {
-            autonavInWatch.click()
-          }
-        }
-      }
+      //   // 在ytd-watch-flexy中查找自动播放按钮
+      //   const watchFlexy = root.querySelector("ytd-watch-flexy")
+      //   if (watchFlexy && !watchFlexy.hidden) {
+      //     const autonavInWatch = watchFlexy.querySelector(".ytp-autonav-toggle-button")
+      //     if (autonavInWatch && autonavInWatch.getAttribute("aria-checked") === "true") {
+      //       autonavInWatch.click()
+      //     }
+      //   }
+      // }
 
       // 自动禁用注释/交互元素
-      const disableAnnotations = () => {
-        const settingsButtons = root.querySelectorAll(".ytp-settings-button")
-        settingsButtons.forEach((button) => {
-          button.click()
-          button.click()
+      // const disableAnnotations = () => {
+      //   const settingsButtons = root.querySelectorAll(".ytp-settings-button")
+      //   settingsButtons.forEach((button) => {
+      //     button.click()
+      //     button.click()
 
-          const panelMenus = root.querySelectorAll(".ytp-panel-menu")
-          panelMenus.forEach((menu) => {
-            const menuItems = menu.querySelectorAll(".ytp-menuitem[role=menuitemcheckbox]")
-            if (menuItems.length) {
-              const lastItem = menuItems[menuItems.length - 1]
-              if (lastItem.innerText !== "Ambient mode") {
-                lastItem.classList.add("annOption")
-                if (lastItem.getAttribute("aria-checked") === "true") {
-                  lastItem.click()
-                }
-              }
-            }
-          })
-        })
-      }
+      //     const panelMenus = root.querySelectorAll(".ytp-panel-menu")
+      //     panelMenus.forEach((menu) => {
+      //       const menuItems = menu.querySelectorAll(".ytp-menuitem[role=menuitemcheckbox]")
+      //       if (menuItems.length) {
+      //         const lastItem = menuItems[menuItems.length - 1]
+      //         if (lastItem.innerText !== "Ambient mode") {
+      //           lastItem.classList.add("annOption")
+      //           if (lastItem.getAttribute("aria-checked") === "true") {
+      //             lastItem.click()
+      //           }
+      //         }
+      //       }
+      //     })
+      //   })
+      // }
 
       // 延迟执行以确保页面元素加载完成
-      setTimeout(() => {
-        disableAutoplay()
-        disableAnnotations()
-      }, 1000)
+      // setTimeout(() => {
+      //   disableAutoplay()
+      //   disableAnnotations()
+      // }, 1000)
 
       // 屏蔽探索部分
       const removeExploreSection = () => {

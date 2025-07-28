@@ -114,7 +114,15 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 // 单纯的刷新——tabId不变、url不变
 // 更新当前页面——tabId不变，url改变
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  // 前置条件检查
+  // 处理标题更新事件（优先处理，无论页面状态如何）
+  if (changeInfo.title && activeTabs[tabId]) {
+    console.log(`Title updated for tab ${tabId}: ${changeInfo.title}`)
+    activeTabs[tabId].title = changeInfo.title
+    return
+  }
+
+  // 前置条件检查 - 只处理页面加载完成的情况
+  console.log(`Tab updated: ${tabId} changeInfo: `, changeInfo)
   if (changeInfo.status !== "complete" || !tab.url) return
 
   const newRawUrl = tab.url
@@ -488,6 +496,16 @@ function normalizeUrl(url) {
 
     // 对于特定网站，保留重要的查询参数
     const hostname = u.hostname.toLowerCase()
+    if (hostname.includes("youtube.com") || hostname.includes("youtu.be")) {
+      const videoId = u.searchParams.get("v")
+      if (videoId) {
+        return `${u.origin}${u.pathname}?v=${videoId}`
+      }
+      // 处理youtu.be短链接格式
+      if (hostname.includes("youtu.be") && u.pathname !== "/") {
+        return `${u.origin}${u.pathname}`
+      }
+    }
 
     // Bilibili - 保留视频BV号或av号
     if (hostname.includes("bilibili.com")) {
