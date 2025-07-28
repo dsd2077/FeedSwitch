@@ -485,8 +485,18 @@ function cacheFavicon(mainDomain, iconUrl) {
 function normalizeUrl(url) {
   try {
     const u = new URL(url)
-    // 保留协议、主机、路径，去除查询参数和hash
-    return `${u.origin}${u.pathname}`
+
+    // 对于特定网站，保留重要的查询参数
+    const hostname = u.hostname.toLowerCase()
+
+    // Bilibili - 保留视频BV号或av号
+    if (hostname.includes("bilibili.com")) {
+      if (u.pathname.includes("/video/")) {
+        return `${u.origin}${u.pathname}`
+      }
+    }
+
+    return url
   } catch {
     return url
   }

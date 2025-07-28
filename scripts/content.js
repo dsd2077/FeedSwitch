@@ -118,7 +118,6 @@ if (SITE_CONFIG?.[parseDomain(location.hostname)]) {
 }
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  console.log("storage.onChanged", changes, areaName)
   if (areaName === "local" && (changes.focus || changes[generateWebsitesTimeKey()])) {
     checkAndRemove()
   }
