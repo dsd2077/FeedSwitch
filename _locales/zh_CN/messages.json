@@ -5,7 +5,7 @@
   "popupTitle": { "message": "FeedBlock", "description": "弹出页面的标题。" },
   "focusLabel": { "message": "专注", "description": "切换开关上“专注”状态的标签。" },
   "funLabel": { "message": "娱乐", "description": "切换开关上“娱乐”状态的标签。" },
-  "goToOptionsLabel": { "message": "设置", "description": "导航到选项页面的按钮文本。" },
+  "goToOptionsLabel": { "message": "设置限额", "description": "导航到选项页面的按钮文本。" },
   "pinTitlePin": { "message": "固定到顶部", "description": "当项目可以被固定时，固定按钮的工具提示。" },
   "pinTitleUnpin": { "message": "取消固定", "description": "当项目已被固定时，固定按钮的工具提示。" },
   "timeDisplayFun": { "message": "娱乐", "description": "时间显示中的“娱乐时间”标签。" },

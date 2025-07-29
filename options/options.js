@@ -7,6 +7,10 @@ sidebarLinks.forEach((link) => {
   link.addEventListener("click", function (event) {
     event.preventDefault() // 阻止默认行为（比如a标签跳转）
     var page = this.getAttribute("data-page")
+
+    // 更新 URL 哈希
+    window.location.hash = page
+
     loadPage(page)
   })
 })
@@ -20,7 +24,7 @@ function loadPage(page) {
 
       // Apply translations to the newly loaded content
       if (window.applyTranslations) {
-        window.applyTranslations(contentArea);
+        window.applyTranslations(contentArea)
       }
 
       const scripts = Array.from(contentArea.querySelectorAll("script"))
@@ -40,5 +44,18 @@ function loadPage(page) {
     })
 }
 
-// 默认加载第一个页面
-loadPage("website-usage-time")
+// 检查 URL 哈希并加载相应页面
+function loadPageFromHash() {
+  const hash = window.location.hash.substring(1) // 去除 # 符号
+  if (hash && ["website-usage-time", "webpage-limits", "about"].includes(hash)) {
+    loadPage(hash)
+  } else {
+    loadPage("website-usage-time")
+  }
+}
+
+// 监听哈希变化
+window.addEventListener("hashchange", loadPageFromHash)
+
+// 初始化页面加载
+loadPageFromHash()

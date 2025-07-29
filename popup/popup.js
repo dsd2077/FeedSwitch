@@ -61,11 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
 })
 
 document.querySelector("#go-to-options").addEventListener("click", function () {
-  if (chrome.runtime.openOptionsPage) {
-    chrome.runtime.openOptionsPage()
-  } else {
-    window.open(chrome.runtime.getURL("options.html"))
-  }
+  window.open(chrome.runtime.getURL("options/option.html#webpage-limits"))
 })
 
 function updateWebsiteList(websiteList) {
@@ -244,10 +240,13 @@ function getIconSrc(domain) {
 
 // 构建域名HTML模板
 function buildDomainHTML(domain, focusPercentage, funPercentage, widthPercentage) {
-  const timeDisplay = domain.funTime > 0 ? `${formatTime(domain.totalTime)} (${chrome.i18n.getMessage('timeDisplayFun')}: ${formatTime(domain.funTime)})` : formatTime(domain.totalTime)
+  const timeDisplay =
+    domain.funTime > 0
+      ? `${formatTime(domain.totalTime)} (${chrome.i18n.getMessage("timeDisplayFun")}: ${formatTime(domain.funTime)})`
+      : formatTime(domain.totalTime)
   const pinClass = domain.isPinned ? "pinned" : ""
   const pinIcon = domain.isPinned ? "📌" : "📍"
-  const pinTitle = domain.isPinned ? chrome.i18n.getMessage('pinTitleUnpin') : chrome.i18n.getMessage('pinTitlePin')
+  const pinTitle = domain.isPinned ? chrome.i18n.getMessage("pinTitleUnpin") : chrome.i18n.getMessage("pinTitlePin")
 
   return `
     <div class="domain-header">

@@ -5,7 +5,7 @@
   "popupTitle": { "message": "FeedBlock", "description": "The title of the popup page." },
   "focusLabel": { "message": "Focus", "description": "Label for the 'Focus' state on the toggle switch." },
   "funLabel": { "message": "Fun", "description": "Label for the 'Fun' state on the toggle switch." },
-  "goToOptionsLabel": { "message": "Go to options", "description": "Button text to navigate to the options page." },
+  "goToOptionsLabel": { "message": "Set limit", "description": "Button text to navigate to the options page." },
   "pinTitlePin": { "message": "Pin to top", "description": "Tooltip for the pin button when an item can be pinned." },
   "pinTitleUnpin": { "message": "Unpin", "description": "Tooltip for the pin button when an item is already pinned." },
   "timeDisplayFun": { "message": "Fun", "description": "Label for 'fun time' in the time display." },
