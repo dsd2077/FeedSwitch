@@ -161,26 +161,41 @@
 
     <div class="steps-container">
       <div class="step-item">
+        <div class="step-number">0</div>
+        <div class="step-content">
+          <h3>固定插件</h3>
+          <p>将FeedBlockPlus固定到工具栏，方便快速切换模式、查看网页使用时长以及访问历史记录</p>
+        </div>
+      </div>
+
+      <div class="step-item">
         <div class="step-number">1</div>
         <div class="step-content">
-          <h3>设置限制</h3>
-          <p>在"网页限制"选项卡中，添加你想要限制的网站和每日使用时间</p>
+          <h3>切换专注/娱乐模式</h3>
+          <p>通过快捷键（command/control+F）或者在弹窗中一键切换专注模式（屏蔽信息流）或娱乐模式（开放信息流），根据当前需要灵活调整</p>
         </div>
       </div>
 
       <div class="step-item">
         <div class="step-number">2</div>
         <div class="step-content">
-          <h3>查看统计</h3>
-          <p>在"使用统计"选项卡中，实时了解你的上网习惯和时间分布</p>
+          <h3>设置限制</h3>
+          <p
+            >在"网页限制"选项卡中，添加你想要限制的网站和每日使用时间。请查看<a
+              href="https://github.com/dsd2077/timeManagement"
+              target="_blank"
+              style="color: #667eea; text-decoration: underline"
+              >屏蔽网站清单</a
+            >。如果你想屏蔽的网站不在此列，请提交issue，本人一定尽快添加。</p
+          >
         </div>
       </div>
 
       <div class="step-item">
         <div class="step-number">3</div>
         <div class="step-content">
-          <h3>保持坚持</h3>
-          <p>相信过程，给自己一些时间适应新的数字习惯</p>
+          <h3>查看统计</h3>
+          <p>在"网站统计"选项卡中，实时了解你的上网习惯和时间分布</p>
         </div>
       </div>
     </div>
@@ -451,7 +466,7 @@
   /* Usage Section */
   .steps-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 30px;
   }
 
