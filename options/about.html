@@ -5,13 +5,13 @@
       <h1 class="hero-title">为什么需要 FeedBlockPlus？</h1>
       <p class="hero-subtitle">重新掌控你的时间，专注于真正重要的事情</p>
     </div>
-    <div class="hero-image">
+    <!-- <div class="hero-image">
       <div class="phone-mockup">
         <div class="distraction-cloud">📱💻📺🎮</div>
         <div class="focus-arrow">→</div>
         <div class="productivity-zone">✅📚💡🎯</div>
       </div>
-    </div>
+    </div> -->
   </div>
 
   <!-- Problem Section -->
@@ -192,14 +192,14 @@
     <p>现在就开始使用 FeedBlockPlus，重新夺回对时间的控制权！</p>
     <div class="cta-buttons">
       <a
-        href="#"
-        onclick="loadPage('webpage-limits')"
+        href="#webpage-limits"
+        onclick="if(typeof loadPage === 'function') { loadPage('webpage-limits'); } else { window.location.hash = 'webpage-limits'; }"
         class="cta-button primary"
         >设置网页限制</a
       >
       <a
-        href="#"
-        onclick="loadPage('website-usage-time')"
+        href="#website-usage-time"
+        onclick="if(typeof loadPage === 'function') { loadPage('website-usage-time'); } else { window.location.hash = 'website-usage-time'; }"
         class="cta-button secondary"
         >查看使用统计</a
       >
@@ -225,7 +225,7 @@
   .hero-section {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
-    padding: 80px 8px;
+    padding: 40px 8px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -405,15 +405,17 @@
   }
 
   .benefits-container {
-    max-width: 800px;
+    max-width: 1000px;
     margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
   }
 
   .benefit-item {
     display: flex;
     align-items: flex-start;
     gap: 30px;
-    margin-bottom: 50px;
     padding: 30px;
     background: white;
     border-radius: 15px;
@@ -573,6 +575,10 @@
 
     .problem-grid,
     .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .benefits-container {
       grid-template-columns: 1fr;
     }
 

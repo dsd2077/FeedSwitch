@@ -870,6 +870,19 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       fetchSubDomainData(domain.mainDomain, dataType).then((subDomains) => {
         const sortedSubDomains = sortSubDomains(subDomains)
         renderSubDomains(domainElement, sortedSubDomains)
+
+        // 如果只有一个子域名，自动展开它
+        if (sortedSubDomains.length === 1) {
+          const subDomainItem = domainElement.querySelector(".subdomain-item")
+          if (subDomainItem) {
+            subDomainItem.classList.add("active")
+            const subDomain = sortedSubDomains[0].subDomain
+            fetchPageData(subDomain, dataType).then((pages) => {
+              const sortedPages = sortPages(pages)
+              renderPages(subDomainItem, sortedPages)
+            })
+          }
+        }
       })
     })
   }
@@ -1027,6 +1040,15 @@ import psl from "../node_modules/psl/dist/psl.mjs"
       <span class="page-time">${formatTime(pageInfo.time)}</span>
     </div>
   `
+
+    // 为页面链接添加点击事件，阻止事件冒泡
+    const pageLink = pageItem.querySelector(".page-title")
+    if (pageLink) {
+      pageLink.addEventListener("click", (event) => {
+        event.stopPropagation()
+        // 让链接正常工作（打开新页面），但阻止事件冒泡到父级
+      })
+    }
 
     return pageItem
   }
