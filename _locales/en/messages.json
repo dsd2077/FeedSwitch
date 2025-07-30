@@ -71,6 +71,7 @@
   "averageDurationLabel": { "message": "Average Duration" },
   "dateLabel": { "message": "Date" },
   "websitesLabel": { "message": "Websites" },
+  "funDurationLabel": { "message": "Fun Duration" },
   "timeUnitHour": { "message": "h", "description": "Hour unit abbreviation" },
   "timeUnitMinute": { "message": "m", "description": "Minute unit abbreviation" },
   "timeUnitSecond": { "message": "s", "description": "Second unit abbreviation" },

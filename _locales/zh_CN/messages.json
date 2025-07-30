@@ -67,6 +67,7 @@
   "averageDurationLabel": { "message": "平均时长" },
   "dateLabel": { "message": "日期" },
   "websitesLabel": { "message": "网站" },
+  "funDurationLabel": { "message": "娱乐时长" },
   "timeUnitHour": { "message": "时", "description": "小时单位缩写" },
   "timeUnitMinute": { "message": "分", "description": "分钟单位缩写" },
   "timeUnitSecond": { "message": "秒", "description": "秒单位缩写" },

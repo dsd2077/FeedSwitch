@@ -248,7 +248,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
     // 日统计数据
     document.getElementById("dailyTotalDuration").textContent = formatDuration(calculateTotalDuration(state.dailyData))
-    document.getElementById("dailyWebsiteCount").textContent = state.dailyData.length
+    document.getElementById("dailyFunDuration").textContent = formatDuration(calculateTotalFunDuration(state.dailyData))
   }
 
   function calculateTotalDuration(data) {
@@ -257,6 +257,10 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
   function calculateAverageDuration(data) {
     return Math.round(calculateTotalDuration(data) / data.total.length)
+  }
+
+  function calculateTotalFunDuration(data) {
+    return data.fun.reduce((acc, curr) => acc + curr, 0)
   }
 
   // 等待ECharts加载
@@ -332,7 +336,7 @@ import psl from "../node_modules/psl/dist/psl.mjs"
 
       // 更新日统计信息
       document.getElementById("dailyTotalDuration").textContent = formatDuration(calculateTotalDuration(state.dailyData))
-      document.getElementById("dailyWebsiteCount").textContent = state.dailyData.length
+      document.getElementById("dailyFunDuration").textContent = formatDuration(calculateTotalFunDuration(state.dailyData))
 
       // 更新日图表
       if (state.dailyChart) {
