@@ -36,6 +36,48 @@ import { SITE_CONFIG } from "../scripts/config.js"
   // 延迟生效相关变量和函数
   const modalWarning = document.getElementById("modal-warning")
 
+  // 检查网站是否已存在的函数
+  function isWebsiteAlreadyAdded(website) {
+    const existingWebsites = Array.from(document.querySelectorAll('[name="websites"]')).map((input) => input.value)
+    return existingWebsites.includes(website)
+  }
+
+  // 添加网站标签的函数
+  function addWebsiteTag(website) {
+    // 检查是否重复
+    if (isWebsiteAlreadyAdded(website)) {
+      return false
+    }
+
+    const tag = document.createElement("div")
+    tag.className = "website-tag"
+    tag.innerHTML = `
+      ${website}
+      <button class="remove-tag-btn">×</button>
+      <input type="hidden" name="websites" value="${website}">
+    `
+    websitesContainer.appendChild(tag)
+
+    // 重新显示建议以更新选中状态
+    updateSuggestionDisplay()
+
+    return true
+  }
+
+  // 更新建议显示的函数
+  function updateSuggestionDisplay() {
+    const input = websiteInput.value.toLowerCase()
+    let matches
+
+    if (input.length > 0) {
+      matches = suggestionList.filter((item) => item.toLowerCase().includes(input))
+    } else {
+      matches = suggestionList
+    }
+
+    showSuggestions(matches)
+  }
+
   // 获取今天是星期几的索引 (0=Sunday, 1=Monday, ..., 6=Saturday)
   function getTodayIndex() {
     return new Date().getDay()
@@ -477,40 +519,61 @@ import { SITE_CONFIG } from "../scripts/config.js"
   websitesContainer.addEventListener("click", (e) => {
     if (e.target.classList.contains("remove-tag-btn")) {
       e.target.closest(".website-tag").remove()
+      // 重新显示建议以更新选中状态
+      updateSuggestionDisplay()
     }
   })
 
   // 创建建议项的函数
   function createSuggestionItem(match) {
     const div = document.createElement("div")
-    div.textContent = match
+    const isSelected = isWebsiteAlreadyAdded(match)
+
     div.style.padding = "5px"
-    div.style.cursor = "pointer"
-    div.onclick = () => {
-      suggestionsDiv.innerHTML = ""
-      websiteInput.value = ""
-      // 创建标签元素
-      const tag = document.createElement("div")
-      tag.className = "website-tag"
-      tag.innerHTML = `
-            ${match}
-            <button class="remove-tag-btn">×</button>
-            <input type="hidden" name="websites" value="${match}">
-        `
-      websitesContainer.appendChild(tag)
+    div.style.display = "flex"
+    div.style.alignItems = "center"
+    // div.style.justifyContent = "space-between"
+
+    // 创建网站名称部分
+    const nameSpan = document.createElement("span")
+    nameSpan.textContent = match
+    div.appendChild(nameSpan)
+
+    // 如果已选中，添加绿色勾号
+    if (isSelected) {
+      const checkSpan = document.createElement("span")
+      checkSpan.textContent = "✓"
+      checkSpan.style.color = "#4CAF50"
+      checkSpan.style.fontWeight = "bold"
+      checkSpan.style.marginLeft = "10px"
+      div.appendChild(checkSpan)
+      div.style.cursor = "default"
+      div.style.opacity = "0.7"
+    } else {
+      div.style.cursor = "pointer"
+      div.onclick = () => {
+        if (addWebsiteTag(match)) {
+          suggestionsDiv.innerHTML = ""
+          websiteInput.value = ""
+        }
+      }
     }
+
     // 添加悬停事件
-    div.addEventListener("mouseenter", () => {
-      // 移除所有激活状态
-      suggestionsDiv.querySelectorAll("div").forEach((item) => {
-        item.classList.remove("active")
+    if (!isSelected) {
+      div.addEventListener("mouseenter", () => {
+        // 移除所有激活状态
+        suggestionsDiv.querySelectorAll("div").forEach((item) => {
+          item.classList.remove("active")
+        })
+        // 设置当前项激活
+        div.classList.add("active")
       })
-      // 设置当前项激活
-      div.classList.add("active")
-    })
-    div.addEventListener("mouseleave", () => {
-      div.classList.remove("active")
-    })
+      div.addEventListener("mouseleave", () => {
+        div.classList.remove("active")
+      })
+    }
+
     return div
   }
 
@@ -569,16 +632,12 @@ import { SITE_CONFIG } from "../scripts/config.js"
       case "Enter":
         e.preventDefault()
         if (active) {
-          suggestionsDiv.innerHTML = ""
-          websiteInput.value = ""
-          const tag = document.createElement("div")
-          tag.className = "website-tag"
-          tag.innerHTML = `
-                ${active.textContent}
-                <button class="remove-tag-btn">×</button>
-                <input type="hidden" name="websites" value="${active.textContent}">
-            `
-          websitesContainer.appendChild(tag)
+          // 获取网站名称（第一个span的文本内容）
+          const websiteName = active.querySelector("span")?.textContent || active.textContent
+          if (addWebsiteTag(websiteName)) {
+            suggestionsDiv.innerHTML = ""
+            websiteInput.value = ""
+          }
         }
 
         return // 提前返回避免执行后续代码

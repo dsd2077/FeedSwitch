@@ -307,6 +307,7 @@
   overflow-x: hidden; /* 隐藏横向滚动条 */
   white-space: nowrap; /* 防止文本换行 */
   width: 100%; /* 宽度与父容器对齐 */
+  padding-left: 5px; /* 添加左边距 */
 }
 
 /* 时间限制选项样式 */
