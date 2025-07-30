@@ -286,7 +286,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
 
-#suggestions div:hover {
+#suggestions div[style*="cursor: pointer"]:hover {
   background-color: #f5f5f5;
   transform: translateX(3px);
   transition: all 0.2s ease;
@@ -307,7 +307,6 @@
   overflow-x: hidden; /* 隐藏横向滚动条 */
   white-space: nowrap; /* 防止文本换行 */
   width: 100%; /* 宽度与父容器对齐 */
-  padding-left: 5px; /* 添加左边距 */
 }
 
 /* 时间限制选项样式 */

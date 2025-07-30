@@ -85,10 +85,6 @@ const quotes = [
     author: "中国古训",
   },
   {
-    text: "浪费时间是一桩大罪过。",
-    author: "卢梭",
-  },
-  {
     text: "年华一去不复返，事业放弃在难成。",
     author: "白居易",
   },

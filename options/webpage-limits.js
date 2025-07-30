@@ -582,10 +582,24 @@ import { SITE_CONFIG } from "../scripts/config.js"
     suggestionsDiv.innerHTML = ""
     websiteInput.closest(".input-group").classList.add("active")
 
-    matches.forEach((match) => {
-      const div = createSuggestionItem(match)
-      suggestionsDiv.appendChild(div)
-    })
+    if (matches.length === 0 && websiteInput.value.trim().length > 0) {
+      // 没有匹配项时显示提示信息
+      const noMatchDiv = document.createElement("div")
+      noMatchDiv.style.padding = "10px"
+      noMatchDiv.style.color = "#666"
+      noMatchDiv.style.fontSize = "14px"
+      noMatchDiv.style.textAlign = "center"
+      noMatchDiv.innerHTML = `
+        想要屏蔽的网站不在列表？<br>
+        请到<a href="https://github.com/dsd2077/FeedBlockPlus" target="_blank" style="color: #007bff; text-decoration: none;">屏蔽网站清单</a>提交你的需求
+      `
+      suggestionsDiv.appendChild(noMatchDiv)
+    } else {
+      matches.forEach((match) => {
+        const div = createSuggestionItem(match)
+        suggestionsDiv.appendChild(div)
+      })
+    }
   }
 
   // 输入框获得焦点时显示所有建议
