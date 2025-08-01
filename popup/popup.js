@@ -23,6 +23,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const websiteList = document.getElementById("website-list")
   updateWebsiteList(websiteList)
 
+  // 初始化快捷键显示
+  initializeShortcutDisplay()
+
   // 添加日期导航按钮的事件监听器
   document.getElementById("prevDay").addEventListener("click", () => {
     changeDate(-1)
@@ -576,4 +579,37 @@ function changeDate(days) {
   // 重新加载数据
   const websiteList = document.getElementById("website-list")
   updateWebsiteList(websiteList)
+}
+
+// 初始化快捷键显示
+function initializeShortcutDisplay() {
+  chrome.commands.getAll((commands) => {
+    const toggleCommand = commands.find((cmd) => cmd.name === "toggle-tracking")
+    if (toggleCommand && toggleCommand.shortcut) {
+      displayShortcut(toggleCommand.shortcut)
+    }
+  })
+}
+
+// 显示快捷键
+function displayShortcut(shortcut) {
+  const shortcutElement = document.getElementById("shortcut-text")
+  if (shortcutElement && shortcut) {
+    const formattedShortcut = formatShortcutKeys(shortcut)
+    shortcutElement.textContent = formattedShortcut
+  }
+}
+
+// 格式化快捷键显示
+function formatShortcutKeys(shortcut) {
+  return shortcut
+    .replace(/Command/g, "⌘")
+    .replace(/Option/g, "⌥")
+    .replace(/Alt/g, "⌥")
+    .replace(/Shift/g, "Shift")
+    .replace(/Control/g, "⌃")
+    .replace(/Ctrl/g, "⌃")
+    .replace(/\+/g, " + ") // 在+号前后添加空格
+    .replace(/(.)/g, "$1 ") // 在每个字符后添加空格
+    .trim() // 移除首尾空格
 }

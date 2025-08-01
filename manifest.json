@@ -39,8 +39,7 @@
   "commands": {
     "toggle-tracking": {
       "suggested_key": {
-        "default": "Ctrl+Shift+V",
-        "mac": "Alt+F"
+        "default": "Alt+F"
       },
       "description": "Toggle time tracking switch"
     }

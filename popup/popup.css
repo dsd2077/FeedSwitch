@@ -439,3 +439,23 @@ input:checked + .slider .off {
   transform: translateY(0);
   box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
+
+/* Shortcut display styles */
+.shortcut-display {
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.shortcut-text {
+  font-size: 14px;
+  color: #999;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+  font-weight: 400;
+  white-space: nowrap;
+  opacity: 0.8;
+}
+
+.shortcut-text:empty {
+  display: none;
+}
