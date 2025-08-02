@@ -8,24 +8,25 @@ FeedBlockPlus is an extension to manage time spent on websites and to block feed
 
 # Table of Contents
 
-- [FeedBlockPlus](#feedblockplus)
-- [Table of Contents](#table-of-contents)
-  - [Supported Websites and Blocked Content](#supported-websites-and-blocked-content)
-    - [1. Bilibili (bilibili.com)](#1-bilibili-bilibilicom)
-    - [2. Baidu (baidu.com)](#2-baidu-baiducom)
-    - [3. Zhihu (zhihu.com)](#3-zhihu-zhihucom)
-    - [4. CSDN (csdn.net)](#4-csdn-csdnnet)
-    - [5. Juejin (juejin.cn)](#5-juejin-juejincn)
-    - [6. Xiaohongshu (xiaohongshu.com)](#6-xiaohongshu-xiaohongshucom)
-    - [7. Jianshu (jianshu.com)](#7-jianshu-jianshucom)
-    - [8. YouTube (youtube.com)](#8-youtube-youtubecom)
-    - [9. Douyin (douyin.com)](#9-douyin-douyincom)
-  - [How It Works](#how-it-works)
-  - [Features](#features)
-  - [Usage Instructions](#usage-instructions)
-  - [Notes](#notes)
-  - [Technical Implementation](#technical-implementation)
-  - [Developer Documentation](#developer-documentation)
+- [Supported Websites and Blocked Content](#supported-websites-and-blocked-content)
+  - [1. Bilibili (bilibili.com)](#1-bilibili-bilibilicom)
+  - [2. Baidu (baidu.com)](#2-baidu-baiducom)
+  - [3. Zhihu (zhihu.com)](#3-zhihu-zhihucom)
+  - [4. CSDN (csdn.net)](#4-csdn-csdnnet)
+  - [5. Juejin (juejin.cn)](#5-juejin-juejincn)
+  - [6. Xiaohongshu (xiaohongshu.com)](#6-xiaohongshu-xiaohongshucom)
+  - [7. Jianshu (jianshu.com)](#7-jianshu-jianshucom)
+  - [8. YouTube (youtube.com)](#8-youtube-youtubecom)
+  - [9. Douyin (douyin.com)](#9-douyin-douyincom)
+  - [10. Weibo (weibo.com)](#10-weibo-weibocom)
+  - [11. Tencent Video (v.qq.com)](#11-tencent-video-vqqcom)
+  - [12. iQiyi (iqiyi.com)](#12-iqiyi-iqiyicom)
+  - [13. Youku (youku.com)](#13-youku-youkucom)
+- [How It Works](#how-it-works)
+- [Features](#features)
+- [Usage Instructions](#usage-instructions)
+- [Notes](#notes)
+- [Technical Implementation](#technical-implementation)
 
 ## Supported Websites and Blocked Content
 
@@ -129,6 +130,52 @@ FeedBlockPlus is an extension to manage time spent on websites and to block feed
 
 - Automatically redirect to featured page when accessing recommendation page
 
+### 10. Weibo (weibo.com)
+
+**Blocked Content:**
+
+- Homepage feed
+- Loading progress bars
+- Right sidebar content
+- Video recommendation feeds
+- Video ranking lists
+- Search result sidebars
+- Featured channels
+
+### 11. Tencent Video (v.qq.com)
+
+**Blocked Content:**
+
+- Main channel container
+- Channel pages
+- Web channels
+- Channel page scroll areas
+- Flex containers
+- Hot search areas
+- Popular games section
+- Homepage content wrapper
+
+### 12. iQiyi (iqiyi.com)
+
+**Blocked Content:**
+
+- Navigation sidebar
+- Page view containers (when not in search mode)
+
+**Additional Features:**
+
+- Intelligently detects search mode and adjusts blocking accordingly
+
+### 13. Youku (youku.com)
+
+**Blocked Content:**
+
+- Channel module containers (hides all child divs except the first one)
+
+**Additional Features:**
+
+- Uses dynamic hiding instead of removal for better compatibility
+
 ## How It Works
 
 The extension works through the following methods:
@@ -165,15 +212,6 @@ The extension is implemented based on the following technologies:
 - **DOM Manipulation**: Dynamically hides or modifies page elements
 - **CSS Selectors**: Precisely targets elements to be blocked
 - **MutationObserver**: Monitors dynamic page changes
-
-## Developer Documentation
-
-The configuration file is located at `config.js`. Each website's configuration includes:
-
-- `targets`: Array of CSS selectors to block
-- `extraCheck`: Optional additional JavaScript processing function
-
-To add new websites or modify existing rules, please edit the `SITE_CONFIG` object.
 
 ---
 
