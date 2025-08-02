@@ -576,7 +576,8 @@ function generateHourlyUsageKey() {
 
 // 处理待生效的更改
 function processPendingChanges() {
-  const todayDate = new Date(Date.now()).toISOString().split("T")[0]
+  console.log("Processing pending changes...")
+  const todayDate = getTodayDate()
 
   chrome.storage.sync.get(["pendingChanges", "limits"], (result) => {
     const pendingChanges = result.pendingChanges || {}
@@ -627,7 +628,10 @@ function processPendingChanges() {
     // 清理过期的待生效更改（超过7天的）
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-    const sevenDaysAgoString = sevenDaysAgo.toISOString().split("T")[0]
+    const year = sevenDaysAgo.getFullYear()
+    const month = String(sevenDaysAgo.getMonth() + 1).padStart(2, "0")
+    const day = String(sevenDaysAgo.getDate()).padStart(2, "0")
+    const sevenDaysAgoString = `${year}-${month}-${day}`
 
     Object.keys(pendingChanges).forEach((date) => {
       if (date < sevenDaysAgoString) {
