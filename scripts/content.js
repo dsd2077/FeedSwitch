@@ -10,6 +10,12 @@ function removeWebsiteFeed(hostname) {
     config.targets.forEach((target) => {
       const elements = root.querySelector(target)
       elements?.parentElement?.removeChild(elements)
+      // const elements = root.querySelectorAll(target)
+      // elements.forEach((element) => {
+      //   if (element && element.style) {
+      //     element.style.display = "none"
+      //   }
+      // })
     })
     config.extraCheck?.(root)
   }
@@ -148,6 +154,12 @@ function parseDomain(domain) {
     if (/^(\d+\.){3}\d+$/.test(domain) || domain === "localhost") {
       return domain
     }
+
+    // 特殊处理v.qq.com等子域名
+    if (domain === "v.qq.com") {
+      return "v.qq.com"
+    }
+
     const parsed = psl.parse(domain)
     return parsed.domain || domain
   } catch (e) {

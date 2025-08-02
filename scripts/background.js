@@ -576,7 +576,7 @@ function generateHourlyUsageKey() {
 
 // 处理待生效的更改
 function processPendingChanges() {
-  const todayDate = new Date(Date.now() + 86400000).toISOString().split("T")[0]
+  const todayDate = new Date(Date.now()).toISOString().split("T")[0]
 
   chrome.storage.sync.get(["pendingChanges", "limits"], (result) => {
     const pendingChanges = result.pendingChanges || {}

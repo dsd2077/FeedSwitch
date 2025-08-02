@@ -112,59 +112,6 @@ export const SITE_CONFIG = {
         }
       }
 
-      // 自动禁用自动播放功能
-      // const disableAutoplay = () => {
-      //   // 桌面端自动播放按钮
-      //   const autonavButton = root.querySelector(".ytp-autonav-toggle-button")
-      //   if (autonavButton && autonavButton.getAttribute("aria-checked") === "true") {
-      //     autonavButton.click()
-      //   }
-
-      //   // 移动端自动播放按钮
-      //   const mobileAutonavContainer = root.querySelector(".ytm-autonav-toggle-button-container")
-      //   if (mobileAutonavContainer && mobileAutonavContainer.getAttribute("aria-pressed") === "true") {
-      //     mobileAutonavContainer.click()
-      //   }
-
-      //   // 在ytd-watch-flexy中查找自动播放按钮
-      //   const watchFlexy = root.querySelector("ytd-watch-flexy")
-      //   if (watchFlexy && !watchFlexy.hidden) {
-      //     const autonavInWatch = watchFlexy.querySelector(".ytp-autonav-toggle-button")
-      //     if (autonavInWatch && autonavInWatch.getAttribute("aria-checked") === "true") {
-      //       autonavInWatch.click()
-      //     }
-      //   }
-      // }
-
-      // 自动禁用注释/交互元素
-      // const disableAnnotations = () => {
-      //   const settingsButtons = root.querySelectorAll(".ytp-settings-button")
-      //   settingsButtons.forEach((button) => {
-      //     button.click()
-      //     button.click()
-
-      //     const panelMenus = root.querySelectorAll(".ytp-panel-menu")
-      //     panelMenus.forEach((menu) => {
-      //       const menuItems = menu.querySelectorAll(".ytp-menuitem[role=menuitemcheckbox]")
-      //       if (menuItems.length) {
-      //         const lastItem = menuItems[menuItems.length - 1]
-      //         if (lastItem.innerText !== "Ambient mode") {
-      //           lastItem.classList.add("annOption")
-      //           if (lastItem.getAttribute("aria-checked") === "true") {
-      //             lastItem.click()
-      //           }
-      //         }
-      //       }
-      //     })
-      //   })
-      // }
-
-      // 延迟执行以确保页面元素加载完成
-      // setTimeout(() => {
-      //   disableAutoplay()
-      //   disableAnnotations()
-      // }, 1000)
-
       // 屏蔽探索部分
       const removeExploreSection = () => {
         // 找到#sections下的ytd-guide-section-renderer元素，隐藏第三个
@@ -197,6 +144,66 @@ export const SITE_CONFIG = {
       const currentUrl = window.location.href
       if (currentUrl.includes("douyin.com/?recommend=1")) {
         window.location.replace("https://www.douyin.com/jingxuan")
+      }
+    },
+  },
+  "v.qq.com": {
+    targets: [
+      "#channel-main-container", // 主页信息流
+      ".channel-page",
+      ".web-channel",
+      "#channel-page-scroll",
+      ".flex-container",
+      "#hot-search", //热搜
+      "#iwan-gamesearchrank-page", //热门游戏
+      "#root > div.qqhome-content-wrap",
+    ],
+  },
+  "iqiyi.com": {
+    targets: ["#root > div.App_App__p1BHw > div > div.pages_side__pWNLH > div > div > div.side_outer__mjJJn > div > div"], //导航栏
+    extraCheck: (root) => {
+      // 检测是否处于搜索状态
+      const searchElement = root.querySelector("#search")
+      const isSearchMode = searchElement && searchElement.offsetParent !== null
+
+      // 如果不是搜索状态，则屏蔽指定容器
+      if (!isSearchMode) {
+        // 屏蔽pages_page_view_bk__C5fSj容器
+        const pageViewContainers = root.querySelectorAll("div.pages_page_view_bk__C5fSj")
+        pageViewContainers.forEach((container) => {
+          if (container) {
+            container.style.display = "none"
+          }
+        })
+      }
+    },
+  },
+  "weibo.com": {
+    targets: [
+      "#scroller > div.vue-recycle-scroller__item-wrapper", //首页信息流
+      "#scroller > div.vue-recycle-scroller__slot > div > div", //加载条
+      "#__sidebar > div > div:nth-child(2) > div > div", //右侧边栏
+      "#app > div > div.woo-box-flex.woo-box-justifyBetween.Frame_content1_3ZhYn > div.Frame_main1_1_6JQ > div > div.recommend", //视频推荐流
+      "#app > div > div.woo-box-flex.woo-box-justifyBetween.Frame_content1_3ZhYn > div.Frame_main1_1_6JQ > div > div.woo-panel-main.woo-panel-top.woo-panel-right.woo-panel-bottom.woo-panel-left.Card_wrap_2ibWe.List_card_2xvIN", //视频榜单
+      "#pl_right_side", //搜索结果有侧边栏
+      "#app > div > div.woo-box-flex.woo-box-justifyBetween.Frame_content1_3ZhYn > div.Frame_main1_1_6JQ > div > div.recommend", //未登录状态视频推荐流
+      "#app > div > div.woo-box-flex.woo-box-justifyBetween.Frame_content1_3ZhYn > div.Frame_side1_2Wnvp > div > div > div:nth-child(6) > div.woo-box-flex.woo-box-column", //精选频道
+    ],
+  },
+  "youku.com": {
+    targets: [],
+    extraCheck: (root) => {
+      // 查找 channel_module_container 容器，使用隐藏而不是删除
+      const channelContainer = root.querySelector("#channel_module_container")
+      if (channelContainer) {
+        // 获取所有直接子div元素
+        const childDivs = channelContainer.querySelectorAll(":scope > div")
+        // 隐藏除第一个div之外的所有子div元素
+        for (let i = 1; i < childDivs.length; i++) {
+          if (childDivs[i] && childDivs[i].style) {
+            childDivs[i].style.display = "none"
+          }
+        }
       }
     },
   },

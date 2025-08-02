@@ -606,7 +606,7 @@ function formatShortcutKeys(shortcut) {
     .replace(/Command/g, "⌘")
     .replace(/Option/g, "⌥")
     .replace(/Alt/g, "⌥")
-    .replace(/Shift/g, "Shift")
+    .replace(/Shift/g, "⇧")
     .replace(/Control/g, "⌃")
     .replace(/Ctrl/g, "⌃")
     .replace(/\+/g, " + ") // 在+号前后添加空格
