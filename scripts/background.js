@@ -284,21 +284,57 @@ function updateDomainTime(pageUrl, seconds, title, type) {
   })
 }
 
-// 新增函数：设置每日凌晨的闹钟
 function setDailyAlarm() {
-  const now = new Date()
-  const tomorrow = new Date(now)
-  tomorrow.setHours(0, 0, 0, 0)
-  if (now >= tomorrow) {
-    tomorrow.setDate(tomorrow.getDate() + 1)
-  }
+  // 先检查闹钟是否已存在
+  chrome.alarms.get("resetDaily", (alarm) => {
+    if (!alarm) {
+      const now = new Date()
+      const tomorrow = new Date(now)
+      tomorrow.setDate(tomorrow.getDate() + 1)
+      tomorrow.setHours(0, 0, 0, 0)
 
-  const delayInMinutes = (tomorrow.getTime() - now.getTime()) / (1000 * 60)
-  chrome.alarms.create("resetDaily", {
-    delayInMinutes: delayInMinutes,
-    periodInMinutes: 1440,
-  }) // 每天凌晨触发
+      const delayInMinutes = (tomorrow.getTime() - now.getTime()) / (1000 * 60)
+      chrome.alarms.create("resetDaily", {
+        delayInMinutes: delayInMinutes,
+        periodInMinutes: 1440,
+      })
+      console.log("Daily alarm set for", new Date(now.getTime() + delayInMinutes * 60 * 1000))
+    } else {
+      console.log("Daily alarm already exists, scheduled for", new Date(alarm.scheduledTime))
+    }
+  })
 }
+
+// function setDailyAlarm() {
+//   // 先清除可能存在的旧闹钟
+//   chrome.alarms.clear("resetDaily", (wasCleared) => {
+//     console.log("Previous alarm cleared:", wasCleared)
+
+//     const now = new Date()
+//     const tomorrow = new Date(now)
+//     // tomorrow.setDate(tomorrow.getDate() + 1) // 先设置为明天
+//     tomorrow.setHours(11, 1, 0, 0) // 设置为凌晨00:00:00
+
+//     const delayInMinutes = (tomorrow.getTime() - now.getTime()) / (1000 * 60)
+//     console.log(
+//       `Setting alarm for next midnight. Current time: ${now.toLocaleString()}, Next trigger: ${tomorrow.toLocaleString()}, Delay: ${delayInMinutes} minutes`,
+//     )
+
+//     chrome.alarms.create("resetDaily", {
+//       delayInMinutes: delayInMinutes,
+//       periodInMinutes: 1440, // 24小时 = 1440分钟
+//     })
+
+//     // 验证闹钟是否创建成功
+//     chrome.alarms.get("resetDaily", (alarm) => {
+//       if (alarm) {
+//         console.log("Daily alarm created successfully:", alarm)
+//       } else {
+//         console.error("Failed to create daily alarm")
+//       }
+//     })
+//   })
+// }
 
 // 新增事件监听器：处理闹钟触发事件
 chrome.alarms.onAlarm.addListener((alarm) => {
@@ -350,6 +386,7 @@ chrome.runtime.onStartup.addListener(() => {
     updateBadgeStatus(true)
     console.log("Runtime startup: Focus reset to true")
   })
+  processPendingChanges()
 })
 
 function parseDomain(domain) {
@@ -539,45 +576,53 @@ function generateHourlyUsageKey() {
 
 // 处理待生效的更改
 function processPendingChanges() {
-  const todayDate = new Date().toISOString().split("T")[0]
+  const todayDate = new Date(Date.now() + 86400000).toISOString().split("T")[0]
 
   chrome.storage.sync.get(["pendingChanges", "limits"], (result) => {
     const pendingChanges = result.pendingChanges || {}
     const limits = result.limits || {}
-    const todayChanges = pendingChanges[todayDate] || []
 
-    if (todayChanges.length === 0) {
+    // 获取所有应该生效的日期（今天及之前的日期）
+    const datesToProcess = Object.keys(pendingChanges).filter((date) => date <= todayDate)
+
+    if (datesToProcess.length === 0) {
       return
     }
 
-    console.log(`Processing ${todayChanges.length} pending changes for ${todayDate}`)
+    let totalChangesProcessed = 0
 
-    todayChanges.forEach((change) => {
-      if (change.action === "update" && change.newLimitData) {
-        // 应用待生效的更改
-        if (limits[change.limitId]) {
-          console.log(`Applying pending changes for limit ID: ${change.limitId}`)
-          console.log(`Old: ${change.websites.join(", ")}`)
-          console.log(`New: ${change.newLimitData.websites.join(", ")}`)
+    // 处理所有应该生效的日期
+    datesToProcess.forEach((date) => {
+      const changes = pendingChanges[date] || []
+      totalChangesProcessed += changes.length
 
-          // 更新限制数据
-          limits[change.limitId] = {
-            ...limits[change.limitId],
-            ...change.newLimitData,
-            updatedAt: new Date().toISOString(),
+      changes.forEach((change) => {
+        if (change.action === "update" && change.newLimitData) {
+          // 应用待生效的更改
+          if (limits[change.limitId]) {
+            console.log(`Applying pending changes for limit ID: ${change.limitId}`)
+            console.log(`Old: ${change.websites.join(", ")}`)
+            console.log(`New: ${change.newLimitData.websites.join(", ")}`)
+
+            // 更新限制数据
+            limits[change.limitId] = {
+              ...limits[change.limitId],
+              ...change.newLimitData,
+              updatedAt: new Date().toISOString(),
+            }
+          }
+        } else if (change.action === "delete") {
+          // 删除限制
+          if (limits[change.limitId]) {
+            console.log(`Deleting limit for websites: ${change.websites.join(", ")}`)
+            delete limits[change.limitId]
           }
         }
-      } else if (change.action === "delete") {
-        // 删除限制
-        if (limits[change.limitId]) {
-          console.log(`Deleting limit for websites: ${change.websites.join(", ")}`)
-          delete limits[change.limitId]
-        }
-      }
-    })
+      })
 
-    // 清除今天的待生效更改
-    delete pendingChanges[todayDate]
+      // 清除已处理的日期的待生效更改
+      delete pendingChanges[date]
+    })
 
     // 清理过期的待生效更改（超过7天的）
     const sevenDaysAgo = new Date()
@@ -595,7 +640,7 @@ function processPendingChanges() {
       if (chrome.runtime.lastError) {
         console.error("Failed to process pending changes:", chrome.runtime.lastError)
       } else {
-        console.log("Pending changes processed successfully")
+        console.log(`Successfully processed ${totalChangesProcessed} pending changes`)
       }
     })
   })
