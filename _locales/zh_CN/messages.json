@@ -1,8 +1,8 @@
 {
-  "appName": { "message": "FeedBlock", "description": "扩展程序的名称。" },
+  "appName": { "message": "FeedBlockPlus", "description": "扩展程序的名称。" },
   "appDesc": { "message": "移除网页干扰内容，限制信息流浏览时间，帮您专注工作、适度娱乐", "description": "扩展程序的描述。" },
   "appActionTitle": { "message": "网页使用时间", "description": "浏览器操作的标题。" },
-  "popupTitle": { "message": "FeedBlock", "description": "弹出页面的标题。" },
+  "popupTitle": { "message": "FeedBlockPlus", "description": "弹出页面的标题。" },
   "focusLabel": { "message": "专注", "description": "切换开关上“专注”状态的标签。" },
   "funLabel": { "message": "娱乐", "description": "切换开关上“娱乐”状态的标签。" },
   "goToOptionsLabel": { "message": "设置限额", "description": "导航到选项页面的按钮文本。" },

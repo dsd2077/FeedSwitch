@@ -1,8 +1,11 @@
 {
-  "appName": { "message": "FeedBlock", "description": "The name of the extension." },
-  "appDesc": { "message": "Remove everything that distract you;", "description": "The description of the extension." },
+  "appName": { "message": "FeedBlockPlus", "description": "The name of the extension." },
+  "appDesc": {
+    "message": "Manage time spent on websites and to block feeds and unwanted content.;",
+    "description": "The description of the extension."
+  },
   "appActionTitle": { "message": "Website Usage Time", "description": "The title of the browser action." },
-  "popupTitle": { "message": "FeedBlock", "description": "The title of the popup page." },
+  "popupTitle": { "message": "FeedBlockPlus", "description": "The title of the popup page." },
   "focusLabel": { "message": "Focus", "description": "Label for the 'Focus' state on the toggle switch." },
   "funLabel": { "message": "Fun", "description": "Label for the 'Fun' state on the toggle switch." },
   "goToOptionsLabel": { "message": "Set limit", "description": "Button text to navigate to the options page." },

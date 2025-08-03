@@ -1,5 +1,5 @@
 {
-  "name": "feedBlock",
+  "name": "feedBlockPlus",
   "version": "1.0.0",
   "description": "A Chrome extension to manage time spent on websites & to block feeds and everything you don't want to see.",
   "devDependencies": {
@@ -12,7 +12,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "watch": "vite build --watch"
+    "watch": "vite build --watch",
+    "create-zip": "node create-zip.js"
   },
   "dependencies": {
     "chrome-types": "^0.1.347",

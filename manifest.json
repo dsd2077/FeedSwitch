@@ -43,11 +43,5 @@
       },
       "description": "Toggle time tracking switch"
     }
-  },
-  "web_accessible_resources": [
-    {
-      "resources": ["node_modules/chart.js/dist/*.js", "node_modules/chart.js/dist/*.map"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  }
 }
