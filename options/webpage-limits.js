@@ -701,7 +701,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
         .map((item) => {
           let timeDisplay = ""
           if (item.timeType === "daily") {
-            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")} ${chrome.i18n.getMessage("limitLabel")}：${
+            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")}${chrome.i18n.getMessage("limitLabel")}：${
               item.dailyLimit
             }${chrome.i18n.getMessage("minutesUnit")}`
           } else if (item.timeType === "custom") {
@@ -720,10 +720,10 @@ import { SITE_CONFIG } from "../scripts/config.js"
                 item.customLimits[day] > 0 ? `${dayNames[index]}:${item.customLimits[day]}${chrome.i18n.getMessage("minutesUnit")}` : null,
               )
               .filter(Boolean)
-            timeDisplay = `${chrome.i18n.getMessage("customOptionLabel")} ${chrome.i18n.getMessage("limitLabel")}：${activeDays.join(", ")}`
+            timeDisplay = `${chrome.i18n.getMessage("customOptionLabel")}${chrome.i18n.getMessage("limitLabel")}：${activeDays.join(", ")}`
           } else {
             // 兼容旧数据
-            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")} ${chrome.i18n.getMessage("limitLabel")}：${
+            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")}${chrome.i18n.getMessage("limitLabel")}：${
               item.dailyLimit || 0
             }${chrome.i18n.getMessage("minutesUnit")}`
           }
@@ -759,7 +759,10 @@ import { SITE_CONFIG } from "../scripts/config.js"
               <div class="pending-changes-preview">
                 <div class="label">${chrome.i18n.getMessage("pendingChangesPreviewLabel")}</div>
                 <div class="change-row">
-                  <div class="change-content">${newData.websites.join(", ")} - ${newTimeDisplay}</div>
+                  <div class="change-content">
+                    <div class="websites-line">${newData.websites.join(", ")}</div>
+                    <div class="time-line">${newTimeDisplay}</div>
+                  </div>
                   <button class="cancel-pending-btn" data-limit-id="${item.id}">${chrome.i18n.getMessage("cancelButton")}</button>
                 </div>
               </div>
@@ -775,7 +778,10 @@ import { SITE_CONFIG } from "../scripts/config.js"
           }
 
           return `<div class="${itemClass}" data-id="${item.id}">
-            <div>${item.websites.join(", ")} - ${timeDisplay}</div>
+            <div class="limit-item-content">
+              <div class="websites-line">${item.websites.join(", ")}</div>
+              <div class="time-line">${timeDisplay}</div>
+            </div>
             ${pendingPreview}
           </div>`
         })

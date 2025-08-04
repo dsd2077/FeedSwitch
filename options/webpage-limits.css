@@ -253,6 +253,29 @@
   flex: 1;
 }
 
+/* 限额项目内容样式 */
+.limit-item-content .websites-line {
+  margin-bottom: 4px;
+  font-weight: 500;
+  font-size: max(14px, 1em);
+}
+
+.limit-item-content .time-line {
+  color: #666;
+  font-size: max(14px, 1em);
+}
+
+.pending-changes-preview .websites-line {
+  margin-bottom: 4px;
+  font-weight: 500;
+  font-size: max(14px, 1em);
+}
+
+.pending-changes-preview .time-line {
+  color: #666;
+  font-size: max(14px, 1em);
+}
+
 .suggestions-container {
   display: none; /* 初始隐藏 */
   position: absolute;
@@ -595,4 +618,13 @@
   background: #e9ecef !important;
   color: #6c757d !important;
   border-color: #dee2e6 !important;
+}
+
+/* limits-container 样式 - 设置最小字体为14px */
+#limits-container {
+  font-size: max(14px, 1em);
+}
+
+#limits-container * {
+  font-size: max(14px, 1em);
 }
