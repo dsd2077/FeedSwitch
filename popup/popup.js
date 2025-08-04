@@ -587,6 +587,9 @@ function initializeShortcutDisplay() {
     const toggleCommand = commands.find((cmd) => cmd.name === "toggle-tracking")
     if (toggleCommand && toggleCommand.shortcut) {
       displayShortcut(toggleCommand.shortcut)
+    } else {
+      // 如果快捷键为空，显示"未设置快捷键"
+      displayShortcutNotSet()
     }
   })
 }
@@ -597,6 +600,18 @@ function displayShortcut(shortcut) {
   if (shortcutElement && shortcut) {
     const formattedShortcut = formatShortcutKeys(shortcut)
     shortcutElement.textContent = formattedShortcut
+    shortcutElement.style.opacity = "1"
+    shortcutElement.title = ""
+  }
+}
+
+// 显示未设置快捷键的提示
+function displayShortcutNotSet() {
+  const shortcutElement = document.getElementById("shortcut-text")
+  if (shortcutElement) {
+    shortcutElement.textContent = chrome.i18n.getMessage("shortcutNotSet")
+    shortcutElement.style.opacity = "0.7" // 用透明度表示这是提示信息
+    shortcutElement.title = ""
   }
 }
 

@@ -81,5 +81,13 @@
   "chartLabelWeekdays": {
     "message": "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday",
     "description": "Weekday labels for charts, comma-separated"
+  },
+  "shortcutNotSet": {
+    "message": "No shortcut",
+    "description": "Text displayed when no shortcut is detected"
+  },
+  "confirmButton": {
+    "message": "Confirm",
+    "description": "Confirm button text"
   }
 }

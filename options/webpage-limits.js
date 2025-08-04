@@ -337,14 +337,15 @@ import { SITE_CONFIG } from "../scripts/config.js"
   loadAndDisplayLimits()
 
   // 删除限额按钮事件
-  deleteLimitBtn.addEventListener("click", () => {
+  deleteLimitBtn.addEventListener("click", async () => {
     const editingId = document.getElementById("limit-id").value
     if (!editingId) {
       alert("无法删除，请先选择一个限制")
       return
     }
 
-    if (confirm("确定要删除这个限额吗？删除操作将于明天生效。")) {
+    const confirmed = await showCustomConfirm(chrome.i18n.getMessage("confirmDeleteLimit"))
+    if (confirmed) {
       deleteLimitWithDelay(editingId)
     }
   })
@@ -481,7 +482,6 @@ import { SITE_CONFIG } from "../scripts/config.js"
         const limitWithId = { ...existingLimit, id: editingId }
         addPendingChange("update", limitWithId, newLimitData)
 
-        alert("删除网站或增加当天使用时间的设置将于明天生效，以防止一时冲动解除限制。")
         modal.style.display = "none"
         return
       }
@@ -783,10 +783,11 @@ import { SITE_CONFIG } from "../scripts/config.js"
 
       // 添加撤销按钮事件
       document.querySelectorAll(".cancel-pending-btn").forEach((btn) => {
-        btn.addEventListener("click", (e) => {
+        btn.addEventListener("click", async (e) => {
           e.stopPropagation() // 防止触发父元素的点击事件
           const limitId = btn.getAttribute("data-limit-id")
-          if (confirm(chrome.i18n.getMessage("confirmCancelPendingChange"))) {
+          const confirmed = await showCustomConfirm(chrome.i18n.getMessage("confirmCancelPendingChange"))
+          if (confirmed) {
             cancelPendingChange(limitId)
           }
         })
@@ -863,4 +864,81 @@ import { SITE_CONFIG } from "../scripts/config.js"
   function generateId() {
     return Date.now().toString(36) + Math.random().toString(36).substr(2)
   }
+
+  // 自定义确认对话框功能
+  function showCustomConfirm(message) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById("confirm-modal")
+      const messageElement = document.getElementById("confirm-message")
+      const confirmBtn = document.getElementById("confirm-ok")
+      const cancelBtn = document.getElementById("confirm-cancel")
+
+      // 设置消息内容
+      messageElement.textContent = message
+
+      // 手动设置按钮文字（确保国际化正确应用）
+      confirmBtn.textContent = chrome.i18n.getMessage("confirmButton")
+      cancelBtn.textContent = chrome.i18n.getMessage("cancelButton")
+
+      // 显示模态框
+      modal.style.display = "block"
+      // 添加动画类，延迟一帧以确保CSS transition生效
+      requestAnimationFrame(() => {
+        modal.classList.add("show")
+      })
+
+      // 点击模态框背景也关闭对话框
+      const handleModalClick = (e) => {
+        if (e.target === modal) {
+          handleCancel()
+        }
+      }
+
+      // 清理所有事件监听器
+      const cleanup = () => {
+        confirmBtn.removeEventListener("click", handleConfirm)
+        cancelBtn.removeEventListener("click", handleCancel)
+        window.removeEventListener("keydown", handleKeydown)
+        modal.removeEventListener("click", handleModalClick)
+      }
+
+      // 处理确认按钮点击
+      const handleConfirm = () => {
+        modal.classList.remove("show")
+        setTimeout(() => {
+          modal.style.display = "none"
+        }, 200) // 等待动画完成
+        cleanup()
+        resolve(true)
+      }
+
+      // 处理取消按钮点击
+      const handleCancel = () => {
+        modal.classList.remove("show")
+        setTimeout(() => {
+          modal.style.display = "none"
+        }, 200) // 等待动画完成
+        cleanup()
+        resolve(false)
+      }
+
+      // 处理键盘事件
+      const handleKeydown = (e) => {
+        if (e.key === "Escape") {
+          handleCancel()
+        } else if (e.key === "Enter") {
+          handleConfirm()
+        }
+      }
+
+      // 添加所有事件监听器
+      confirmBtn.addEventListener("click", handleConfirm)
+      cancelBtn.addEventListener("click", handleCancel)
+      window.addEventListener("keydown", handleKeydown)
+      modal.addEventListener("click", handleModalClick)
+    })
+  }
+
+  // 将自定义确认函数添加到全局作用域
+  window.showCustomConfirm = showCustomConfirm
 })()

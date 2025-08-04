@@ -74,5 +74,13 @@
   "chartLabelWeekdays": {
     "message": "周日,周一,周二,周三,周四,周五,周六",
     "description": "图表中的星期标签，逗号分隔"
+  },
+  "shortcutNotSet": {
+    "message": "未设置快捷键",
+    "description": "当检测不到快捷键时显示的文本"
+  },
+  "confirmButton": {
+    "message": "确认",
+    "description": "确认按钮文本"
   }
 }
