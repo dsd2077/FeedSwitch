@@ -5,16 +5,29 @@ import { SITE_CONFIG } from "./config.js"
 function removeWebsiteFeed(hostname) {
   const config = SITE_CONFIG[parseDomain(hostname)]
   if (!config) return
-
   const checkAndRemove = (root = document) => {
+    // 路由级条件：若站点定义了 shouldApply，则仅在返回 true 时执行
+    if (typeof config.shouldApply === "function") {
+      try {
+        if (!config.shouldApply(window.location)) {
+          return
+        }
+      } catch (e) {
+        console.warn("shouldApply check failed:", e)
+      }
+    }
     config.targets.forEach((target) => {
-      const elements = root.querySelector(target)
-      elements?.parentElement?.removeChild(elements)
+      // const elements = root.querySelector(target)
+      // elements?.parentElement?.removeChild(elements)
+      const elements = root.querySelectorAll(target)
+      elements.forEach((element) => {
+        if (element && element.style) {
+          element.style.display = "none"
+        }
+      })
       // const elements = root.querySelectorAll(target)
       // elements.forEach((element) => {
-      //   if (element && element.style) {
-      //     element.style.display = "none"
-      //   }
+      //   element?.parentElement?.removeChild(element)
       // })
     })
     config.extraCheck?.(root)

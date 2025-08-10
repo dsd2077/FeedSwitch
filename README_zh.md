@@ -1,6 +1,6 @@
-# FeedBlockPlus
+# FeedBlock Plus
 
-FeedBlockPlus 是一个浏览器扩展，用于屏蔽各大网站的干扰性内容，帮助用户专注于核心内容。
+FeedBlock Plus 是一个浏览器扩展，用于屏蔽各大网站的干扰性内容，帮助用户专注于核心内容。
 
 # 目录
 
@@ -18,6 +18,11 @@ FeedBlockPlus 是一个浏览器扩展，用于屏蔽各大网站的干扰性内
   - [11. 腾讯视频 (v.qq.com)](#11-腾讯视频-v.qq.com)
   - [12. 爱奇艺 (iqiyi.com)](#12-爱奇艺-iqiyi.com)
   - [13. 优酷 (youku.com)](#13-优酷-youku.com)
+  - [14. TikTok (tiktok.com)](#14-tiktok-tiktokcom)
+  - [15. Facebook (facebook.com)](#15-facebook-facebookcom)
+  - [16. X (x.com)](#16-x-xcom)
+  - [17. Instagram (instagram.com)](#17-instagram-instagramcom)
+  - [18. Reddit (reddit.com)](#18-reddit-redditcom)
 - [工作原理](#工作原理)
 - [特点](#特点)
 - [使用说明](#使用说明)
@@ -33,6 +38,8 @@ FeedBlockPlus 是一个浏览器扩展，用于屏蔽各大网站的干扰性内
 - 头部频道导航
 - bilibili 热搜
 - 广告屏蔽提示
+- 侧边推荐栏
+- 播放结束页相关推荐
 
 **额外功能：**
 
@@ -101,6 +108,7 @@ FeedBlockPlus 是一个浏览器扩展，用于屏蔽各大网站的干扰性内
 - 侧边栏导航项：
   - 首页/Home 链接
   - Shorts/短片 链接
+- 观看页右侧推荐视频区域
 
 **额外功能：**
 
@@ -160,6 +168,65 @@ FeedBlockPlus 是一个浏览器扩展，用于屏蔽各大网站的干扰性内
 **屏蔽内容：**
 
 - 首页信息流
+
+### 14. TikTok (tiktok.com)
+
+**屏蔽内容：**
+
+- 主页热门页侧边操作容器
+- Explore 探索入口及相关容器（侧栏/顶栏）
+- Live 入口及相关容器（侧栏/顶栏）
+- 探索页布局容器
+
+**额外功能：**
+
+- 在探索页相关容器内自动静音视频/音频
+- 隐藏探索页中的进度指示元素
+- 对探索页容器进行兜底隐藏
+
+### 15. Facebook (facebook.com)
+
+**屏蔽内容：**
+
+- 信息流容器
+- 单条动态
+- Watch 入口
+- Gaming 入口及相关外链
+- Reels 入口
+
+### 16. X (x.com)
+
+**屏蔽内容：**
+
+- 首页/探索页信息流
+- 单条推文容器
+- 推文外层单元（虚拟列表 cell）
+- 新帖子提示条
+
+**生效范围：**
+
+- 仅在 /home、/explore、/communities 生效
+
+### 17. Instagram (instagram.com)
+
+**屏蔽内容：**
+
+- 主内容区域
+- 页脚内容信息
+
+**生效范围：**
+
+- 首页 /、/explore、/reels
+
+### 18. Reddit (reddit.com)
+
+**屏蔽内容：**
+
+- 首页信息流
+
+**生效范围：**
+
+- `/`、`/r/all`、`/explore`、`/r/popular`
 
 ## 工作原理
 

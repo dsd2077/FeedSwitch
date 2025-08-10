@@ -22,6 +22,11 @@ FeedBlockPlus is an extension to manage time spent on websites and to block feed
   - [11. Tencent Video (v.qq.com)](#11-tencent-video-vqqcom)
   - [12. iQiyi (iqiyi.com)](#12-iqiyi-iqiyicom)
   - [13. Youku (youku.com)](#13-youku-youkucom)
+  - [14. TikTok (tiktok.com)](#14-tiktok-tiktokcom)
+  - [15. Facebook (facebook.com)](#15-facebook-facebookcom)
+  - [16. X (x.com)](#16-x-xcom)
+  - [17. Instagram (instagram.com)](#17-instagram-instagramcom)
+  - [18. Reddit (reddit.com)](#18-reddit-redditcom)
 - [How It Works](#how-it-works)
 - [Features](#features)
 - [Usage Instructions](#usage-instructions)
@@ -38,6 +43,8 @@ FeedBlockPlus is an extension to manage time spent on websites and to block feed
 - Header channel navigation
 - Hot search trending areas and double trending displays
 - Ad block tips
+- Right-side recommendation list
+- End-screen related recommendations
 
 **Additional Features:**
 
@@ -108,6 +115,7 @@ FeedBlockPlus is an extension to manage time spent on websites and to block feed
 - Sidebar navigation items:
   - Home links
   - Shorts links
+- Right sidebar related videos on watch pages
 
 **Additional Features:**
 
@@ -171,6 +179,66 @@ FeedBlockPlus is an extension to manage time spent on websites and to block feed
 **Blocked Content:**
 
 - Channel module containers (hides all child divs except the first one)
+
+### 14. TikTok (tiktok.com)
+
+**Blocked Content:**
+
+- Homepage hot page side actions container
+- Explore entries and related containers (sidebar/topbar)
+- Live entries and related containers (sidebar/topbar)
+- Explore layout containers
+
+**Additional Features:**
+
+- Mute all media within explore-related containers
+- Hide progress indicators within explore containers
+- Fallback hiding of the explore containers themselves
+
+### 15. Facebook (facebook.com)
+
+**Blocked Content:**
+
+- Feed container
+- Single post articles
+- Paged/virtualized feed units (pagelets starting with FeedUnit\_)
+- Watch entry
+- Gaming entries and related external links
+- Reels entry
+
+### 16. X (x.com)
+
+**Blocked Content:**
+
+- Home/Explore timeline regions
+- Tweet article containers
+- Tweet outer cell elements (virtual list cells)
+- New posts status bars
+
+**Scope:**
+
+- Applies only on /home, /explore, and paths containing /communities
+
+### 17. Instagram (instagram.com)
+
+**Blocked Content:**
+
+- Main content area
+- Footer/contentinfo
+
+**Scope:**
+
+- Applies on /, /explore, and /reels
+
+### 18. Reddit (reddit.com)
+
+**Blocked Content:**
+
+- Main content container `#subgrid-container`
+
+**Scope:**
+
+- Applies on `/`, `/r/all`, `/explore`, and `/r/popular`
 
 **Additional Features:**
 
