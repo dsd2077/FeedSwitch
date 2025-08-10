@@ -1,5 +1,5 @@
 {
-  "appName": { "message": "FeedBlockPlus", "description": "The name of the extension." },
+  "appName": { "message": "FeedBlock Plus", "description": "The name of the extension." },
   "appDesc": {
     "message": "Manage time spent on websites and to block feeds and unwanted content.;",
     "description": "The description of the extension."
