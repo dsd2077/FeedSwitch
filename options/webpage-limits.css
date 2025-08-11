@@ -11,6 +11,73 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+/* 添加醒目且美观的add-limit-btn样式 */
+#add-limit-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  letter-spacing: 0.5px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+}
+
+#add-limit-btn::before {
+  content: "+";
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+#add-limit-btn:hover {
+  box-shadow: 0 7px 20px rgba(102, 126, 234, 0.6);
+  transform: translateY(-3px);
+}
+
+#add-limit-btn:active {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+#add-limit-btn::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+#add-limit-btn:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(50, 50);
+    opacity: 0;
+  }
+}
+
 /* 确认对话框特殊背景 */
 #confirm-modal {
   background-color: rgba(0, 0, 0, 0.5);
