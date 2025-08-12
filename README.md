@@ -2,9 +2,9 @@
   <a href="./README_zh.md">中文</a> / English
 </div>
 
-# FeedBlockPlus
+# FeedCleaner
 
-FeedBlockPlus is an extension to manage time spent on websites and to block feeds and unwanted content.
+FeedCleaner is an extension to manage time spent on websites and to block feeds and unwanted content.
 
 # Table of Contents
 

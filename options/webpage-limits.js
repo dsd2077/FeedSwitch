@@ -701,9 +701,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
         .map((item) => {
           let timeDisplay = ""
           if (item.timeType === "daily") {
-            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")}${chrome.i18n.getMessage("limitLabel")}：${
-              item.dailyLimit
-            }${chrome.i18n.getMessage("minutesUnit")}`
+            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")}：${item.dailyLimit}${chrome.i18n.getMessage("minutesUnit")}`
           } else if (item.timeType === "custom") {
             const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
             const dayNames = [
@@ -720,12 +718,10 @@ import { SITE_CONFIG } from "../scripts/config.js"
                 item.customLimits[day] > 0 ? `${dayNames[index]}:${item.customLimits[day]}${chrome.i18n.getMessage("minutesUnit")}` : null,
               )
               .filter(Boolean)
-            timeDisplay = `${chrome.i18n.getMessage("customOptionLabel")}${chrome.i18n.getMessage("limitLabel")}：${activeDays.join(", ")}`
+            timeDisplay = `${chrome.i18n.getMessage("customOptionLabel")}：${activeDays.join(", ")}`
           } else {
             // 兼容旧数据
-            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")}${chrome.i18n.getMessage("limitLabel")}：${
-              item.dailyLimit || 0
-            }${chrome.i18n.getMessage("minutesUnit")}`
+            timeDisplay = `${chrome.i18n.getMessage("dailyOptionLabel")}：${item.dailyLimit || 0}${chrome.i18n.getMessage("minutesUnit")}`
           }
 
           const pendingChange = pendingMap[item.id]
