@@ -82,5 +82,158 @@
   "confirmButton": {
     "message": "确认",
     "description": "确认按钮文本"
+  },
+  "aboutProblemSectionTitle": {
+    "message": "你是否遇到过这些问题？"
+  },
+  "aboutProblemTimeBlackHoleTitle": {
+    "message": "时间黑洞"
+  },
+  "aboutProblemTimeBlackHoleDesc": {
+    "message": "原本只想娱乐一会，结果社交媒体一刷就是几个小时"
+  },
+  "aboutProblemAttentionScatteredTitle": {
+    "message": "注意力涣散"
+  },
+  "aboutProblemAttentionScatteredDesc": {
+    "message": "总是忍不住点开微博、B站、Youtobe，无法专注于重要任务"
+  },
+  "aboutProblemMentalFrictionTitle": {
+    "message": "精神内耗"
+  },
+  "aboutProblemMentalFrictionDesc": {
+    "message": "无聊时不自觉地刷信息流打发时间，但刷完后反而感到更加空虚和迷茫"
+  },
+  "aboutProblemGoalDeviationTitle": {
+    "message": "目标偏离"
+  },
+  "aboutProblemGoalDeviationDesc": {
+    "message": "本想学习或解决问题，却被推荐内容吸引偏离目标，一小时后才发现完全忘了最初要做什么"
+  },
+  "aboutStatRefocusTime": {
+    "message": "每次被打断后重新专注所需的时间"
+  },
+  "aboutStatRefocusTimeValue": {
+    "message": "25分26秒"
+  },
+  "aboutStatRefocusTimeSource": {
+    "message": "加州大学欧文分校Gloria Mark教授研究"
+  },
+  "aboutStatSocialMediaTime": {
+    "message": "全球社交媒体日均使用时长"
+  },
+  "aboutStatSocialMediaTimeValue": {
+    "message": "2小时23分钟"
+  },
+  "aboutStatSocialMediaTimeSource": {
+    "message": "DataReportal 2024年全球报告"
+  },
+  "aboutStatSourcePrefix": {
+    "message": "来源："
+  },
+  "aboutSolutionSectionTitle": {
+    "message": "FeedCleaner 如何帮助你？"
+  },
+  "aboutFeatureFocusFunModeTitle": {
+    "message": "专注/娱乐模式"
+  },
+  "aboutFeatureFocusFunModeDesc": {
+    "message": "专注模式：一键屏蔽社交媒体上的推荐内容和分散注意力的元素；娱乐模式：开放信息流"
+  },
+  "aboutFeatureTimeManagementTitle": {
+    "message": "智能时间管理"
+  },
+  "aboutFeatureTimeManagementDesc": {
+    "message": "为每个网站设置时间限制，当达到限制时自动屏蔽信息流，帮你建立健康的上网习惯"
+  },
+  "aboutFeatureUsageStatsTitle": {
+    "message": "使用统计"
+  },
+  "aboutFeatureUsageStatsDesc": {
+    "message": "详细记录你的上网时间和习惯，让你清楚了解时间都花在了哪里"
+  },
+  "aboutFeatureDelayedEffectTitle": {
+    "message": "延迟生效机制"
+  },
+  "aboutFeatureDelayedEffectDesc": {
+    "message": "防止冲动解除限制 - 删除网站限制或增加时间需要次日才生效，给你冷静思考的时间"
+  },
+  "aboutFeatureSelfRestraintTitle": {
+    "message": "自我约束"
+  },
+  "aboutFeatureSelfRestraintDesc": {
+    "message": "一旦设置限制，就不能轻易修改，帮你克服意志力薄弱的问题"
+  },
+  "aboutFeatureCustomRulesTitle": {
+    "message": "自定义规则"
+  },
+  "aboutFeatureCustomRulesDesc": {
+    "message": "灵活设置不同网站的访问规则，既能工作时专注，也能休息时放松"
+  },
+  "aboutBenefitsSectionTitle": {
+    "message": "使用 FeedCleaner 的好处"
+  },
+  "aboutBenefitProductivityTitle": {
+    "message": "提高工作效率"
+  },
+  "aboutBenefitProductivityDesc": {
+    "message": "减少干扰，让你能够长时间专注于重要任务，工作质量和速度都会显著提升"
+  },
+  "aboutBenefitMentalHealthTitle": {
+    "message": "改善心理健康"
+  },
+  "aboutBenefitMentalHealthDesc": {
+    "message": "减少无意义的信息摄入，降低焦虑感，让你的大脑得到真正的休息"
+  },
+  "aboutBenefitSelfControlTitle": {
+    "message": "增强自控力"
+  },
+  "aboutBenefitSelfControlDesc": {
+    "message": "通过工具辅助，逐渐培养良好的数字习惯，提升自我管理能力"
+  },
+  "aboutBenefitTimeSovereigntyTitle": {
+    "message": "重夺时间主权"
+  },
+  "aboutBenefitTimeSovereigntyDesc": {
+    "message": "不再被算法推荐牵着走，你来决定如何分配自己的时间和注意力"
+  },
+  "aboutUsageSectionTitle": {
+    "message": "如何开始使用？"
+  },
+  "aboutStepPinExtensionTitle": {
+    "message": "固定插件"
+  },
+  "aboutStepPinExtensionDesc": {
+    "message": "将FeedCleaner固定到工具栏，方便快速切换模式、查看网页使用时长以及访问历史记录"
+  },
+  "aboutStepToggleModeTitle": {
+    "message": "切换专注/娱乐模式"
+  },
+  "aboutStepToggleModeDesc": {
+    "message": "使用 Option/Alt+F 或弹窗切换模式（专注：屏蔽信息流；娱乐：开放信息流）<br />快捷键设置: chrome://extensions/shortcuts"
+  },
+  "aboutStepSetLimitsTitle": {
+    "message": "设置限制"
+  },
+  "aboutStepSetLimitsDesc": {
+    "message": "在\"网页限制\"选项卡中，添加你想要限制的网站和每日使用时间。请查看<a href=\"https://github.com/dsd2077/FeedBlockPlus\" target=\"_blank\" style=\"color: #667eea; text-decoration: underline\">屏蔽网站清单</a>。如果你想屏蔽的网站不在此列，请提交issue，本人一定尽快添加"
+  },
+  "aboutStepViewStatsTitle": {
+    "message": "查看统计"
+  },
+  "aboutStepViewStatsDesc": {
+    "message": "在\"网站统计\"选项卡中，实时了解你的上网习惯和时间分布"
+  },
+  "aboutCtaSectionTitle": {
+    "message": "开始你的数字健康之旅"
+  },
+  "aboutCtaSectionDesc": {
+    "message": "现在就开始使用 FeedCleaner，重新夺回对时间的控制权！"
+  },
+  "aboutCtaSetLimitsButton": {
+    "message": "设置网页限制"
+  },
+  "aboutCtaViewStatsButton": {
+    "message": "查看使用统计"
   }
 }

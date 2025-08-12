@@ -79,7 +79,7 @@
   "timeUnitMinute": { "message": "m", "description": "Minute unit abbreviation" },
   "timeUnitSecond": { "message": "s", "description": "Second unit abbreviation" },
   "chartLabelWeekdays": {
-    "message": "Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday",
+    "message": "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
     "description": "Weekday labels for charts, comma-separated"
   },
   "shortcutNotSet": {
@@ -89,5 +89,158 @@
   "confirmButton": {
     "message": "Confirm",
     "description": "Confirm button text"
+  },
+  "aboutProblemSectionTitle": {
+    "message": "Have you encountered these problems?"
+  },
+  "aboutProblemTimeBlackHoleTitle": {
+    "message": "Time Black Hole"
+  },
+  "aboutProblemTimeBlackHoleDesc": {
+    "message": "Originally intended to entertain for a while, but ended up scrolling social media for hours"
+  },
+  "aboutProblemAttentionScatteredTitle": {
+    "message": "Scattered Attention"
+  },
+  "aboutProblemAttentionScatteredDesc": {
+    "message": "Can't help but click on Weibo, Bilibili, YouTube, unable to focus on important tasks"
+  },
+  "aboutProblemMentalFrictionTitle": {
+    "message": "Mental Friction"
+  },
+  "aboutProblemMentalFrictionDesc": {
+    "message": "Unconsciously scrolling feeds to kill time when bored, but feeling more empty and confused afterwards"
+  },
+  "aboutProblemGoalDeviationTitle": {
+    "message": "Goal Deviation"
+  },
+  "aboutProblemGoalDeviationDesc": {
+    "message": "Intended to study or solve problems, but got distracted by recommended content, only to realize an hour later that you completely forgot what you originally wanted to do"
+  },
+  "aboutStatRefocusTime": {
+    "message": "Time required to refocus after each interruption"
+  },
+  "aboutStatRefocusTimeValue": {
+    "message": "25 min 26 sec"
+  },
+  "aboutStatRefocusTimeSource": {
+    "message": "Research by Professor Gloria Mark, UC Irvine"
+  },
+  "aboutStatSocialMediaTime": {
+    "message": "Global daily average social media usage"
+  },
+  "aboutStatSocialMediaTimeValue": {
+    "message": "2 hours 23 minutes"
+  },
+  "aboutStatSocialMediaTimeSource": {
+    "message": "DataReportal 2024 Global Report"
+  },
+  "aboutStatSourcePrefix": {
+    "message": "Source: "
+  },
+  "aboutSolutionSectionTitle": {
+    "message": "How FeedCleaner Helps You?"
+  },
+  "aboutFeatureFocusFunModeTitle": {
+    "message": "Focus/Fun Mode"
+  },
+  "aboutFeatureFocusFunModeDesc": {
+    "message": "Focus mode: Block recommended content and distracting elements on social media with one click; Fun mode: Open information flow"
+  },
+  "aboutFeatureTimeManagementTitle": {
+    "message": "Smart Time Management"
+  },
+  "aboutFeatureTimeManagementDesc": {
+    "message": "Set time limits for each website, automatically block information flow when the limit is reached, helping you build healthy internet habits"
+  },
+  "aboutFeatureUsageStatsTitle": {
+    "message": "Usage Statistics"
+  },
+  "aboutFeatureUsageStatsDesc": {
+    "message": "Record your internet time and habits in detail, so you can clearly understand where your time is spent"
+  },
+  "aboutFeatureDelayedEffectTitle": {
+    "message": "Delayed Effect Mechanism"
+  },
+  "aboutFeatureDelayedEffectDesc": {
+    "message": "Prevent impulsive removal of restrictions - removing website restrictions or increasing time requires next day to take effect, giving you time to think calmly"
+  },
+  "aboutFeatureSelfRestraintTitle": {
+    "message": "Self-Restraint"
+  },
+  "aboutFeatureSelfRestraintDesc": {
+    "message": "Once restrictions are set, they cannot be easily modified, helping you overcome weak willpower"
+  },
+  "aboutFeatureCustomRulesTitle": {
+    "message": "Custom Rules"
+  },
+  "aboutFeatureCustomRulesDesc": {
+    "message": "Flexibly set access rules for different websites, allowing you to focus at work and relax during breaks"
+  },
+  "aboutBenefitsSectionTitle": {
+    "message": "Benefits of Using FeedCleaner"
+  },
+  "aboutBenefitProductivityTitle": {
+    "message": "Improve Work Efficiency"
+  },
+  "aboutBenefitProductivityDesc": {
+    "message": "Reduce distractions, allowing you to focus on important tasks for long periods, significantly improving work quality and speed"
+  },
+  "aboutBenefitMentalHealthTitle": {
+    "message": "Improve Mental Health"
+  },
+  "aboutBenefitMentalHealthDesc": {
+    "message": "Reduce meaningless information intake, lower anxiety, and give your brain real rest"
+  },
+  "aboutBenefitSelfControlTitle": {
+    "message": "Enhance Self-Control"
+  },
+  "aboutBenefitSelfControlDesc": {
+    "message": "With tool assistance, gradually develop good digital habits and improve self-management abilities"
+  },
+  "aboutBenefitTimeSovereigntyTitle": {
+    "message": "Reclaim Time Sovereignty"
+  },
+  "aboutBenefitTimeSovereigntyDesc": {
+    "message": "No longer be led by algorithm recommendations, you decide how to allocate your time and attention"
+  },
+  "aboutUsageSectionTitle": {
+    "message": "How to Get Started?"
+  },
+  "aboutStepPinExtensionTitle": {
+    "message": "Pin Extension"
+  },
+  "aboutStepPinExtensionDesc": {
+    "message": "Pin FeedCleaner to the toolbar for quick mode switching, viewing webpage usage time, and accessing history"
+  },
+  "aboutStepToggleModeTitle": {
+    "message": "Toggle Focus/Fun Mode"
+  },
+  "aboutStepToggleModeDesc": {
+    "message": "Use Option/Alt+F or popup to switch modes (Focus: block feeds; Fun: open feeds)<br />Shortcut settings: chrome://extensions/shortcuts"
+  },
+  "aboutStepSetLimitsTitle": {
+    "message": "Set Limits"
+  },
+  "aboutStepSetLimitsDesc": {
+    "message": "In the \"Webpage Limits\" tab, add websites you want to limit and daily usage time. Please check the <a href=\"https://github.com/dsd2077/FeedBlockPlus\" target=\"_blank\" style=\"color: #667eea; text-decoration: underline\">blocked websites list</a>. If the website you want to block is not on this list, please submit an issue and I will add it as soon as possible"
+  },
+  "aboutStepViewStatsTitle": {
+    "message": "View Statistics"
+  },
+  "aboutStepViewStatsDesc": {
+    "message": "In the \"Website Statistics\" tab, understand your internet habits and time distribution in real time"
+  },
+  "aboutCtaSectionTitle": {
+    "message": "Start Your Digital Health Journey"
+  },
+  "aboutCtaSectionDesc": {
+    "message": "Start using FeedCleaner now and regain control of your time!"
+  },
+  "aboutCtaSetLimitsButton": {
+    "message": "Set Webpage Limits"
+  },
+  "aboutCtaViewStatsButton": {
+    "message": "View Usage Statistics"
   }
 }
