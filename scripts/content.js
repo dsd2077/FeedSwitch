@@ -1,4 +1,4 @@
-import psl from "../node_modules/psl/dist/psl.mjs"
+import psl from "../libs/psl.mjs"
 let cachedMap = new Map()
 import { SITE_CONFIG } from "./config.js"
 // 通用移除函数

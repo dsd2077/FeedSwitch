@@ -1,4 +1,4 @@
-import psl from "../node_modules/psl/dist/psl.mjs"
+import psl from "../libs/psl.mjs"
 ;(function () {
   let websitesTimeCache = null
   let faviconCache = null
