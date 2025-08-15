@@ -1,5 +1,5 @@
 {
-  "name": "FeedCleaner",
+  "name": "FeedSwitch",
   "version": "1.0.0",
   "description": "A Chrome extension to manage time spent on websites & to block feeds and everything you don't want to see.",
   "devDependencies": {

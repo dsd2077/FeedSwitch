@@ -1,6 +1,6 @@
-# FeedCleaner
+# FeedSwitch
 
-FeedCleaner 是一个浏览器扩展，用于屏蔽各大网站的干扰性内容，帮助用户专注于核心内容。
+FeedSwitch 是一个浏览器扩展，用于屏蔽各大网站的干扰性内容，帮助用户专注于核心内容。
 
 # 目录
 

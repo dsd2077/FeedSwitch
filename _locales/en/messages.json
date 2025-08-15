@@ -1,11 +1,11 @@
 {
-  "appName": { "message": "FeedCleaner", "description": "The name of the extension." },
+  "appName": { "message": "FeedSwitch", "description": "The name of the extension." },
   "appDesc": {
     "message": "Manage time spent on websites and to block feeds and unwanted content.;",
     "description": "The description of the extension."
   },
   "appActionTitle": { "message": "Statistic", "description": "The title of the browser action." },
-  "popupTitle": { "message": "FeedCleaner", "description": "The title of the popup page." },
+  "popupTitle": { "message": "FeedSwitch", "description": "The title of the popup page." },
   "focusLabel": { "message": "Focus", "description": "Label for the 'Focus' state on the toggle switch." },
   "funLabel": { "message": "Fun", "description": "Label for the 'Fun' state on the toggle switch." },
   "goToOptionsLabel": { "message": "Set limit", "description": "Button text to navigate to the options page." },
@@ -26,7 +26,7 @@
   "optionsNavWebsiteUsageTime": { "message": "Statistic", "description": "Navigation link text for the Website Usage Time page." },
   "optionsNavWebpageLimits": { "message": "Limits", "description": "Navigation link text for the Webpage Limits page." },
   "optionsNavAbout": { "message": "About", "description": "Navigation link text for About this extension." },
-  "AboutTitle": { "message": "About FeedCleaner", "description": "Title for the Disable Time section." },
+  "AboutTitle": { "message": "About FeedSwitch", "description": "Title for the Disable Time section." },
   "disableTimeContent": { "message": "This is the content for the disable time section.", "description": "Content for the Disable Time section." },
   "webpageLimitsTitle": { "message": "Webpage Limit Management" },
   "webpageLimitsHeading": { "message": "Limits" },
@@ -139,7 +139,7 @@
     "message": "Source: "
   },
   "aboutSolutionSectionTitle": {
-    "message": "How FeedCleaner Helps You?"
+    "message": "How FeedSwitch Helps You?"
   },
   "aboutFeatureFocusFunModeTitle": {
     "message": "Focus/Fun Mode"
@@ -178,7 +178,7 @@
     "message": "Flexibly set access rules for different websites, allowing you to focus at work and relax during breaks"
   },
   "aboutBenefitsSectionTitle": {
-    "message": "Benefits of Using FeedCleaner"
+    "message": "Benefits of Using FeedSwitch"
   },
   "aboutBenefitProductivityTitle": {
     "message": "Improve Work Efficiency"
@@ -211,7 +211,7 @@
     "message": "Pin Extension"
   },
   "aboutStepPinExtensionDesc": {
-    "message": "Pin FeedCleaner to the toolbar for quick mode switching, viewing webpage usage time, and accessing history"
+    "message": "Pin FeedSwitch to the toolbar for quick mode switching, viewing webpage usage time, and accessing history"
   },
   "aboutStepToggleModeTitle": {
     "message": "Toggle Focus/Fun Mode"
@@ -235,7 +235,7 @@
     "message": "Start Your Digital Health Journey"
   },
   "aboutCtaSectionDesc": {
-    "message": "Start using FeedCleaner now and regain control of your time!"
+    "message": "Start using FeedSwitch now and regain control of your time!"
   },
   "aboutCtaSetLimitsButton": {
     "message": "Set Webpage Limits"

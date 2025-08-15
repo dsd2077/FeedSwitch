@@ -1,8 +1,8 @@
 {
-  "appName": { "message": "FeedCleaner", "description": "扩展程序的名称。" },
+  "appName": { "message": "FeedSwitch", "description": "扩展程序的名称。" },
   "appDesc": { "message": "移除网页干扰内容，限制信息流浏览时间，帮您专注工作、适度娱乐", "description": "扩展程序的描述。" },
   "appActionTitle": { "message": "网页使用时间", "description": "浏览器操作的标题。" },
-  "popupTitle": { "message": "FeedCleaner", "description": "弹出页面的标题。" },
+  "popupTitle": { "message": "FeedSwitch", "description": "弹出页面的标题。" },
   "focusLabel": { "message": "专注", "description": "切换开关上“专注”状态的标签。" },
   "funLabel": { "message": "娱乐", "description": "切换开关上“娱乐”状态的标签。" },
   "goToOptionsLabel": { "message": "设置限额", "description": "导航到选项页面的按钮文本。" },
@@ -132,7 +132,7 @@
     "message": "来源："
   },
   "aboutSolutionSectionTitle": {
-    "message": "FeedCleaner 如何帮助你？"
+    "message": "FeedSwitch 如何帮助你？"
   },
   "aboutFeatureFocusFunModeTitle": {
     "message": "专注/娱乐模式"
@@ -171,7 +171,7 @@
     "message": "灵活设置不同网站的访问规则，既能工作时专注，也能休息时放松"
   },
   "aboutBenefitsSectionTitle": {
-    "message": "使用 FeedCleaner 的好处"
+    "message": "使用 FeedSwitch 的好处"
   },
   "aboutBenefitProductivityTitle": {
     "message": "提高工作效率"
