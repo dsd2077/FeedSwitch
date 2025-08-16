@@ -23,7 +23,7 @@
   "optionsNavWebsiteUsageTime": { "message": "网站统计", "description": "“网站使用时间”页面的导航链接文本。" },
   "optionsNavWebpageLimits": { "message": "网页限额", "description": "“网页限额”页面的导航链接文本。" },
   "optionsNavAbout": { "message": "关于插件", "description": "关于插件”页面的导航链接文本。" },
-  "AboutTitle": { "message": "关于FeedCleaner", "description": "“停用时间”部分的标题。" },
+  "AboutTitle": { "message": "关于FeedSwitch", "description": "“停用时间”部分的标题。" },
   "disableTimeContent": { "message": "这里是停用时间的内容。", "description": "“停用时间”部分的内容。" },
   "webpageLimitsTitle": { "message": "网页限额管理" },
   "webpageLimitsHeading": { "message": "网页限额" },
@@ -204,7 +204,7 @@
     "message": "固定插件"
   },
   "aboutStepPinExtensionDesc": {
-    "message": "将FeedCleaner固定到工具栏，方便快速切换模式、查看网页使用时长以及访问历史记录"
+    "message": "将FeedSwitch固定到工具栏，方便快速切换模式、查看网页使用时长以及访问历史记录"
   },
   "aboutStepToggleModeTitle": {
     "message": "切换专注/娱乐模式"
@@ -216,7 +216,7 @@
     "message": "设置限制"
   },
   "aboutStepSetLimitsDesc": {
-    "message": "在\"网页限制\"选项卡中，添加你想要限制的网站和每日使用时间。请查看<a href=\"https://github.com/dsd2077/FeedBlockPlus\" target=\"_blank\" style=\"color: #667eea; text-decoration: underline\">屏蔽网站清单</a>。如果你想屏蔽的网站不在此列，请提交issue，本人一定尽快添加"
+    "message": "在\"网页限制\"选项卡中，添加你想要限制的网站和每日使用时间。请查看<a href=\"https://github.com/dsd2077/FeedSwitch\" target=\"_blank\" style=\"color: #667eea; text-decoration: underline\">屏蔽网站清单</a>。如果你想屏蔽的网站不在此列，请提交issue，本人一定尽快添加"
   },
   "aboutStepViewStatsTitle": {
     "message": "查看统计"
@@ -228,12 +228,28 @@
     "message": "开始你的数字健康之旅"
   },
   "aboutCtaSectionDesc": {
-    "message": "现在就开始使用 FeedCleaner，重新夺回对时间的控制权！"
+    "message": "现在就开始使用 FeedSwitch，重新夺回对时间的控制权！"
   },
   "aboutCtaSetLimitsButton": {
     "message": "设置网页限制"
   },
   "aboutCtaViewStatsButton": {
     "message": "查看使用统计"
+  },
+  "pendingUpdateLabel": {
+    "message": "待更新 - 次日生效",
+    "description": "待生效的更新更改标签"
+  },
+  "pendingDeleteLabel": {
+    "message": "待删除 - 次日生效",
+    "description": "待生效的删除更改标签"
+  },
+  "dailyLimitLabel": {
+    "message": "每日",
+    "description": "每日时间限制标签"
+  },
+  "customLimitLabel": {
+    "message": "自定义",
+    "description": "自定义时间限制标签"
   }
 }

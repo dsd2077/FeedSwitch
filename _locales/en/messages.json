@@ -223,7 +223,7 @@
     "message": "Set Limits"
   },
   "aboutStepSetLimitsDesc": {
-    "message": "In the \"Webpage Limits\" tab, add websites you want to limit and daily usage time. Please check the <a href=\"https://github.com/dsd2077/FeedBlockPlus\" target=\"_blank\" style=\"color: #667eea; text-decoration: underline\">blocked websites list</a>. If the website you want to block is not on this list, please submit an issue and I will add it as soon as possible"
+    "message": "In the \"Webpage Limits\" tab, add websites you want to limit and daily usage time. Please check the <a href=\"https://github.com/dsd2077/FeedSwitch\" target=\"_blank\" style=\"color: #667eea; text-decoration: underline\">blocked websites list</a>. If the website you want to block is not on this list, please submit an issue and I will add it as soon as possible"
   },
   "aboutStepViewStatsTitle": {
     "message": "View Statistics"
@@ -242,5 +242,21 @@
   },
   "aboutCtaViewStatsButton": {
     "message": "View Usage Statistics"
+  },
+  "pendingUpdateLabel": {
+    "message": "Pending Update - Effective Tomorrow",
+    "description": "Label for pending update changes that will take effect tomorrow"
+  },
+  "pendingDeleteLabel": {
+    "message": "Pending Delete - Effective Tomorrow",
+    "description": "Label for pending delete changes that will take effect tomorrow"
+  },
+  "dailyLimitLabel": {
+    "message": "Daily",
+    "description": "Label for daily time limit"
+  },
+  "customLimitLabel": {
+    "message": "Custom",
+    "description": "Label for custom time limit"
   }
 }

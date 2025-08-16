@@ -591,7 +591,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
       noMatchDiv.style.textAlign = "center"
       noMatchDiv.innerHTML = `
         想要屏蔽的网站不在列表？<br>
-        请到<a href="https://github.com/dsd2077/FeedBlockPlus" target="_blank" style="color: #007bff; text-decoration: none;">屏蔽网站清单</a>提交你的需求
+        请到<a href="https://github.com/dsd2077/FeedSwitch" target="_blank" style="color: #007bff; text-decoration: none;">屏蔽网站清单</a>提交你的需求
       `
       suggestionsDiv.appendChild(noMatchDiv)
     } else {
@@ -729,10 +729,13 @@ import { SITE_CONFIG } from "../scripts/config.js"
           const isPendingDelete = !!pendingChange && pendingChange.action === "delete"
 
           let itemClass = "limit-item"
+          let pendingText = ""
           if (isPendingUpdate) {
             itemClass = "limit-item pending-update"
+            pendingText = chrome.i18n.getMessage("pendingUpdateLabel")
           } else if (isPendingDelete) {
             itemClass = "limit-item pending-delete"
+            pendingText = chrome.i18n.getMessage("pendingDeleteLabel")
           }
 
           let pendingPreview = ""
@@ -741,14 +744,24 @@ import { SITE_CONFIG } from "../scripts/config.js"
             let newTimeDisplay = ""
 
             if (newData.timeType === "daily") {
-              newTimeDisplay = `每日限制：${newData.dailyLimit}分钟`
+              newTimeDisplay = `${chrome.i18n.getMessage("dailyLimitLabel")}：${newData.dailyLimit}${chrome.i18n.getMessage("minutesUnit")}`
             } else if (newData.timeType === "custom") {
               const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"]
-              const dayNames = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"]
+              const dayNames = [
+                chrome.i18n.getMessage("weekdaySunday"),
+                chrome.i18n.getMessage("weekdayMonday"),
+                chrome.i18n.getMessage("weekdayTuesday"),
+                chrome.i18n.getMessage("weekdayWednesday"),
+                chrome.i18n.getMessage("weekdayThursday"),
+                chrome.i18n.getMessage("weekdayFriday"),
+                chrome.i18n.getMessage("weekdaySaturday"),
+              ]
               const activeDays = days
-                .map((day, index) => (newData.customLimits[day] > 0 ? `${dayNames[index]}:${newData.customLimits[day]}分钟` : null))
+                .map((day, index) =>
+                  newData.customLimits[day] > 0 ? `${dayNames[index]}:${newData.customLimits[day]}${chrome.i18n.getMessage("minutesUnit")}` : null,
+                )
                 .filter(Boolean)
-              newTimeDisplay = `自定义限制：${activeDays.join(", ")}`
+              newTimeDisplay = `${chrome.i18n.getMessage("customLimitLabel")}：${activeDays.join(", ")}`
             }
 
             pendingPreview = `
@@ -773,7 +786,7 @@ import { SITE_CONFIG } from "../scripts/config.js"
             `
           }
 
-          return `<div class="${itemClass}" data-id="${item.id}">
+          return `<div class="${itemClass}" data-id="${item.id}" ${pendingText ? `data-pending-text="${pendingText}"` : ""}>
             <div class="limit-item-content">
               <div class="websites-line">${item.websites.join(", ")}</div>
               <div class="time-line">${timeDisplay}</div>

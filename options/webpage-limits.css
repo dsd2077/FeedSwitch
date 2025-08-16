@@ -241,7 +241,7 @@
 }
 
 .limit-item.pending-update::after {
-  content: "待更新 - 次日生效";
+  content: attr(data-pending-text);
   position: absolute;
   top: 4px;
   right: 8px;
@@ -260,7 +260,7 @@
 }
 
 .limit-item.pending-delete::after {
-  content: "待删除 - 次日生效";
+  content: attr(data-pending-text);
   position: absolute;
   top: 4px;
   right: 8px;
