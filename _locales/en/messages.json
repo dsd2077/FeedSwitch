@@ -1,7 +1,7 @@
 {
-  "appName": { "message": "FeedSwitch", "description": "The name of the extension." },
+  "appName": { "message": "FeedSwitch: Block feed and unwanted content", "description": "The name of the extension." },
   "appDesc": {
-    "message": "Manage time spent on websites and to block feeds and unwanted content.;",
+    "message": "Add an intelligent switch for the website’s feed.",
     "description": "The description of the extension."
   },
   "appActionTitle": { "message": "Statistic", "description": "The title of the browser action." },

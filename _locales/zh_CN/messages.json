@@ -1,5 +1,5 @@
 {
-  "appName": { "message": "FeedSwitch", "description": "扩展程序的名称。" },
+  "appName": { "message": "FeedSwitch: 信息流开关", "description": "扩展程序的名称。" },
   "appDesc": { "message": "移除网页干扰内容，限制信息流浏览时间，帮您专注工作、适度娱乐", "description": "扩展程序的描述。" },
   "appActionTitle": { "message": "网页使用时间", "description": "浏览器操作的标题。" },
   "popupTitle": { "message": "FeedSwitch", "description": "弹出页面的标题。" },
