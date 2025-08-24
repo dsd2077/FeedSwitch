@@ -262,13 +262,14 @@ function updateDomainTime(pageUrl, seconds, title, type) {
     const entry = {
       time: (existingEntry.time || 0) + seconds,
       title: title || existingEntry.title || "",
+      funTime: existingEntry.funTime || 0,
     }
 
     // 更新 funTime（仅在非 focus 状态下）
     const currentHour = new Date().getHours()
 
     if (!result.focus) {
-      entry.funTime = (existingEntry.funTime || 0) + seconds
+      entry.funTime += seconds
       hourlyUsage.fun[currentHour] = (hourlyUsage.fun[currentHour] || 0) + seconds
     }
 
