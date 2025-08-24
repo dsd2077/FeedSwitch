@@ -319,6 +319,11 @@ export const SITE_CONFIG = {
       'div[data-testid="cellInnerDiv"]',
       // 新帖子提示条（多语言，容器使用 role="status"）
       'div[role="status"]',
+
+      // "What’s happening" 推荐区域
+      'div[data-testid="news_sidebar"], section[role="region"][aria-labelledby^="accessible-list"]',
+      // "Who to follow" 推荐关注区域
+      'div:has(> div > aside[aria-label="Who to follow"][role="complementary"])',
     ],
     // 仅在首页与探索页生效，搜索页不生效
     shouldApply: (loc) => {
