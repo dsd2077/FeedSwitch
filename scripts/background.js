@@ -376,17 +376,25 @@ chrome.runtime.onMessage.addListener((request) => {
   }
 })
 
-// 初始化时从存储加载状态
-chrome.storage.local.set({ focus: true }, () => {
-  updateBadgeStatus(true)
-  console.log("Reset focus to true on browser startup")
-})
+function initializeFocusState() {
+  chrome.storage.local.get("focus", (result) => {
+    if (typeof result.focus === "undefined") {
+      chrome.storage.local.set({ focus: true }, () => {
+        updateBadgeStatus(true)
+        console.log("Initialized focus to true")
+      })
+      return
+    }
+
+    updateBadgeStatus(!!result.focus)
+    console.log(`Loaded focus state: ${!!result.focus}`)
+  })
+}
+
+initializeFocusState()
 
 chrome.runtime.onStartup.addListener(() => {
-  chrome.storage.local.set({ focus: true }, () => {
-    updateBadgeStatus(true)
-    console.log("Runtime startup: Focus reset to true")
-  })
+  initializeFocusState()
   processPendingChanges()
 })
 
