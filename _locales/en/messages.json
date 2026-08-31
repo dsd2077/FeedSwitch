@@ -38,6 +38,8 @@
   "addLimitModalTitle": { "message": "Add Limit" },
   "editLimitModalTitle": { "message": "Edit Limit" },
   "websiteInputPlaceholder": { "message": "Enter website domain (e.g., youtube.com)" },
+  "searchPlaceholder": { "message": "Search websites, page titles, or URLs" },
+  "searchNoResults": { "message": "No matching websites found" },
   "timeLabel": { "message": "Time:" },
   "dailyOptionLabel": { "message": "Daily" },
   "minutesUnit": { "message": "m" },

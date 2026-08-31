@@ -33,6 +33,8 @@
   "addLimitModalTitle": { "message": "添加限额" },
   "editLimitModalTitle": { "message": "编辑限额" },
   "websiteInputPlaceholder": { "message": "输入网站域名（如：bilibili.com）" },
+  "searchPlaceholder": { "message": "搜索网站、页面标题或网址" },
+  "searchNoResults": { "message": "没有找到匹配的网站" },
   "timeLabel": { "message": "时间：" },
   "dailyOptionLabel": { "message": "每天" },
   "minutesUnit": { "message": "分钟" },

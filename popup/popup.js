@@ -1,12 +1,15 @@
 import psl from "../libs/psl.mjs"
+import { filterWebsiteTree } from "../scripts/website-filter.js"
 
 /// <reference types="chrome"/>
 /// <reference lib="DOM"/>
 let websitesTimeCache = null
+let visibleWebsitesTimeCache = null
 let faviconCache = null
 let faviconUrls = null
 let pinnedWebsites = null // 添加pin状态缓存，格式：{domain: timestamp}
 let currentDate = new Date() // 当前选择的日期
+let searchQuery = ""
 
 document.addEventListener("DOMContentLoaded", () => {
   const trackingSwitch = document.getElementById("tracking-switch")
@@ -22,6 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const websiteList = document.getElementById("website-list")
   updateWebsiteList(websiteList)
+
+  const searchInput = document.getElementById("website-search")
+  searchInput?.addEventListener("input", (event) => {
+    searchQuery = event.target.value
+    renderWebsiteList(websiteList, processStorageData())
+  })
 
   // 初始化快捷键显示
   initializeShortcutDisplay()
@@ -71,6 +80,7 @@ function updateWebsiteList(websiteList) {
   const websitesTimeKey = generateWebsitesTimeKey()
   chrome.storage.local.get([websitesTimeKey, "faviconCache", "faviconUrls", "pinnedWebsites"], (result) => {
     websitesTimeCache = result[websitesTimeKey] || {} // 缓存数据
+    visibleWebsitesTimeCache = filterWebsiteTree(websitesTimeCache, searchQuery).data
     faviconCache = result.faviconCache || {}
     faviconUrls = result.faviconUrls || {}
 
@@ -111,13 +121,13 @@ function updateWebsiteList(websiteList) {
 
 // 处理存储数据
 function processStorageData() {
-  const domainData = Object.entries(websitesTimeCache)
+  const domainData = Object.entries(websitesTimeCache || {})
     .map(([mainDomain, subDomains]) => ({
       mainDomain,
       totalTime: calculateTotalTime(subDomains),
       funTime: calculateFunTime(subDomains),
-      isPinned: mainDomain in pinnedWebsites,
-      pinTimestamp: pinnedWebsites[mainDomain] || 0,
+      isPinned: mainDomain in (pinnedWebsites || {}),
+      pinTimestamp: pinnedWebsites?.[mainDomain] || 0,
     }))
     .sort((a, b) => {
       // 首先按pin状态排序，被pin的网站排在前面
@@ -152,12 +162,22 @@ function calculateFunTime(subDomains) {
 // 渲染网站列表
 function renderWebsiteList(websiteList, domains) {
   websiteList.innerHTML = ""
-  const maxTotalTime = Math.max(...domains.map((d) => d.totalTime), 0)
+  const fullMaxTotalTime = Math.max(...domains.map((d) => d.totalTime), 0)
+  const filteredTree = filterWebsiteTree(websitesTimeCache, searchQuery)
+  visibleWebsitesTimeCache = filteredTree.data
+  const visibleDomains = searchQuery.trim() ? domains.filter((domain) => domain.mainDomain in filteredTree.data) : domains
 
-  domains.forEach((domain) => {
-    const domainElement = createDomainElement(domain, maxTotalTime)
+  visibleDomains.forEach((domain) => {
+    const domainElement = createDomainElement(domain, fullMaxTotalTime)
     websiteList.appendChild(domainElement)
   })
+
+  if (searchQuery.trim() && visibleDomains.length === 0) {
+    const emptyState = document.createElement("li")
+    emptyState.className = "search-empty-state"
+    emptyState.textContent = chrome.i18n.getMessage("searchNoResults")
+    websiteList.appendChild(emptyState)
+  }
 
   // 触发进度条动画
   setTimeout(() => {
@@ -213,7 +233,25 @@ function createDomainElement(domain, maxTotalTime) {
   }
 
   setupDomainClickListener(domainList, domain)
+  if (searchQuery.trim()) {
+    expandSearchDomain(domainList, domain.mainDomain)
+  }
   return domainList
+}
+
+function expandSearchDomain(domainElement, mainDomain) {
+  const subDomains = visibleWebsitesTimeCache?.[mainDomain] || {}
+  const fullSubDomains = websitesTimeCache?.[mainDomain] || {}
+  const sortedSubDomains = sortSubDomains(subDomains, fullSubDomains)
+  const subDomainElements = renderSubDomains(domainElement, sortedSubDomains)
+
+  domainElement.classList.add("active")
+  subDomainElements.forEach((subDomainElement, index) => {
+    const subDomain = sortedSubDomains[index]?.subDomain
+    const pages = subDomain ? subDomains[subDomain] || {} : {}
+    subDomainElement.classList.add("active")
+    renderPages(subDomainElement, sortPages(pages))
+  })
 }
 
 // 获取图标源地址
@@ -306,7 +344,7 @@ function setupDomainClickListener(domainElement, domain) {
       }
 
       fetchSubDomainData(domain.mainDomain).then((subDomains) => {
-        const sortedSubDomains = sortSubDomains(subDomains)
+        const sortedSubDomains = sortSubDomains(subDomains, websitesTimeCache?.[domain.mainDomain])
         renderSubDomains(domainElement, sortedSubDomains)
 
         // 如果只有一个子域名，自动展开它
@@ -336,8 +374,9 @@ function toggleSubdomainExpansion(element) {
 // 获取子域名数据
 function fetchSubDomainData(mainDomain) {
   return new Promise((resolve) => {
-    if (websitesTimeCache && websitesTimeCache[mainDomain]) {
-      resolve(websitesTimeCache[mainDomain])
+    const sourceCache = searchQuery.trim() ? visibleWebsitesTimeCache : websitesTimeCache
+    if (sourceCache && sourceCache[mainDomain]) {
+      resolve(sourceCache[mainDomain])
     } else {
       const websitesTimeKey = generateWebsitesTimeKey()
       chrome.storage.local.get([websitesTimeKey], (result) => {
@@ -349,11 +388,11 @@ function fetchSubDomainData(mainDomain) {
 }
 
 // 排序子域名
-function sortSubDomains(subDomains) {
+function sortSubDomains(subDomains, durationSource = subDomains) {
   return Object.entries(subDomains)
     .map(([subDomain, pages]) => ({
       subDomain,
-      time: calculateSubDomainTime(pages),
+      time: calculateSubDomainTime(durationSource?.[subDomain] || pages),
     }))
     .sort((a, b) => b.time - a.time)
 }
@@ -365,11 +404,14 @@ function calculateSubDomainTime(pages) {
 
 // 渲染子域名
 function renderSubDomains(domainElement, subDomains) {
+  const subDomainElements = []
   subDomains.forEach(({ subDomain, time }) => {
     const subDomainElement = createSubDomainElement(subDomain, time)
     setupSubDomainListener(subDomainElement, subDomain)
     domainElement.appendChild(subDomainElement)
+    subDomainElements.push(subDomainElement)
   })
+  return subDomainElements
 }
 
 // 创建子域名元素
@@ -411,8 +453,9 @@ function setupSubDomainListener(subDomainElement, subDomain) {
 function fetchPageData(subDomain) {
   return new Promise((resolve) => {
     const mainDomain = parseDomain(subDomain)
-    if (websitesTimeCache && websitesTimeCache[mainDomain]?.[subDomain]) {
-      resolve(websitesTimeCache[mainDomain][subDomain])
+    const sourceCache = searchQuery.trim() ? visibleWebsitesTimeCache : websitesTimeCache
+    if (sourceCache && sourceCache[mainDomain]?.[subDomain]) {
+      resolve(sourceCache[mainDomain][subDomain])
     } else {
       const websitesTimeKey = generateWebsitesTimeKey()
       chrome.storage.local.get([websitesTimeKey], (result) => {

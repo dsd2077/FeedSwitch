@@ -48,6 +48,31 @@ button {
   cursor: pointer;
 }
 
+.website-search {
+  box-sizing: border-box;
+  display: block;
+  width: min(100%, 720px);
+  margin: 0 1rem 1rem;
+  padding: 10px 14px;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #fff;
+  color: #2d3748;
+  font-size: 15px;
+  outline: none;
+}
+
+.website-search:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.search-empty-state {
+  padding: 24px 12px;
+  color: #718096;
+  text-align: center;
+}
+
 /* 禁用状态的按钮样式 */
 #nextDay:disabled {
   color: #666; /* 灰色文字 */
