@@ -394,7 +394,17 @@ function initializeFocusState() {
 initializeFocusState()
 
 chrome.runtime.onStartup.addListener(() => {
-  initializeFocusState()
+  // onStartup 只会在浏览器配置文件启动时触发；Service Worker 被唤醒、页面刷新
+  // 或标签页变化不会触发此事件，因此只有这里重置用户模式。
+  chrome.storage.local.set({ focus: true }, () => {
+    if (chrome.runtime.lastError) {
+      console.error("Failed to reset focus on browser startup:", chrome.runtime.lastError)
+      return
+    }
+
+    updateBadgeStatus(true)
+    console.log("Reset focus to true on browser startup")
+  })
   processPendingChanges()
 })
 
