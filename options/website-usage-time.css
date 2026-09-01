@@ -62,6 +62,26 @@ button {
   outline: none;
 }
 
+.stats-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: min(100%, 720px);
+  margin: 0 1rem 1rem;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  border: 1px solid #cfe8d8;
+  border-radius: 8px;
+  background: #f0fff4;
+  color: #276749;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.stats-notice-icon {
+  flex: 0 0 auto;
+}
+
 .website-search:focus {
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);

@@ -1,4 +1,5 @@
 import psl from "../libs/psl.mjs"
+import { SITE_CONFIG } from "./config.js"
 
 // background.js
 let activeTabId = null
@@ -238,6 +239,9 @@ function updateDomainTime(pageUrl, seconds, title, type) {
   if (!isSystemActive || !isBrowserFocused || !normalizedUrl || seconds <= 0 || !isValidDomain(domain)) return
 
   const mainDomain = parseDomain(domain)
+  // v.qq.com 等配置项可能是特殊子域名，因此同时检查规范化主域名和当前主机名。
+  const isFunTimeTracked =
+    Object.prototype.hasOwnProperty.call(SITE_CONFIG, mainDomain) || Object.prototype.hasOwnProperty.call(SITE_CONFIG, domain)
   const websitesTimeKey = generateWebsitesTimeKey()
   const hourlyUsageKey = generateHourlyUsageKey()
   chrome.storage.local.get(["focus", websitesTimeKey, hourlyUsageKey], (result) => {
@@ -262,13 +266,13 @@ function updateDomainTime(pageUrl, seconds, title, type) {
     const entry = {
       time: (existingEntry.time || 0) + seconds,
       title: title || existingEntry.title || "",
-      funTime: existingEntry.funTime || 0,
+      funTime: isFunTimeTracked ? existingEntry.funTime || 0 : 0,
     }
 
-    // 更新 funTime（仅在非 focus 状态下）
+    // 娱乐时间只统计支持屏蔽信息流的网站；其他网站的时间全部作为专注时间。
     const currentHour = new Date().getHours()
 
-    if (!result.focus) {
+    if (!result.focus && isFunTimeTracked) {
       entry.funTime += seconds
       hourlyUsage.fun[currentHour] = (hourlyUsage.fun[currentHour] || 0) + seconds
     }

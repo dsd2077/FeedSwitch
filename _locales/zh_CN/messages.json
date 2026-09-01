@@ -64,6 +64,9 @@
   "alertDelayedChange": { "message": "删除网站或增加当天使用时间的设置将于明天生效，以防止一时冲动解除限制。" },
   "errorNotFoundToDelete": { "message": "找不到要删除的限制。" },
   "websiteUsageTimeTitle": { "message": "网站统计" },
+  "websiteUsageTimeNote": {
+    "message": "娱乐时长仅统计支持屏蔽信息流的网站；其他网站（如语雀）的使用时间会计入专注时长。"
+  },
   "timeRangeLabel": { "message": "时间范围" },
   "totalDurationLabel": { "message": "总时长" },
   "averageDurationLabel": { "message": "平均时长" },

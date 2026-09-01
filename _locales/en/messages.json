@@ -71,6 +71,9 @@
   },
   "errorNotFoundToDelete": { "message": "Could not find the limit to delete." },
   "websiteUsageTimeTitle": { "message": "Statistic" },
+  "websiteUsageTimeNote": {
+    "message": "Fun time is tracked only for websites with feed-blocking support. Time spent on other sites, such as Yuque, is counted as focus time."
+  },
   "timeRangeLabel": { "message": "Time Range" },
   "totalDurationLabel": { "message": "Total" },
   "averageDurationLabel": { "message": "Average" },
