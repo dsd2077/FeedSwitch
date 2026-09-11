@@ -335,11 +335,37 @@ import { filterWebsiteTree } from "../scripts/website-filter.js"
     if (weeklyChartElement) {
       state.weeklyChart = window.echarts.init(weeklyChartElement)
       state.weeklyChart.setOption(createEChartsConfig("weekly"))
+      // 用 ZRender 捕获整个坐标系的点击，而不只是柱体图形本身
+      state.weeklyChart.getZr().on("click", handleWeeklyChartSurfaceClick)
     }
     if (dailyChartElement) {
       state.dailyChart = window.echarts.init(dailyChartElement)
       state.dailyChart.setOption(createEChartsConfig("daily"))
     }
+  }
+
+  // 点击周图表中的日期区域时，切换右侧的日数据
+  function handleWeeklyChartSurfaceClick(event) {
+    const chart = state.weeklyChart
+    const x = event?.offsetX ?? event?.zrX
+    const y = event?.offsetY ?? event?.zrY
+
+    if (!chart || !Number.isFinite(x) || !Number.isFinite(y) || !chart.containPixel({ gridIndex: 0 }, [x, y])) return
+
+    const dataPoint = chart.convertFromPixel({ seriesIndex: 0 }, [x, y])
+    selectWeeklyDate(dataPoint?.[0])
+  }
+
+  function selectWeeklyDate(index) {
+    index = Number(index)
+    if (!Number.isInteger(index) || !state.currentWeek[index]) return
+
+    state.currentDate = new Date(state.currentWeek[index])
+    updateDateDisplay("dailyDate", state.currentDate)
+    updateWeeklyChartTodayPosition()
+    state.dailyPagination.currentPage = 1
+    document.getElementById("nextDay").disabled = isSameDay(state.currentDate, new Date())
+    updateDailyDataOnly()
   }
 
   // 只更新周图表中"今天"的位置
