@@ -1,48 +1,31 @@
 <div align="center">
-  <a href="./README.md">中文</a> / English
+  <a href="./README.md">中文</a> / <a href="./README_en.md">English</a>
 </div>
+
+<p align="center">
+  <img src="./icons/宣传图/promotion1.png" alt="FeedSwitch: Regain control of your attention" width="440">
+</p>
 
 # FeedSwitch
 
-FeedSwitch is an extension to manage time spent on websites and to block feeds and unwanted content.
+FeedSwitch is a Chrome extension that reduces distractions from feeds and recommendations, helping you give your time and attention back to the things that matter. It combines feed blocking, time tracking, and usage limits in one lightweight tool: turn focus on when you need it and restore feeds when you take a break.
 
-# Table of Contents
+## What you can do with FeedSwitch
 
-- [Quick Start](#quick-start)
-- [Supported Websites and Blocked Content](#supported-websites-and-blocked-content)
-  - [1. Bilibili (bilibili.com)](#1-bilibili-bilibilicom)
-  - [2. Baidu (baidu.com)](#2-baidu-baiducom)
-  - [3. Zhihu (zhihu.com)](#3-zhihu-zhihucom)
-  - [4. CSDN (csdn.net)](#4-csdn-csdnnet)
-  - [5. Juejin (juejin.cn)](#5-juejin-juejincn)
-  - [6. Xiaohongshu (xiaohongshu.com)](#6-xiaohongshu-xiaohongshucom)
-  - [7. Jianshu (jianshu.com)](#7-jianshu-jianshucom)
-  - [8. YouTube (youtube.com)](#8-youtube-youtubecom)
-  - [9. Douyin (douyin.com)](#9-douyin-douyincom)
-  - [10. Weibo (weibo.com)](#10-weibo-weibocom)
-  - [11. Tencent Video (v.qq.com)](#11-tencent-video-vqqcom)
-  - [12. iQiyi (iqiyi.com)](#12-iqiyi-iqiyicom)
-  - [13. Youku (youku.com)](#13-youku-youkucom)
-  - [14. TikTok (tiktok.com)](#14-tiktok-tiktokcom)
-  - [15. Facebook (facebook.com)](#15-facebook-facebookcom)
-  - [16. X (x.com)](#16-x-xcom)
-  - [17. Instagram (instagram.com)](#17-instagram-instagramcom)
-  - [18. Reddit (reddit.com)](#18-reddit-redditcom)
-- [How It Works](#how-it-works)
-- [Features](#features)
-- [Usage Instructions](#usage-instructions)
-- [Notes](#notes)
-- [Technical Implementation](#technical-implementation)
+- **Focus / Fun mode**: Switch with one click. Focus mode hides feeds and recommendation areas on supported websites; Fun mode restores them.
+- **Track website usage**: Review usage by website, date, and time of day, with focus time separated from fun time.
+- **Set website limits**: Set daily or weekday-specific limits so “I will scroll less” becomes a concrete rule.
+- **Delayed changes**: Removing a limit or increasing today’s available time takes effect the next day, helping prevent impulsive overrides.
+- **Quick controls and search**: Switch modes, search recorded websites, and pin frequently used websites from the toolbar popup.
+- **Local storage**: Your data stays in the browser. No account or upload of browsing history is required.
+
+> FeedSwitch helps you manage attention; it does not try to ban the web. Configure rules around your own work, study, and break schedule.
 
 ## Quick Start
 
-### Prerequisites
+### 1. Install dependencies and build
 
-Install [Node.js](https://nodejs.org/) (22 LTS recommended, includes npm), Git, and Google Chrome.
-
-### Clone and build
-
-Run in your terminal:
+Install Node.js (22 LTS recommended, including npm), Git, and Google Chrome. Then run:
 
 ```bash
 git clone https://github.com/dsd2077/FeedSwitch.git
@@ -51,283 +34,97 @@ npm ci
 npm run build
 ```
 
-`npm ci` installs dependencies from the lockfile. `npm run build` compiles the content script with Vite and generates `dist/content.js`.
+`npm ci` installs dependencies from `package-lock.json`. `npm run build` compiles the content script with Vite and generates `dist/content.js`.
 
-### Load the extension
+### 2. Load the extension in Chrome
 
 1. Open `chrome://extensions/` in Chrome.
 2. Enable **Developer mode** in the top-right corner.
-3. Click **Load unpacked** and select the **FeedSwitch project root** containing `manifest.json`.
-4. Visit a supported website to start using the extension.
+3. Click **Load unpacked**.
+4. Select the **FeedSwitch project root** containing `manifest.json`; do not select only `dist/`.
+5. Open a supported website and click the FeedSwitch icon in the toolbar.
 
-The `dist/` directory contains only the compiled content script; the extension also needs the configuration, pages, icons, and other files in the project root.
+After changing code, run `npm run build`, click the extension’s reload button on the extensions page, and refresh the target webpage.
 
-### Development and packaging
+### 3. First steps
 
-To rebuild automatically when editing the content script, run from the project root:
+1. Turn on **Focus** in the popup to hide feeds and recommendations on supported websites.
+2. Review the website list, expand an entry for page details, or use the search box to find a site.
+3. Open settings, go to **Webpage Limits**, add a domain, and set a daily or weekday-specific limit.
+4. Open **Statistic** to review weekly and daily usage.
+5. Configure a shortcut for `toggle-tracking` at `chrome://extensions/shortcuts` if needed.
+
+<p align="center">
+  <img src="./icons/popup%20400%2A640.png" alt="FeedSwitch popup with mode switch and website usage" width="400">
+</p>
+
+## See the interface
+
+### Popup: review today’s usage
+
+The popup lists total time by website and uses progress bars to separate focus time from fun time. Click a website to inspect subdomains and pages; use the pin button to keep frequently used sites at the top.
+
+### Statistics: understand your time distribution
+
+The statistics page provides weekly and daily views with total time, average time, per-website usage, and the split between focus and fun time. Data is stored locally by date.
+
+<p align="center">
+  <img src="./icons/time-usage%201400%2A560.png" alt="FeedSwitch website usage statistics" width="100%">
+</p>
+
+### Limits: set boundaries in advance
+
+In **Webpage Limits**, add a domain and choose a daily limit or separate limits for each day of the week. Removing a limit, deleting a website, or increasing today’s time takes effect the next day.
+
+<p align="center">
+  <img src="./icons/limits.png" alt="FeedSwitch webpage limits" width="100%">
+</p>
+
+## Supported scope
+
+FeedSwitch includes rules for feeds, recommendation areas, and distracting elements on a range of popular Chinese and international websites. See [Supported Websites and Blocked Content](./SUPPORTED_SITES_en.md) for the full list and each rule’s scope.
+
+Website layouts change over time. If a rule stops working, open an [Issue](https://github.com/dsd2077/FeedSwitch/issues) with the website, page URL, and reproduction steps.
+
+## Development and packaging
+
+Run these commands from the project root:
 
 ```bash
+# One-time build
+npm run build
+
+# Rebuild automatically while editing the content script
 npm run watch
-```
 
-After a rebuild, reload the extension on the extensions page, then refresh the target webpage.
-
-To create a release archive, run:
-
-```bash
+# Build and create a Chrome extension archive
 npm run create-zip
 ```
 
-This command builds the content script first, then generates `feedSwitch-extension.zip` in the project root. The packaging script requires the system `zip` command to be installed and available in your terminal.
+`npm run create-zip` builds first and then creates `feedSwitch-extension.zip`. The packaging script requires the system `zip` command. Before publishing or uploading, make sure `manifest.json` is at the archive root.
 
-## Supported Websites and Blocked Content
+## FAQ
 
-### 1. Bilibili (bilibili.com)
+**Why does nothing change after loading the extension?** Make sure you selected the project root containing `manifest.json` and the generated `dist/content.js`. Reload the extension at `chrome://extensions/`, then refresh the webpage.
 
-**Blocked Content:**
+**Why did removing a limit or increasing today’s time not take effect immediately?** This is intentional. Removing a limit or increasing today’s usage time takes effect the next day; the current day’s restriction is not weakened temporarily.
 
-- Main feed layout
-- Header channel navigation
-- Hot search trending areas and double trending displays
-- Ad block tips
-- Right-side recommendation list
-- End-screen related recommendations
+**Why is a website not being blocked?** Feed blocking runs only for websites and pages with configured rules. Check the [supported list](./SUPPORTED_SITES_en.md), or open an Issue if the website is missing.
 
-**Additional Features:**
-
-- Remove search input placeholder text
-
-### 2. Baidu (baidu.com)
-
-**Blocked Content:**
-
-- Hot search wrapper
-- New search guide bubble
-- Offset content area
-
-### 3. Zhihu (zhihu.com)
-
-**Blocked Content:**
-
-- Main story feed
-- Loading progress bar
-- Hot search cards
-- Specific style elements
-- Post right-side content area
-
-**Additional Features:**
-
-- Remove search input placeholder text
-- Delete "Search Discovery" related content
-- Adjust search main area and post content area width to 1000px
-
-### 4. CSDN (csdn.net)
-
-**Blocked Content:**
-
-- Carousel slide paid content
-- Sidebar hot articles
-- Sidebar categories
-- Sidebar archives
-- Sidebar new comments
-- Toolbar advertisements
-- Right-side fixed hidden elements
-
-### 5. Juejin (juejin.cn)
-
-**Blocked Content:**
-
-- Sidebar blocks
-- Top banner container
-- Image advertisements in article areas
-
-### 6. Xiaohongshu (xiaohongshu.com)
-
-**Blocked Content:**
-
-- Explore feeds
-- Channel container
-
-### 7. Jianshu (jianshu.com)
-
-**Blocked Content:**
-
-- Sidebar
-
-### 8. YouTube (youtube.com)
-
-**Blocked Content:**
-
-- Homepage feed (homepage only, doesn't affect subscription page)
-- Sidebar navigation items:
-  - Home links
-  - Shorts links
-- Right sidebar related videos on watch pages
-
-**Additional Features:**
-
-- Automatically remove notification numbers from page title
-- Hide sidebar "Explore" section (third navigation area)
-
-### 9. Douyin (douyin.com)
-
-**Blocked Content:**
-
-- Right container content
-- Navigation tabs:
-  - Discover tab
-  - Recommend tab
-  - Live tab
-  - VS tab
-  - Series tab
-
-**Additional Features:**
-
-- Automatically redirect to featured page when accessing recommendation page
-
-### 10. Weibo (weibo.com)
-
-**Blocked Content:**
-
-- Homepage feed
-- Loading progress bars
-- Right sidebar content
-- Video recommendation feeds
-- Video ranking lists
-- Search result sidebars
-- Featured channels
-
-### 11. Tencent Video (v.qq.com)
-
-**Blocked Content:**
-
-- Main channel container
-- Channel pages
-- Web channels
-- Channel page scroll areas
-- Flex containers
-- Hot search areas
-- Popular games section
-- Homepage content wrapper
-
-### 12. iQiyi (iqiyi.com)
-
-**Blocked Content:**
-
-- Navigation sidebar
-- Page view containers (when not in search mode)
-
-**Additional Features:**
-
-- Intelligently detects search mode and adjusts blocking accordingly
-
-### 13. Youku (youku.com)
-
-**Blocked Content:**
-
-- Channel module containers (hides all child divs except the first one)
-
-### 14. TikTok (tiktok.com)
-
-**Blocked Content:**
-
-- Homepage hot page side actions container
-- Explore entries and related containers (sidebar/topbar)
-- Live entries and related containers (sidebar/topbar)
-- Explore layout containers
-
-**Additional Features:**
-
-- Mute all media within explore-related containers
-- Hide progress indicators within explore containers
-- Fallback hiding of the explore containers themselves
-
-### 15. Facebook (facebook.com)
-
-**Blocked Content:**
-
-- Feed container
-- Single post articles
-- Paged/virtualized feed units (pagelets starting with FeedUnit\_)
-- Watch entry
-- Gaming entries and related external links
-- Reels entry
-
-### 16. X (x.com)
-
-**Blocked Content:**
-
-- Home/Explore timeline regions
-- Tweet article containers
-- Tweet outer cell elements (virtual list cells)
-- New posts status bars
-
-**Scope:**
-
-- Applies only on /home, /explore, and paths containing /communities
-
-### 17. Instagram (instagram.com)
-
-**Blocked Content:**
-
-- Main content area
-- Footer/contentinfo
-
-**Scope:**
-
-- Applies on /, /explore, and /reels
-
-### 18. Reddit (reddit.com)
-
-**Blocked Content:**
-
-- Main content container `#subgrid-container`
-
-**Scope:**
-
-- Applies on `/`, `/r/all`, `/explore`, and `/r/popular`
-
-**Additional Features:**
-
-- Uses dynamic hiding instead of removal for better compatibility
-
-## How It Works
-
-The extension works through the following methods:
-
-1. **CSS Selector Blocking**: Uses predefined CSS selectors to hide unwanted page elements
-2. **Dynamic Checking**: Some websites include additional JavaScript checks to handle dynamically generated content
-3. **Style Adjustments**: Certain websites adjust page layout to optimize user experience
-
-## Features
-
-- 🎯 **Precise Blocking**: Targets specific disruptive elements for each website
-- 🔧 **Dynamic Processing**: Supports handling of dynamically generated content
-- 🎨 **Layout Optimization**: Optimizes page layout while blocking content
-- 🚀 **Performance Friendly**: Lightweight implementation that doesn't affect page loading performance
-
-## Usage Instructions
-
-1. Install the browser extension
-2. Visit supported websites
-3. The extension will automatically block disruptive content defined in the configuration
-4. Enjoy a cleaner, more focused browsing experience
+**Is data uploaded to a server?** No. Usage time, limits, and mode state are stored in Chrome’s local extension storage.
 
 ## Notes
 
-- Blocking rules may need adjustment as websites update
-- Some features (like redirects) may change the website's default behavior
-- Performance may vary slightly across different browsers or devices
+- Website redesigns may temporarily affect individual rules.
+- Focus mode changes parts of a website’s default layout; switch to Fun mode to restore feeds.
+- The extension needs access to page content to identify and hide target areas.
 
-## Technical Implementation
+## Related documents
 
-The extension is implemented based on the following technologies:
-
-- **Content Script Injection**: Injects scripts when pages load
-- **DOM Manipulation**: Dynamically hides or modifies page elements
-- **CSS Selectors**: Precisely targets elements to be blocked
-- **MutationObserver**: Monitors dynamic page changes
+- [Supported Websites and Blocked Content](./SUPPORTED_SITES_en.md)
+- [Delayed Changes Summary](./DELAYED_CHANGES_SUMMARY.md)
+- [中文 README](./README.md)
 
 ---
 
-_This extension aims to provide a better web browsing experience, reduce distracting content, and help users focus on important information._
+FeedSwitch helps you reduce unconscious scrolling and keep your attention on the things you choose.
