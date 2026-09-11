@@ -1,286 +1,312 @@
 <div align="center">
-  <a href="./README_zh.md">中文</a> / English
+  中文 / <a href="./README_en.md">English</a>
 </div>
 
 # FeedSwitch
 
-FeedSwitch is an extension to manage time spent on websites and to block feeds and unwanted content.
+FeedSwitch 是一个浏览器扩展，用于屏蔽各大网站的信息流内容以及狗皮膏药，还你一个清爽的冲浪体验
 
-# Table of Contents
+# 目录
 
-- [Supported Websites and Blocked Content](#supported-websites-and-blocked-content)
+- [快速开始（Quick Start）](#快速开始quick-start)
+- [支持的网站及屏蔽内容](#支持的网站及屏蔽内容)
   - [1. Bilibili (bilibili.com)](#1-bilibili-bilibilicom)
-  - [2. Baidu (baidu.com)](#2-baidu-baiducom)
-  - [3. Zhihu (zhihu.com)](#3-zhihu-zhihucom)
+  - [2. 百度 (baidu.com)](#2-百度-baiducom)
+  - [3. 知乎 (zhihu.com)](#3-知乎-zhihucom)
   - [4. CSDN (csdn.net)](#4-csdn-csdnnet)
-  - [5. Juejin (juejin.cn)](#5-juejin-juejincn)
-  - [6. Xiaohongshu (xiaohongshu.com)](#6-xiaohongshu-xiaohongshucom)
-  - [7. Jianshu (jianshu.com)](#7-jianshu-jianshucom)
+  - [5. 掘金 (juejin.cn)](#5-掘金-juejincn)
+  - [6. 小红书 (xiaohongshu.com)](#6-小红书-xiaohongshucom)
+  - [7. 简书 (jianshu.com)](#7-简书-jianshucom)
   - [8. YouTube (youtube.com)](#8-youtube-youtubecom)
-  - [9. Douyin (douyin.com)](#9-douyin-douyincom)
-  - [10. Weibo (weibo.com)](#10-weibo-weibocom)
-  - [11. Tencent Video (v.qq.com)](#11-tencent-video-vqqcom)
-  - [12. iQiyi (iqiyi.com)](#12-iqiyi-iqiyicom)
-  - [13. Youku (youku.com)](#13-youku-youkucom)
+  - [9. 抖音 (douyin.com)](#9-抖音-douyincom)
+  - [10. 微博 (weibo.com)](#10-微博-weibocom)
+  - [11. 腾讯视频 (v.qq.com)](#11-腾讯视频-vqqcom)
+  - [12. 爱奇艺 (iqiyi.com)](#12-爱奇艺-iqiyicom)
+  - [13. 优酷 (youku.com)](#13-优酷-youkucom)
   - [14. TikTok (tiktok.com)](#14-tiktok-tiktokcom)
   - [15. Facebook (facebook.com)](#15-facebook-facebookcom)
   - [16. X (x.com)](#16-x-xcom)
   - [17. Instagram (instagram.com)](#17-instagram-instagramcom)
   - [18. Reddit (reddit.com)](#18-reddit-redditcom)
-- [How It Works](#how-it-works)
-- [Features](#features)
-- [Usage Instructions](#usage-instructions)
-- [Notes](#notes)
-- [Technical Implementation](#technical-implementation)
+- [工作原理](#工作原理)
+- [特点](#特点)
+- [使用说明](#使用说明)
+- [注意事项](#注意事项)
 
-## Supported Websites and Blocked Content
+## 快速开始（Quick Start）
+
+### 环境准备
+
+安装 [Node.js](https://nodejs.org/)（推荐 22 LTS，包含 npm）、Git 和 Google Chrome。
+
+### 获取源码并编译
+
+在终端执行：
+
+```bash
+git clone https://github.com/dsd2077/FeedSwitch.git
+cd FeedSwitch
+npm ci
+npm run build
+```
+
+`npm ci` 根据锁文件安装依赖，`npm run build` 使用 Vite 编译内容脚本，生成 `dist/content.js`。
+
+### 加载扩展
+
+1. 在 Chrome 地址栏打开 `chrome://extensions/`。
+2. 开启右上角的「开发者模式」。
+3. 点击「加载已解压的扩展程序」，选择包含 `manifest.json` 的 **FeedSwitch 项目根目录**。
+4. 访问支持的网站，开始使用扩展。
+
+`dist/` 仅包含编译后的内容脚本；扩展还需要项目根目录中的配置、页面、图标等文件。
+
+### 开发与打包
+
+修改内容脚本时，可在项目根目录运行监听构建：
+
+```bash
+npm run watch
+```
+
+保存后会自动重新编译。更新后，在扩展管理页点击扩展的刷新按钮，再刷新目标网页。
+
+需要生成发布压缩包时，运行：
+
+```bash
+npm run create-zip
+```
+
+该命令会先执行编译，再在项目根目录生成 `feedSwitch-extension.zip`。打包脚本依赖系统的 `zip` 命令，请确保已安装并可在终端使用。
+
+## 支持的网站及屏蔽内容
 
 ### 1. Bilibili (bilibili.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Main feed layout
-- Header channel navigation
-- Hot search trending areas and double trending displays
-- Ad block tips
-- Right-side recommendation list
-- End-screen related recommendations
+- 首页信息流
+- 头部频道导航
+- bilibili 热搜
+- 广告屏蔽提示
+- 侧边推荐栏
+- 播放结束页相关推荐
 
-**Additional Features:**
+**额外功能：**
 
-- Remove search input placeholder text
+- 移除搜索框占位符文本
 
-### 2. Baidu (baidu.com)
+### 2. 百度 (baidu.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Hot search wrapper
-- New search guide bubble
-- Offset content area
+- 百度热搜
+- 首页广告
+- 搜索结果右侧栏
 
-### 3. Zhihu (zhihu.com)
+### 3. 知乎 (zhihu.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Main story feed
-- Loading progress bar
-- Hot search cards
-- Specific style elements
-- Post right-side content area
+- 首页信息流
+- 热搜卡片
+- 帖子右侧内容区域
 
-**Additional Features:**
+**额外功能：**
 
-- Remove search input placeholder text
-- Delete "Search Discovery" related content
-- Adjust search main area and post content area width to 1000px
+- 移除搜索框占位符文本
+- 删除"搜索发现"相关内容
+- 调整搜索主区域和帖子内容区域宽度为 1000px
 
 ### 4. CSDN (csdn.net)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Carousel slide paid content
-- Sidebar hot articles
-- Sidebar categories
-- Sidebar archives
-- Sidebar new comments
-- Toolbar advertisements
-- Right-side fixed hidden elements
+- 轮播幻灯片付费内容
+- 侧边栏热门文章
+- 侧边栏分类
+- 侧边栏归档
+- 侧边栏新评论
+- 工具栏广告
+- 右侧固定隐藏元素
 
-### 5. Juejin (juejin.cn)
+### 5. 掘金 (juejin.cn)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Sidebar blocks
-- Top banner container
-- Image advertisements in article areas
+- 侧边栏块
+- 顶部横幅容器
+- 文章区域中的图片广告
 
-### 6. Xiaohongshu (xiaohongshu.com)
+### 6. 小红书 (xiaohongshu.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Explore feeds
-- Channel container
+- 首页信息流
+- 频道导航
 
-### 7. Jianshu (jianshu.com)
+### 7. 简书 (jianshu.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Sidebar
+- 侧边栏
 
 ### 8. YouTube (youtube.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Homepage feed (homepage only, doesn't affect subscription page)
-- Sidebar navigation items:
-  - Home links
-  - Shorts links
-- Right sidebar related videos on watch pages
+- 首页信息流（仅限首页，不影响订阅页面）
+- 侧边栏导航项：
+  - 首页/Home 链接
+  - Shorts/短片 链接
+- 观看页右侧推荐视频区域
 
-**Additional Features:**
+**额外功能：**
 
-- Automatically remove notification numbers from page title
-- Hide sidebar "Explore" section (third navigation area)
+- 自动移除页面标题中的通知数字
+- 隐藏侧边栏的"探索"部分（第三个导航区域）
 
-### 9. Douyin (douyin.com)
+### 9. 抖音 (douyin.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Right container content
-- Navigation tabs:
-  - Discover tab
-  - Recommend tab
-  - Live tab
-  - VS tab
-  - Series tab
+- 右侧容器内容
+- 导航标签：
+  - 精选标签
+  - 推荐标签
+  - 直播标签
+  - VS 标签
+  - 系列标签
 
-**Additional Features:**
+### 10. 微博 (weibo.com)
 
-- Automatically redirect to featured page when accessing recommendation page
+**屏蔽内容：**
 
-### 10. Weibo (weibo.com)
+- 首页信息流
+- 加载进度条
+- 右侧边栏内容
+- 视频推荐流
+- 视频榜单
+- 搜索结果侧边栏
+- 精选频道
 
-**Blocked Content:**
+### 11. 腾讯视频 (v.qq.com)
 
-- Homepage feed
-- Loading progress bars
-- Right sidebar content
-- Video recommendation feeds
-- Video ranking lists
-- Search result sidebars
-- Featured channels
+**屏蔽内容：**
 
-### 11. Tencent Video (v.qq.com)
+- 首页信息流
+- 频道页面
+- 网页频道
+- 频道页面滚动区域
+- 弹性容器
+- 热搜区域
+- 热门游戏部分
+- 首页内容包装器
 
-**Blocked Content:**
+### 12. 爱奇艺 (iqiyi.com)
 
-- Main channel container
-- Channel pages
-- Web channels
-- Channel page scroll areas
-- Flex containers
-- Hot search areas
-- Popular games section
-- Homepage content wrapper
+**屏蔽内容：**
 
-### 12. iQiyi (iqiyi.com)
+- 首页信息流
+- 页面视图容器（非搜索模式下）
 
-**Blocked Content:**
+**额外功能：**
 
-- Navigation sidebar
-- Page view containers (when not in search mode)
+- 智能检测搜索模式并相应调整屏蔽
 
-**Additional Features:**
+### 13. 优酷 (youku.com)
 
-- Intelligently detects search mode and adjusts blocking accordingly
+**屏蔽内容：**
 
-### 13. Youku (youku.com)
-
-**Blocked Content:**
-
-- Channel module containers (hides all child divs except the first one)
+- 首页信息流
 
 ### 14. TikTok (tiktok.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Homepage hot page side actions container
-- Explore entries and related containers (sidebar/topbar)
-- Live entries and related containers (sidebar/topbar)
-- Explore layout containers
+- 主页热门页侧边操作容器
+- Explore 探索入口及相关容器（侧栏/顶栏）
+- Live 入口及相关容器（侧栏/顶栏）
+- 探索页布局容器
 
-**Additional Features:**
+**额外功能：**
 
-- Mute all media within explore-related containers
-- Hide progress indicators within explore containers
-- Fallback hiding of the explore containers themselves
+- 在探索页相关容器内自动静音视频/音频
+- 隐藏探索页中的进度指示元素
+- 对探索页容器进行兜底隐藏
 
 ### 15. Facebook (facebook.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Feed container
-- Single post articles
-- Paged/virtualized feed units (pagelets starting with FeedUnit\_)
-- Watch entry
-- Gaming entries and related external links
-- Reels entry
+- 信息流容器
+- 单条动态
+- Watch 入口
+- Gaming 入口及相关外链
+- Reels 入口
 
 ### 16. X (x.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Home/Explore timeline regions
-- Tweet article containers
-- Tweet outer cell elements (virtual list cells)
-- New posts status bars
+- 首页/探索页信息流
+- 单条推文容器
+- 推文外层单元（虚拟列表 cell）
+- 新帖子提示条
 
-**Scope:**
+**生效范围：**
 
-- Applies only on /home, /explore, and paths containing /communities
+- 仅在 /home、/explore、/communities 生效
 
 ### 17. Instagram (instagram.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Main content area
-- Footer/contentinfo
+- 主内容区域
+- 页脚内容信息
 
-**Scope:**
+**生效范围：**
 
-- Applies on /, /explore, and /reels
+- 首页 /、/explore、/reels
 
 ### 18. Reddit (reddit.com)
 
-**Blocked Content:**
+**屏蔽内容：**
 
-- Main content container `#subgrid-container`
+- 首页信息流
 
-**Scope:**
+**生效范围：**
 
-- Applies on `/`, `/r/all`, `/explore`, and `/r/popular`
+- `/`、`/r/all`、`/explore`、`/r/popular`
 
-**Additional Features:**
+## 工作原理
 
-- Uses dynamic hiding instead of removal for better compatibility
+扩展通过以下方式工作：
 
-## How It Works
+1. **CSS 选择器屏蔽**：使用预定义的 CSS 选择器隐藏不需要的页面元素
+2. **动态检查**：部分网站包含额外的 JavaScript 检查，用于处理动态生成的内容
+3. **样式调整**：某些网站会调整页面布局以优化用户体验
 
-The extension works through the following methods:
+## 特点
 
-1. **CSS Selector Blocking**: Uses predefined CSS selectors to hide unwanted page elements
-2. **Dynamic Checking**: Some websites include additional JavaScript checks to handle dynamically generated content
-3. **Style Adjustments**: Certain websites adjust page layout to optimize user experience
+- 🎯 **精准屏蔽**：针对每个网站的特定干扰元素进行屏蔽
+- 🔧 **动态处理**：支持动态生成内容的处理
+- 🎨 **布局优化**：在屏蔽内容的同时优化页面布局
+- 🚀 **性能友好**：轻量级实现，不影响页面加载性能
 
-## Features
+## 使用说明
 
-- 🎯 **Precise Blocking**: Targets specific disruptive elements for each website
-- 🔧 **Dynamic Processing**: Supports handling of dynamically generated content
-- 🎨 **Layout Optimization**: Optimizes page layout while blocking content
-- 🚀 **Performance Friendly**: Lightweight implementation that doesn't affect page loading performance
+1. 安装浏览器扩展
+2. 访问支持的网站
+3. 扩展将自动屏蔽配置中定义的干扰内容
+4. 享受更清洁、专注的浏览体验
 
-## Usage Instructions
+## 注意事项
 
-1. Install the browser extension
-2. Visit supported websites
-3. The extension will automatically block disruptive content defined in the configuration
-4. Enjoy a cleaner, more focused browsing experience
-
-## Notes
-
-- Blocking rules may need adjustment as websites update
-- Some features (like redirects) may change the website's default behavior
-- Performance may vary slightly across different browsers or devices
-
-## Technical Implementation
-
-The extension is implemented based on the following technologies:
-
-- **Content Script Injection**: Injects scripts when pages load
-- **DOM Manipulation**: Dynamically hides or modifies page elements
-- **CSS Selectors**: Precisely targets elements to be blocked
-- **MutationObserver**: Monitors dynamic page changes
+- 屏蔽规则可能会随着网站的更新而需要调整
+- 某些功能（如重定向）可能会改变网站的默认行为
+- 不同浏览器或设备上的表现可能略有差异
 
 ---
 
-_This extension aims to provide a better web browsing experience, reduce distracting content, and help users focus on important information._
+_本扩展旨在提供更好的网络浏览体验，减少干扰内容，帮助用户专注于重要信息。_
