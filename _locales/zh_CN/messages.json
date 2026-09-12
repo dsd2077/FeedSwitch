@@ -65,7 +65,7 @@
   "errorNotFoundToDelete": { "message": "找不到要删除的限制。" },
   "websiteUsageTimeTitle": { "message": "网站统计" },
   "websiteUsageTimeNote": {
-    "message": "娱乐时长仅统计支持屏蔽信息流的网站；其他网站（如语雀）的使用时间会计入专注时长。"
+    "message": "娱乐时长仅统计支持屏蔽信息流的网站；其他网站的使用时间只会计入专注时长（无论处于何种模式）。"
   },
   "timeRangeLabel": { "message": "时间范围" },
   "totalDurationLabel": { "message": "总时长" },
