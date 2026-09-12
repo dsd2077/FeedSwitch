@@ -54,15 +54,17 @@ After changing code, run `npm run build`, click the extension’s reload button 
 4. Open **Statistic** to review weekly and daily usage.
 5. Configure a shortcut for `toggle-tracking` at `chrome://extensions/shortcuts` if needed.
 
-<p align="center">
-  <img src="./icons/popup%20400%2A640.png" alt="FeedSwitch popup with mode switch and website usage" width="400">
-</p>
+
 
 ## See the interface
 
 ### Popup: review today’s usage
 
 The popup lists total time by website and uses progress bars to separate focus time from fun time. Click a website to inspect subdomains and pages; use the pin button to keep frequently used sites at the top.
+
+<p align="center">
+  <img src="./icons/popup%20400%2A640.png" alt="FeedSwitch popup with mode switch and website usage" width="400">
+</p>
 
 ### Statistics: understand your time distribution
 

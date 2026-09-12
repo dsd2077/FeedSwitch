@@ -8,7 +8,7 @@
 
 # FeedSwitch
 
-FeedSwitch 是一个 Chrome 浏览器扩展，帮助你减少信息流和推荐内容带来的干扰，把时间和注意力还给真正重要的事情。它把“屏蔽干扰”“时间记录”和“使用限额”放在同一个轻量的工具里：需要专注时一键开启，休息时随时恢复。
+FeedSwitch 是一个 Chrome 浏览器扩展，用于屏蔽各大网站的信息流内容以及狗皮膏药，还你一个清爽的冲浪体验
 
 ## 你可以用 FeedSwitch 做什么
 
@@ -54,15 +54,16 @@ npm run build
 4. 打开 **统计** 页面，查看本周和当天的使用分布。
 5. 如需快捷键，可前往 `chrome://extensions/shortcuts` 设置 `toggle-tracking`。
 
-<p align="center">
-  <img src="./icons/popup%20400%2A640.png" alt="FeedSwitch 弹窗：切换模式并查看网站使用时间" width="400">
-</p>
+
 
 ## 界面一览
 
 ### 弹窗：查看当天使用情况
 
 弹窗会按网站列出当天的总时长，并用进度条区分专注时间和娱乐时间。点击网站条目可以继续查看子域名和页面；图钉按钮可以把常用网站固定在顶部。
+<p align="center">
+  <img src="./icons/popup%20400%2A640.png" alt="FeedSwitch 弹窗：切换模式并查看网站使用时间" width="400">
+</p>
 
 ### 统计：理解你的时间分布
 
