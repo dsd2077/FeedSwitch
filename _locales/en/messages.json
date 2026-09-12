@@ -88,7 +88,7 @@
     "description": "Weekday labels for charts, comma-separated"
   },
   "shortcutNotSet": {
-    "message": "No shortcut",
+    "message": "Set shortcut",
     "description": "Text displayed when no shortcut is detected"
   },
   "confirmButton": {

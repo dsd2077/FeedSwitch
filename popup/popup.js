@@ -645,6 +645,9 @@ function displayShortcut(shortcut) {
     shortcutElement.textContent = formattedShortcut
     shortcutElement.style.opacity = "1"
     shortcutElement.title = ""
+    shortcutElement.classList.remove("shortcut-link")
+    shortcutElement.removeAttribute("role")
+    shortcutElement.removeAttribute("tabindex")
   }
 }
 
@@ -654,7 +657,48 @@ function displayShortcutNotSet() {
   if (shortcutElement) {
     shortcutElement.textContent = chrome.i18n.getMessage("shortcutNotSet")
     shortcutElement.style.opacity = "0.7" // 用透明度表示这是提示信息
-    shortcutElement.title = ""
+    const settingsUrl = getShortcutSettingsUrl()
+    if (settingsUrl) {
+      shortcutElement.classList.add("shortcut-link")
+      shortcutElement.setAttribute("role", "link")
+      shortcutElement.setAttribute("tabindex", "0")
+      shortcutElement.title = settingsUrl
+      shortcutElement.onclick = () => openShortcutSettings(settingsUrl)
+      shortcutElement.onkeydown = (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault()
+          openShortcutSettings(settingsUrl)
+        }
+      }
+    } else {
+      shortcutElement.classList.remove("shortcut-link")
+      shortcutElement.removeAttribute("role")
+      shortcutElement.removeAttribute("tabindex")
+      shortcutElement.title = ""
+      shortcutElement.onclick = null
+      shortcutElement.onkeydown = null
+    }
+  }
+}
+
+// 仅为 Chrome 和 Edge 提供快捷键设置页入口，避免误跳到其他浏览器的内部页面。
+function getShortcutSettingsUrl() {
+  const userAgent = navigator.userAgent
+  if (/\bEdg(?:e|A|iOS)?\/\d/i.test(userAgent)) {
+    return "edge://extensions/shortcuts"
+  }
+  if (
+    /\bChrome\/\d/i.test(userAgent) &&
+    !/\b(?:OPR|Opera|Brave|Vivaldi|YaBrowser)\/\d/i.test(userAgent)
+  ) {
+    return "chrome://extensions/shortcuts"
+  }
+  return null
+}
+
+function openShortcutSettings(settingsUrl) {
+  if (chrome.tabs?.create) {
+    chrome.tabs.create({ url: settingsUrl })
   }
 }
 

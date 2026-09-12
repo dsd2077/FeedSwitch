@@ -81,7 +81,7 @@
     "description": "图表中的星期标签，逗号分隔"
   },
   "shortcutNotSet": {
-    "message": "未设置快捷键",
+    "message": "设置快捷键",
     "description": "当检测不到快捷键时显示的文本"
   },
   "confirmButton": {

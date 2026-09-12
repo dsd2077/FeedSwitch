@@ -482,6 +482,18 @@ input:checked + .slider .off {
   opacity: 0.8;
 }
 
+.shortcut-text.shortcut-link {
+  color: #777;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.shortcut-text.shortcut-link:hover,
+.shortcut-text.shortcut-link:focus {
+  color: #4f46e5;
+}
+
 .shortcut-text:empty {
   display: none;
 }
